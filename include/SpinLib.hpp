@@ -1,71 +1,102 @@
 #pragma once
-#include <vector>
 #include <unordered_map>
 #include <string>
 #include <cstdint>
 #include <stdexcept>
 
+#include <array>
+#include <ostream>
 
-/*
- * Permutation struct
+
+/**
+ * @enum SpinId
+ * @brief   Enumerates all possible basic Rubik's Cube moves.
  *
- * Represents a permutation of cube pieces, where 'from' is the index of the piece being moved,
- * and 'to' is the index of the piece it is moved to.
- *    * Example: {from: 1, to: 5} means the piece at index 1 is moved to index 5.
+ *          Each move is represented by a unique identifier, which can be used to retrieve the corresponding Spin object.
+ *          The moves include U (Up), D (Down), R (Right), L (Left), F (Front), B (Back) and their inverses and double turns.
+*/
+enum class SpinId : uint8_t {
+    U,
+    U_PRIME,
+    U2,
+    D,
+    D_PRIME,
+    D2,
+    R,
+    R_PRIME,
+    R2,
+    L,
+    L_PRIME,
+    L2,
+    F,
+    F_PRIME,
+    F2,
+    B,
+    B_PRIME,
+    B2,
+    COUNT
+};
+
+
+constexpr size_t to_index(SpinId id) {
+    return static_cast<size_t>(id);
+}
+
+
+/**
+ * @struct Permutation
+ * @brief   Represents a single piece's movement and orientation change due to a spin.
+ *
+ *          This struct contains:
+ *              - from: The index of the piece before the spin.
+ *              - to: The index of the piece after the spin.
+ *              - delta: The change in orientation (for corners and edges).
 */
 struct Permutation {
     uint8_t from;
     uint8_t to;
+    uint8_t delta = 0;
+
+    Permutation() = default;
+
+    Permutation(uint8_t from, uint8_t to, uint8_t delta = 0)
+        : from(from), to(to), delta(delta) {}
 };
 
-/*
- * OrientationChange struct
- *
- * Represents a change in orientation for a cube piece, where 'index' is the index of the piece,
- * and 'delta' is the change in orientation.
-    * Example: {index: 1, delta: 2} means the piece at index 1 has its orientation changed by 2.
+
+/**
+ * @struct Spin
+
+ * @brief   Represents a spin in the Rubik's Cube, containing moves for corners and edges.
+
+ *          This struct holds two arrays of Permutation structure:
+ *              - cornersMoves: An array of 4 Permutation structure representing the moves for corner pieces.
+ *              - edgesMoves: An array of 4 Permutation structure representing the moves for edge pieces.
 */
-struct OrientationChange {
-    uint8_t index;
-    uint8_t delta;
+struct Spin {    
+    std::array<Permutation, 4> cornersMoves;
+    std::array<Permutation, 4> edgesMoves;
+
+    Spin() = default;
+
+    Spin(std::array<Permutation, 4> const& corners, std::array<Permutation, 4> const& edges)
+        : cornersMoves(corners), edgesMoves(edges) {}
 };
 
 
-/*
- * Spin struct
- *
- * Represents a spin in the Rubik's Cube, containing moves and orientation changes for corners and edges.
- * - cornersMoves: A vector of Permutation structs representing the moves of corner pieces.
- * - cornersOrientation: A vector of OrientationChange structs representing the orientation changes of corner pieces.
- * - edgesMoves: A vector of Permutation structs representing the moves of edge pieces.
- * - edgesOrientation: A vector of OrientationChange structs representing the orientation changes of edge pieces.
+/**
+    * @class SpinLib
+    * @brief Singleton class that manages a collection of Spin objects.
+    *
+    * This class provides access to predefined spins for a Rubik's Cube, allowing users to retrieve
+    * spins by their SpinId. It ensures that only one instance of SpinLib exists throughout the application,
+    * and initializes the spins with predefined moves for corners and edges.
+    * @note The SpinLib class is designed to be a singleton, meaning it can only be instantiated once.
+    *       Use SpinLib::getInstance() to access the singleton instance.  
+    * @example
+    * SpinLib& spinLib = SpinLib::getInstance();
+    * const Spin& spin = spinLib.getSpin(SpinId::U);
 */
-struct Spin {
-    
-    std::vector<Permutation> cornersMoves;
-    std::vector<OrientationChange> cornersOrientation;
-    
-    std::vector<Permutation> edgesMoves;
-    std::vector<OrientationChange> edgesOrientation;
-};
-
-
-/* ==============================================================================
-    *
-    * SpinLib class
-    *
-    * Singleton class that manages a library of spins for the Rubik's Cube.
-    * It initializes a set of predefined spins and provides access to them by name.
-    * 
-    * Usage:
-    *   SpinLib& spinLib = SpinLib::getInstance();
-    *   const Spin& spin = spinLib.getSpin("U");
-    * 
-    * This class is designed to be a singleton, ensuring that only one instance exists throughout the application.
-    * It provides a method to retrieve spins by their name, which can be used to apply
-    * specific moves to a Rubik's Cube.
-    *
-=============================================================================== */
 class SpinLib {
 
     
@@ -88,30 +119,62 @@ class SpinLib {
         /*
          * getSpin
          *
-         * Retrieves a Spin object by its name.
-         * Throws an exception if the spin name does not exist in the library.
-         * @param spinName - The name of the spin to retrieve.
-         * @return const Spin& - A constant reference to the Spin object associated with the given name.
-         * @throws std::invalid_argument - If the spin name does not exist in the library.
+         * Retrieves a Spin object by its SpinId.
+         * Throws an out_of_range exception if the SpinId is invalid.
+         *
+         * @param id - The SpinId for which to retrieve the Spin.
+         * @return const Spin& - A reference to the Spin object corresponding to the given id.
+         * @throws std::out_of_range if the id is invalid.
         */
-        const Spin& getSpin(const std::string& spinName) const;
+        const Spin& getSpin(SpinId id) const;
 
     private:
 
-        /* 
+        /**
          * spins
-         *
-         * A map that holds the predefined spins, where the key is the name of the spin (e.g., "U", "D'", "L2")
-         * and the value is a Spin object containing the moves and orientation changes for corners and edges
+         * @brief   Represents a collection of Spin objects indexed by SpinId.
+         *          Each Spin object contains the moves for corners and edges for a specific spin.
+         * The size of the array is determined by the COUNT value in SpinId, ensuring that it can hold all defined spins.
         */
-        std::unordered_map<std::string, Spin> spins;
+        std::array<Spin, static_cast<size_t>(SpinId::COUNT)> spins;
 
-        /*
+        /**
          * initializeSpins
          *
-         * Initializes the spins map with predefined spins.
-         * This method populates the spins map with various Rubik's Cube spins,
-         * defining the moves and orientation changes for corners and edges.
+         * Initializes the spins array with predefined spins.
+         * This method is called in the constructor to populate the SpinLib with all available spins.
+         *
+         * It defines the moves for corners and edges for each type of spin.
         */
         void initializeSpins();
+
+        /**
+         * addSpin
+         *
+         * Adds a new Spin to the spins array.
+         * @brief This method is used to define the moves for corners and edges for a specific spin.
+         *
+         * @param id - The SpinId for which to add the Spin.
+         * @param cornersMoves - An array of Permutation objects representing corner moves.
+         * @param edgesMoves - An array of Permutation objects representing edge moves.
+        */
+        void addSpin(SpinId id, 
+            std::array<Permutation, 4> cornersMoves, 
+            std::array<Permutation, 4> edgesMoves
+        );
 };
+
+
+// std::ostream& operator<<(std::ostream& os, const Permutation& p) {
+//     os << "{from: " << unsigned(p.from) << ", to: " << unsigned(p.to) << ", delta: " << unsigned(p.delta) << "}";
+//     return os;
+// }
+
+// std::ostream& operator<<(std::ostream& os, const Spin& s) {
+//     os << "Corners: [";
+//     for (const auto& c : s.cornersMoves) os << c << " ";
+//     os << "] Edges: [";
+//     for (const auto& e : s.edgesMoves) os << e << " ";
+//     os << "]";
+//     return os;
+// }

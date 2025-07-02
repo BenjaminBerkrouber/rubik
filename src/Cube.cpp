@@ -60,10 +60,17 @@ void Cube::initializeMapping() {
 // ============================================================================
 
 
-void Cube::applySpin(const std::string& spinName) {
-    const Spin& spin = SpinLib::getInstance().getSpin(spinName);
 
-    std::cout << "  Applying spin: " << spinName << std::endl;
+void Cube::applySpin(SpinId id) {
+    const Spin *spinPtr = nullptr;
+
+    try {
+        spinPtr = &SpinLib::getInstance().getSpin(id);
+    } catch (const std::out_of_range& e) {
+        std::cerr << "Error applying spin: " << e.what() << std::endl;
+        return;
+    }
+    const Spin& spin = *spinPtr;
 
     std::vector<uint8_t> tmpCorners(std::begin(corners), std::end(corners));
     std::vector<uint8_t> tmpEdges(std::begin(edges), std::end(edges));
@@ -73,12 +80,12 @@ void Cube::applySpin(const std::string& spinName) {
 
     for (const auto& move : spin.cornersMoves) {
         corners[move.to] = tmpCorners[move.from];
-        corners_orientation[move.to] = (tmpCornersOrientation[move.from] + getCornerOrientationDelta(spin, move.to)) % 3;
+        corners_orientation[move.to] = (tmpCornersOrientation[move.from] + move.delta) % 3;
     }
 
     for (const auto& move : spin.edgesMoves) {
         edges[move.to] = tmpEdges[move.from];
-        edges_orientation[move.to] = (tmpEdgesOrientation[move.from] + getEdgeOrientationDelta(spin, move.to)) % 2;
+        edges_orientation[move.to] = (tmpEdgesOrientation[move.from] + move.delta) % 2;
     }
 }
 
@@ -88,21 +95,6 @@ void Cube::applySpin(const std::string& spinName) {
 // ============================================================================
 // ==== Getters
 // ============================================================================
-
-
-int Cube::getCornerOrientationDelta(const Spin& spin, uint8_t index) {
-    for (const auto& oc : spin.cornersOrientation) {
-        if (oc.index == index) return oc.delta;
-    }
-    return 0;
-}
-
-int Cube::getEdgeOrientationDelta(const Spin& spin, uint8_t index) {
-    for (const auto& oc : spin.edgesOrientation) {
-        if (oc.index == index) return oc.delta;
-    }
-    return 0;
-}
 
 
 std::string Cube::getCorners() const {

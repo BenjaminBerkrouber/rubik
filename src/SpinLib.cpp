@@ -22,12 +22,10 @@ SpinLib& SpinLib::getInstance() {
     return instance;
 }
 
-const Spin& SpinLib::getSpin(const std::string& spinName) const {
-    auto it = spins.find(spinName);
-    if (it != spins.end()) {
-        return it->second;
-    }
-    throw std::invalid_argument("Spin not found: " + spinName);
+const Spin& SpinLib::getSpin(SpinId id) const {
+    size_t index = to_index(id);
+    if (index >= spins.size()) throw std::out_of_range("Invalid SpinId");
+    return spins[index];
 }
 
 
@@ -38,223 +36,264 @@ const Spin& SpinLib::getSpin(const std::string& spinName) const {
 
 void SpinLib::initializeSpins() {
 
-    spins["U"] = Spin{
-        .cornersMoves = { 
-            {0, 1}, {1, 2}, {2, 3}, {3, 0} 
-        },
-        .cornersOrientation = {},
-        .edgesMoves = { 
-            {0, 1}, {1, 2}, {2, 3}, {3, 0} 
-        },
-        .edgesOrientation = {}
-    };
-    spins["U'"] = Spin{
-        .cornersMoves = { 
-            {0, 3}, {3, 2}, {2, 1}, {1, 0} 
-        },
-        .cornersOrientation = {},
-        .edgesMoves = { 
-            {0, 3}, {3, 2}, {2, 1}, {1, 0} 
-        },
-        .edgesOrientation = {}
-    };
-    spins["U2"] = Spin{
-        .cornersMoves = { 
-            {0, 2}, {1, 3}, {2, 0}, {3, 1} 
-        },
-        .cornersOrientation = {},
-        .edgesMoves = { 
-            {0, 2}, {1, 3}, {2, 0}, {3, 1} 
-        },
-        .edgesOrientation = {}
-    };
-
-
-    spins["D"] = Spin{
-        .cornersMoves = { 
-            {4, 5}, {5, 6}, {6, 7}, {7, 4} 
-        },
-        .cornersOrientation = {},
-        .edgesMoves = { 
-            {8, 9}, {9, 10}, {10, 11}, {11, 8} 
-        },
-        .edgesOrientation = {}
-    };
-    spins["D'"] = Spin{
-        .cornersMoves = { 
-            {4, 7}, {7, 6}, {6, 5}, {5, 4} 
-        },
-        .cornersOrientation = {},
-        .edgesMoves = { 
-            {8, 11}, {11, 10}, {10, 9}, {9, 8}
-        },
-        .edgesOrientation = {}
-    };
-    spins["D2"] = Spin{
-        .cornersMoves = { 
-            {4, 6}, {5, 7}, {6, 4}, {7, 5} 
-        },
-        .cornersOrientation = {},
-        .edgesMoves = {
-            {8, 10}, {9, 11}, {10, 8}, {11, 9}
-        },
-        .edgesOrientation = {}
-    };
-
-    spins["R"] = Spin{
-        .cornersMoves = { 
-            {0, 3}, {3, 7}, {7, 4}, {4, 0} 
-        },
-        .cornersOrientation = {
-            {0, 1}, {3, 2}, {7, 1}, {4, 2}
-        },
-        .edgesMoves = {
-            {4, 3}, {3, 7}, {7, 11}, {11, 4}
-        },
-        .edgesOrientation = {}
-    };
-
-    spins["R'"] = Spin{
-        .cornersMoves = { 
-            {0, 4}, {4, 7}, {7, 3}, {3, 0} 
-        },
-        .cornersOrientation = {
-            {4, 2}, {7, 1}, {3, 2}, {0, 1}
-        },
-        .edgesMoves = {
-            {4, 11}, {11, 7}, {7, 3}, {3, 4}
-        },
-        .edgesOrientation = {}
-    };
-
-    spins["R2"] = Spin{
-        .cornersMoves = { 
-            {0, 7}, {3, 4}, {7, 0}, {4, 3} 
-        },
-        .cornersOrientation = {},
-        .edgesMoves = {
-            {4, 7}, {3, 11}, {7, 4}, {11, 3}
-        },
-        .edgesOrientation = {}
-    };
-
-    spins["L"] = Spin{
-        .cornersMoves = { 
-            {1, 5}, {5, 6}, {6, 2}, {2, 1} 
-        },
-        .cornersOrientation = {
-            {1, 2}, {5, 1}, {6, 2}, {2, 1}
-        },
-        .edgesMoves = {
-            {1, 5}, {5, 9}, {9, 6}, {6, 1}
-        },
-        .edgesOrientation = {}
-    };
-
-    spins["L'"] = Spin{
-        .cornersMoves = { 
-            {1, 2}, {2, 6}, {6, 5}, {5, 1} 
-        },
-        .cornersOrientation = {
-            {1, 2}, {2, 1}, {6, 2}, {5, 1}
-        },
-        .edgesMoves = {
-            {1, 6}, {6, 9}, {9, 5}, {5, 1}
-        },
-        .edgesOrientation = {}
-    };
-
-    spins["L2"] = Spin{
-        .cornersMoves = { 
-            {1, 6}, {5, 2}, {6, 1}, {2, 5} 
-        },
-        .cornersOrientation = {},
-        .edgesMoves = {
-            {1, 9}, {5, 6}, {9, 1}, {6, 5}
-        },
-        .edgesOrientation = {}
-    };
-
-    spins["F"] = Spin{
-        .cornersMoves = { 
-            {0, 4}, {4, 5}, {5, 1}, {1, 0} 
-        },
-        .cornersOrientation = {
-            {0, 2}, {4, 1}, {5, 2}, {1, 1}
-        },
-        .edgesMoves = {
-            {0, 4}, {4, 8}, {8, 5}, {5, 0}
-        },
-        .edgesOrientation = {
-            {0, 1}, {4, 1}, {8, 1}, {5, 1}
+    addSpin(SpinId::U, 
+        std::array<Permutation, 4>{ 
+            Permutation{0, 1},
+            Permutation{1, 2},
+            Permutation{2, 3},
+            Permutation{3, 0}
+        }, 
+        std::array<Permutation, 4>{ 
+            Permutation{0, 1},
+            Permutation{1, 2},
+            Permutation{2, 3},
+            Permutation{3, 0}
         }
-    };
-
-    spins["F'"] = Spin{
-        .cornersMoves = { 
-            {0, 1}, {1, 5}, {5, 4}, {4, 0} 
-        },
-        .cornersOrientation = {
-            {0, 2}, {1, 1}, {5, 2}, {4, 1}
-        },
-        .edgesMoves = {
-            {0, 5}, {5, 8}, {8, 4}, {4, 0}
-        },
-        .edgesOrientation = {
-            {0, 1}, {5, 1}, {8, 1}, {4, 1}
+    );
+    addSpin(SpinId::U_PRIME, 
+        std::array<Permutation, 4>{ 
+            Permutation{0, 3},
+            Permutation{3, 2},
+            Permutation{2, 1},
+            Permutation{1, 0}
+        }, 
+        std::array<Permutation, 4>{ 
+            Permutation{0, 3},
+            Permutation{3, 2},
+            Permutation{2, 1},
+            Permutation{1, 0}
         }
-    };
-
-    spins["F2"] = Spin{
-        .cornersMoves = { 
-            {0, 5}, {4, 1}, {5, 0}, {1, 4} 
-        },
-        .cornersOrientation = {},
-        .edgesMoves = {
-            {0, 8}, {4, 5}, {8, 0}, {5, 4}
-        },
-        .edgesOrientation = {}
-    };
-
-    spins["B"] = Spin{
-        .cornersMoves = { 
-            {2, 6}, {6, 7}, {7, 3}, {3, 2} 
-        },
-        .cornersOrientation = {
-            {2, 2}, {6, 1}, {7, 2}, {3, 1}
-        },
-        .edgesMoves = {
-            {2, 6}, {6, 10}, {10, 7}, {7, 2}
-        },
-        .edgesOrientation = {
-            {2, 1}, {6, 1}, {10, 1}, {7, 1}
+    );
+    addSpin(SpinId::U2, 
+        std::array<Permutation, 4>{ 
+            Permutation{0, 2},
+            Permutation{1, 3},
+            Permutation{2, 0},
+            Permutation{3, 1}
+        }, 
+        std::array<Permutation, 4>{ 
+            Permutation{0, 2},
+            Permutation{1, 3},
+            Permutation{2, 0},
+            Permutation{3, 1}
         }
-    };
-
-    spins["B'"] = Spin{
-        .cornersMoves = { 
-            {2, 3}, {3, 7}, {7, 6}, {6, 2} 
-        },
-        .cornersOrientation = {
-            {2, 2}, {3, 1}, {7, 2}, {6, 1}
-        },
-        .edgesMoves = {
-            {2, 7}, {7, 10}, {10, 6}, {6, 2}
-        },
-        .edgesOrientation = {
-            {2, 1}, {7, 1}, {10, 1}, {6, 1}
+    );
+    addSpin(SpinId::D, 
+        std::array<Permutation, 4>{ 
+            Permutation{4, 5},
+            Permutation{5, 6},
+            Permutation{6, 7},
+            Permutation{7, 4}
+        }, 
+        std::array<Permutation, 4>{ 
+            Permutation{8, 9},
+            Permutation{9, 10},
+            Permutation{10, 11},
+            Permutation{11, 8}
         }
-    };
-
-    spins["B2"] = Spin{
-        .cornersMoves = { 
-            {2, 7}, {6, 3}, {7, 2}, {3, 6} 
+    );
+    addSpin(SpinId::D_PRIME, 
+        std::array<Permutation, 4>{ 
+            Permutation{4, 7},
+            Permutation{7, 6},
+            Permutation{6, 5},
+            Permutation{5, 4}
+        }, 
+        std::array<Permutation, 4>{ 
+            Permutation{8, 11},
+            Permutation{11, 10},
+            Permutation{10, 9},
+            Permutation{9, 8}
+        }
+    );
+    addSpin(SpinId::D2, 
+        std::array<Permutation, 4>{ 
+            Permutation{4, 6},
+            Permutation{5, 7},
+            Permutation{6, 4 },
+            Permutation{7, 5}
+        }, 
+        std::array<Permutation, 4>{ 
+            Permutation{8, 10},
+            Permutation{9, 11},
+            Permutation{10, 8},
+            Permutation{11, 9}
+        }
+    );
+    addSpin(SpinId::R, 
+        std::array<Permutation, 4>{ 
+            Permutation{0, 3, 2},
+            Permutation{3, 7, 1},
+            Permutation{7, 4, 2},
+            Permutation{4, 0, 1}
+        }, 
+        std::array<Permutation, 4>{ 
+            Permutation{4, 3},
+            Permutation{3, 7},
+            Permutation{7, 11},
+            Permutation{11, 4}
+        }
+    );
+    addSpin(SpinId::R_PRIME, 
+        std::array<Permutation, 4>{ 
+            Permutation{0, 4, 2},
+            Permutation{4, 7, 1},
+            Permutation{7, 3, 2},
+            Permutation{3, 0, 1}
+        }, 
+        std::array<Permutation, 4>{ 
+            Permutation{4, 11},
+            Permutation{11, 7},
+            Permutation{7, 3},
+            Permutation{3, 4}
+        }
+    );
+    addSpin(SpinId::R2, 
+        std::array<Permutation, 4>{ 
+            Permutation{0, 7},
+            Permutation{3, 4},
+            Permutation{7, 0},
+            Permutation{4, 3}
+        }, 
+        std::array<Permutation, 4>{ 
+            Permutation{4, 7},
+            Permutation{3, 11},
+            Permutation{7, 4},
+            Permutation{11, 3}
+        }
+    );
+    addSpin(SpinId::L, 
+        std::array<Permutation, 4>{ 
+            Permutation{1, 5, 1},
+            Permutation{5, 6, 2},
+            Permutation{6, 2, 1},
+            Permutation{2, 1, 2}
+        }, 
+        std::array<Permutation, 4>{ 
+            Permutation{1, 5},
+            Permutation{5, 9},
+            Permutation{9, 6},
+            Permutation{6, 1}
+        }
+    );
+    addSpin(SpinId::L_PRIME, 
+        std::array<Permutation, 4>{ 
+            Permutation{1, 2, 1},
+            Permutation{2, 6, 2},
+            Permutation{6, 5, 1},
+            Permutation{5, 1, 2}
+        }, 
+        std::array<Permutation, 4>{ 
+            Permutation{1, 6},
+            Permutation{6, 9},
+            Permutation{9, 5},
+            Permutation{5, 1}
+        }
+    );
+    addSpin(SpinId::L2, 
+        std::array<Permutation, 4>{ 
+            Permutation{1, 6},
+            Permutation{5, 2},
+            Permutation{6, 1},
+            Permutation{2, 5}
+        }, 
+        std::array<Permutation, 4>{ 
+            Permutation{1, 9},
+            Permutation{5, 6},
+            Permutation{9, 1},
+            Permutation{6, 5}
+        }
+    );
+    addSpin(SpinId::F, 
+        std::array<Permutation, 4>{ 
+            Permutation{0, 4, 1},
+            Permutation{4, 5, 2},
+            Permutation{5, 1, 1},
+            Permutation{1, 0, 2}
+        }, 
+        std::array<Permutation, 4>{ 
+            Permutation{0, 4, 1},
+            Permutation{4, 8, 1},
+            Permutation{8, 5, 1},
+            Permutation{5, 0, 1}
+        }
+    );
+    addSpin(SpinId::F_PRIME, 
+        std::array<Permutation, 4>{ 
+            Permutation{0, 1, 1},
+            Permutation{1, 5, 2},
+            Permutation{5, 4, 1},
+            Permutation{4, 0, 2}
+        }, 
+        std::array<Permutation, 4>{ 
+            Permutation{0, 5, 1},
+            Permutation{5, 8, 1},
+            Permutation{8, 4, 1},
+            Permutation{4, 0, 1}
+        }
+    );
+    addSpin(SpinId::F2, 
+        std::array<Permutation, 4>{ 
+            Permutation{0, 5},
+            Permutation{4, 1},
+            Permutation{5, 0},
+            Permutation{1, 4}
+        }, 
+        std::array<Permutation, 4>{ 
+            Permutation{0, 8},
+            Permutation{4, 5},
+            Permutation{8, 0},
+            Permutation{5, 4}
+        }
+    );
+    addSpin(SpinId::B, 
+        std::array<Permutation, 4>{ 
+            Permutation{2, 6, 1},
+            Permutation{6, 7, 2},
+            Permutation{7, 3, 1},
+            Permutation{3, 2, 2}
         },
-        .cornersOrientation = {},
-        .edgesMoves = {
-            {2, 10}, {6, 7}, {10, 2}, {7, 6}
-        },
-        .edgesOrientation = {}
-    };
+        std::array<Permutation, 4>{ 
+            Permutation{2, 6, 1},
+            Permutation{6, 10, 1},
+            Permutation{10, 7, 1},
+            Permutation{7, 2, 1}
+        }
+    );
+    addSpin(SpinId::B_PRIME, 
+        std::array<Permutation, 4>{
+            Permutation{2, 3, 1},
+            Permutation{3, 7, 2},
+            Permutation{7, 6, 1},
+            Permutation{6, 2, 2}
+    }, 
+        std::array<Permutation, 4>{
+            Permutation{2, 7, 1},
+            Permutation{7, 10, 1},
+            Permutation{10, 6, 1},
+            Permutation{6, 2, 1}
+    }
+    );
+    addSpin(SpinId::B2, 
+        std::array<Permutation, 4>{
+            Permutation{2, 7},
+            Permutation{6, 3},
+            Permutation{7, 2},
+            Permutation{3, 6}
+    }, 
+        std::array<Permutation, 4>{
+            Permutation{2, 10},
+            Permutation{6, 7},
+            Permutation{10, 2},
+            Permutation{7, 6}
+        }
+    );
+}
 
+
+void SpinLib::addSpin(SpinId id, 
+        std::array<Permutation, 4> cornersMoves, 
+        std::array<Permutation, 4> edgesMoves) 
+{
+    spins[to_index(id)] = Spin(cornersMoves, edgesMoves);
 }

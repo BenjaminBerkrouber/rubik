@@ -6,6 +6,8 @@
 #include <map>
 #include <vector>
 #include "./SpinLib.hpp"
+#include <array>
+
 
 #define YELLOW "\e[43m"
 #define WHITE "\e[47m"
@@ -22,20 +24,17 @@ class Cube {
         ~Cube();
 
 
-        void applySpin(const std::string& spin);
-        
-        int getCornerOrientationDelta(const Spin& spin, uint8_t index);
-        int getEdgeOrientationDelta(const Spin& spin, uint8_t index);
-        
+        void applySpin(SpinId id);
+
 
         std::string getCorners() const;
         std::string getEdges() const; 
         std::string getCornerOrientations() const; 
         std::string getEdgeOrientations() const;
-        
 
 
-        
+
+
         void print() ;
         std::string getCornerSticker(uint8_t cornerIndex, uint8_t cornerOrientation) const;
         std::string getEdgeSticker(uint8_t edgeIndex, uint8_t edgeOrientation) const;
@@ -138,7 +137,4 @@ class Cube {
             {7, 0}, {0, 0}, {6, 0},
             {7, 2}, {10, 1}, {6, 1} 
         };
-        
-        
-        
     };
