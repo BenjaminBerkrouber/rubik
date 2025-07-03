@@ -1,8 +1,8 @@
 NAME = rubik
-TEST_NAME = test
 
-CC = c++
-CFLAGS = -g -Wall -Wextra -Werror -std=c++17 -O2
+CXX = c++
+CXXFLAGS = -g -Wall -Wextra -Werror -std=c++20 -O2
+GTEST_LIB = -lgtest -lgtest_main -pthread
 # -pg
 
 SRC = 		main.cpp \
@@ -13,13 +13,17 @@ INC = 		include/Cube.hpp \
 			include/SpinLib.hpp \
 
 
-OBJ_DIR = obj/
-OBJ = $(addprefix $(OBJ_DIR), $(SRC:.cpp=.o))
-OBJ_DEBOG = $(addprefix $(OBJ_DIR), $(SRCTEST:.cpp=.o))
+TEST_BIN = bin/tests/tests
+OBJ_BIN = bin/obj/
+OBJ = $(addprefix $(OBJ_BIN), $(SRC:.cpp=.o))
+OBJ_DEBOG = $(addprefix $(OBJ_BIN), $(SRCTEST:.cpp=.o))
+
 INCLUDES_DIR = include/
 DEPS = $(INC)
 
-GTEST_LIB = -lgtest -lgtest_main -pthread
+TESTS = tests/SpinLib_test.cpp \
+		tests/Cube_test.cpp \
+		tests/spins/spin_*_test.cpp \
 
 
 RED=\033[0;31m
@@ -29,12 +33,6 @@ NC=\033[0m
 
 all: start $(NAME) end
 
-debog: $(OBJ_DEBOG)
-	@echo "$(GREEN)---------- Starting the compilation of $(NAME) ----------$(NC)"
-	@$(CC) $(CFLAGS) $(OBJ_DEBOG) -o $(TEST_NAME) $(GTEST_LIB)
-	@echo " $(NAME)"
-	@echo " "
-
 start:
 	@echo " "
 	@echo "$(GREEN)---------- Starting the compilation of $(NAME) ----------$(NC)"
@@ -42,22 +40,29 @@ start:
 $(NAME): $(OBJ)
 	@echo "$(BLUE)---------- Creating the executable ----------$(NC)"
 	@echo " $(NAME)"
-	@$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
+	@$(CXX) $(CXXFLAGS) $(OBJ) -o $(NAME)
 
-$(OBJ_DIR)%.o: %.cpp
+$(OBJ_BIN)%.o: %.cpp
 	@echo " $<"
 	@mkdir -p $(dir $@)
-	@$(CC) $(CFLAGS) -I$(INCLUDES_DIR) -I$(INCLUDES_DIR)/Face_Type -c $< -o $@
+	@$(CXX) $(CXXFLAGS) -I$(INCLUDES_DIR) -I$(INCLUDES_DIR)/Face_Type -c $< -o $@
 
 end:
 	@echo "$(GREEN)---------- Successfully compiled! ----------$(NC)"
 	@echo " "
 
+SRC_NO_MAIN = $(filter-out main.cpp, $(SRC))
+
+test: $(TESTS) $(SRC)
+	@echo "$(BLUE)---------- Building and running tests ----------$(NC)"
+	$(CXX) $(CXXFLAGS) -o $(TEST_BIN) $(TESTS) $(SRC_NO_MAIN) $(LDFLAGS) $(GTEST_LIB)
+	./$(TEST_BIN)
+
 clean:
 	@echo "$(RED)---------- Cleaning up files ----------$(NC)"
-	@echo " $(OBJ_DIR)"
+	@echo " $(OBJ_BIN)"
 	@echo " "
-	@rm -rf $(OBJ_DIR)
+	@rm -rf $(OBJ_BIN)
 
 fclean: clean
 	@echo "$(RED)---------- Full cleanup... ----------$(NC)"
