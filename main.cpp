@@ -2,10 +2,9 @@
 
 #include <iostream>
 
-void applySpin(Cube& cube, const std::string& spin, bool verbose = true) {
-    cube.applySpin(spin);
+void applySpin(Cube& cube, SpinId id, bool verbose = true) {
+    cube.applySpin(id);
     if (verbose) {
-        std::cout << "Applied spin: " << spin << std::endl;
         std::cout << "Corners: " << cube.getCorners() << std::endl;
         std::cout << "Corners orientations: " << cube.getCornerOrientations() << std::endl;
         std::cout << "Edges: " << cube.getEdges() << std::endl;
@@ -21,15 +20,7 @@ int main() {
 
     cube.print();
 
-    std::vector<std::string> sexyMove = {
-        "R", "U", "R'", "U'"
-    };
-
-    for ( int i = 0; i < 6; ++i) {
-        for (const auto& spin : sexyMove) {
-            applySpin(cube, spin);
-        }
-    }
+    applySpin(cube, SpinId::D2);
 
 
 

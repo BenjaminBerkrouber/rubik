@@ -60,10 +60,34 @@ void Cube::initializeMapping() {
 // ============================================================================
 
 
+void Cube::applySimpleMove(auto &dest, auto &dest_orientation, const auto& moves, int mod) {
+    auto lastVal = dest[moves.back().from];
+    auto lastOri = dest_orientation[moves.back().from];
+
+    for (int i = moves.size() - 1; i > 0; --i) {
+        dest[moves[i].from] = dest[moves[i - 1].from];
+        dest_orientation[moves[i].from] = (dest_orientation[moves[i - 1].from] + moves[i - 1].delta) % mod;
+    }
+
+    dest[moves[0].from] = lastVal;
+    dest_orientation[moves[0].from] = (lastOri + moves.back().delta) % mod;
+}
+
+void Cube::applyDubleMove(auto& dest, auto &dest_orientation, const auto& moves, int mod) {
+
+    std::swap(dest[moves[0].from], dest[moves[1].from]);
+    std::swap(dest[moves[2].from], dest[moves[3].from]);
+
+    dest_orientation[moves[0].from] = (dest_orientation[moves[0].from] + moves[0].delta) % mod;
+    dest_orientation[moves[1].from] = (dest_orientation[moves[1].from] + moves[1].delta) % mod;
+    dest_orientation[moves[2].from] = (dest_orientation[moves[2].from] + moves[2].delta) % mod;
+    dest_orientation[moves[3].from] = (dest_orientation[moves[3].from] + moves[3].delta) % mod;
+}
+
+
 
 void Cube::applySpin(SpinId id) {
     const Spin *spinPtr = nullptr;
-
     try {
         spinPtr = &SpinLib::getInstance().getSpin(id);
     } catch (const std::out_of_range& e) {
@@ -71,21 +95,13 @@ void Cube::applySpin(SpinId id) {
         return;
     }
     const Spin& spin = *spinPtr;
-
-    std::vector<uint8_t> tmpCorners(std::begin(corners), std::end(corners));
-    std::vector<uint8_t> tmpEdges(std::begin(edges), std::end(edges));
-    std::vector<uint8_t> tmpCornersOrientation(std::begin(corners_orientation), std::end(corners_orientation));
-    std::vector<uint8_t> tmpEdgesOrientation(std::begin(edges_orientation), std::end(edges_orientation));
-
-
-    for (const auto& move : spin.cornersMoves) {
-        corners[move.to] = tmpCorners[move.from];
-        corners_orientation[move.to] = (tmpCornersOrientation[move.from] + move.delta) % 3;
-    }
-
-    for (const auto& move : spin.edgesMoves) {
-        edges[move.to] = tmpEdges[move.from];
-        edges_orientation[move.to] = (tmpEdgesOrientation[move.from] + move.delta) % 2;
+    
+    if (id < SpinId::U2) {
+        applySimpleMove(corners, corners_orientation, spin.cornersMoves, 3);
+        applySimpleMove(edges, edges_orientation, spin.edgesMoves, 2);
+    } else {
+        applyDubleMove(corners, corners_orientation, spin.cornersMoves, 3);
+        applyDubleMove(edges, edges_orientation, spin.edgesMoves, 3);
     }
 }
 

@@ -43,6 +43,8 @@ class Cube {
 
     private:
 
+        void applySimpleMove(auto &dest, auto &dest_orientation, const auto& moves, int mod);
+        void applyDubleMove(auto& dest, auto &dest_orientation, const auto& moves, int mod);
 
     /* =============================================================================
 
@@ -66,11 +68,11 @@ class Cube {
             * 
             *  The mapping is stored in a map for easy access.
         */
-        uint8_t corners[8];
-        uint8_t corners_orientation[8];
+        std::array<uint8_t, 8> corners;
+        std::array<uint8_t, 8> corners_orientation;
 
-        uint8_t edges[12];
-        uint8_t edges_orientation[12];
+        std::array<uint8_t, 12> edges;
+        std::array<uint8_t, 12> edges_orientation;
 
 
     /* =============================================================================

@@ -18,21 +18,21 @@
 enum class SpinId : uint8_t {
     U,
     U_PRIME,
-    U2,
     D,
     D_PRIME,
-    D2,
     R,
     R_PRIME,
-    R2,
     L,
     L_PRIME,
-    L2,
     F,
     F_PRIME,
-    F2,
     B,
     B_PRIME,
+    U2,
+    L2,
+    F2,
+    R2,
+    D2,
     B2,
     COUNT
 };
@@ -164,17 +164,3 @@ class SpinLib {
         );
 };
 
-
-// std::ostream& operator<<(std::ostream& os, const Permutation& p) {
-//     os << "{from: " << unsigned(p.from) << ", to: " << unsigned(p.to) << ", delta: " << unsigned(p.delta) << "}";
-//     return os;
-// }
-
-// std::ostream& operator<<(std::ostream& os, const Spin& s) {
-//     os << "Corners: [";
-//     for (const auto& c : s.cornersMoves) os << c << " ";
-//     os << "] Edges: [";
-//     for (const auto& e : s.edgesMoves) os << e << " ";
-//     os << "]";
-//     return os;
-// }
