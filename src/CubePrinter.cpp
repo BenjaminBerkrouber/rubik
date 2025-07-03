@@ -4,6 +4,31 @@
 // ==== Constructor and Destructor 
 // ================================================================================
 
+void applySpin(Cube& cube, CubePrinter printer, SpinId id, bool verbose = true) {
+    cube.applySpin(id);
+    if (verbose) {
+        std::cout << std::endl;
+        std::cout << "================= Cube state =================" << std::endl << std::endl;
+        std::cout << "Corners:             ";
+        for (const auto& corner : cube.getCorners()) {
+            std::cout << static_cast<int>(corner) << " ";
+        }
+        std::cout << std::endl << "Corners Orientation: ";
+        for (const auto& cornerOrientation : cube.getCornerOrientations()) {
+            std::cout << static_cast<int>(cornerOrientation) << " ";
+        }
+        std::cout << std::endl << "Edge:                ";
+        for (const auto& edge : cube.getEdges()) {
+            std::cout << static_cast<int>(edge) << " ";
+        }
+        std::cout << std::endl << "Edge Orientation:    ";
+        for (const auto& edgeOrientation : cube.getEdgeOrientations()) {
+            std::cout << static_cast<int>(edgeOrientation) << " ";
+        }
+        std::cout << std::endl << std::endl;
+        printer.print();
+    }
+}
 
 CubePrinter::CubePrinter(Cube& cube) : cube(cube) {
     initializeMapping();
@@ -17,15 +42,15 @@ CubePrinter::~CubePrinter() {}
 // ============================================================================
 
 void CubePrinter::initializeMapping() {
-    mapping_corners[0] = {YELLOW, GREEN, RED};      // UFR
-    mapping_corners[1] = {YELLOW, RED, BLUE};       // UFL
-    mapping_corners[2] = {YELLOW, BLUE, ORANGE};    // UBL
-    mapping_corners[3] = {YELLOW, ORANGE, GREEN};   // UBR
+    mapping_corners[0] = {YELLOW, RED, GREEN};      // UFR
+    mapping_corners[1] = {YELLOW, BLUE, RED};       // UFL
+    mapping_corners[2] = {YELLOW, ORANGE, BLUE};    // UBL
+    mapping_corners[3] = {YELLOW, GREEN, ORANGE};   // UBR
 
-    mapping_corners[4] = {WHITE, RED, GREEN};       // DFR
-    mapping_corners[5] = {WHITE, BLUE, RED};        // DFL
-    mapping_corners[6] = {WHITE, ORANGE, BLUE};     // DBL 
-    mapping_corners[7] = {WHITE, GREEN, ORANGE};    // DBR
+    mapping_corners[4] = {WHITE, GREEN, RED};       // DFR
+    mapping_corners[5] = {WHITE, RED, BLUE};        // DFL
+    mapping_corners[6] = {WHITE, BLUE, ORANGE};     // DBL 
+    mapping_corners[7] = {WHITE, ORANGE, GREEN};    // DBR
 
     mapping_edges[0] = {YELLOW, RED};               // UF
     mapping_edges[1] = {YELLOW, BLUE};              // UL

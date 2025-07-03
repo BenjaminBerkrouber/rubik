@@ -121,10 +121,10 @@ void SpinLib::initializeSpins() {
     );
     addSpin(SpinId::R, 
         std::array<Permutation, 4>{ 
-            Permutation{0, 2},
-            Permutation{3, 1},
-            Permutation{7, 2},
-            Permutation{4, 1}
+            Permutation{0, 1},
+            Permutation{3, 2},
+            Permutation{7, 1},
+            Permutation{4, 2}
         }, 
         std::array<Permutation, 4>{ 
             Permutation{4},
@@ -135,10 +135,10 @@ void SpinLib::initializeSpins() {
     );
     addSpin(SpinId::R_PRIME, 
         std::array<Permutation, 4>{ 
-            Permutation{0, 2},
-            Permutation{4, 1},
-            Permutation{7, 2},
-            Permutation{3, 1}
+            Permutation{0, 1},
+            Permutation{4, 2},
+            Permutation{7, 1},
+            Permutation{3, 2}
         }, 
         std::array<Permutation, 4>{ 
             Permutation{4},
@@ -163,10 +163,10 @@ void SpinLib::initializeSpins() {
     );
     addSpin(SpinId::L, 
         std::array<Permutation, 4>{ 
-            Permutation{1, 1},
-            Permutation{5, 2},
-            Permutation{6, 1},
-            Permutation{2, 2}
+            Permutation{1, 2},
+            Permutation{5, 1},
+            Permutation{6, 2},
+            Permutation{2, 1}
         }, 
         std::array<Permutation, 4>{ 
             Permutation{1},
@@ -177,10 +177,10 @@ void SpinLib::initializeSpins() {
     );
     addSpin(SpinId::L_PRIME, 
         std::array<Permutation, 4>{ 
-            Permutation{1, 1},
-            Permutation{2, 2},
-            Permutation{6, 1},
-            Permutation{5, 2}
+            Permutation{1, 2},
+            Permutation{2, 1},
+            Permutation{6, 2},
+            Permutation{5, 1}
         }, 
         std::array<Permutation, 4>{ 
             Permutation{1},
@@ -205,10 +205,10 @@ void SpinLib::initializeSpins() {
     );
     addSpin(SpinId::F, 
         std::array<Permutation, 4>{ 
-            Permutation{0, 1},
-            Permutation{4, 2},
-            Permutation{5, 1},
-            Permutation{1, 2}
+            Permutation{0, 2},
+            Permutation{4, 1},
+            Permutation{5, 2},
+            Permutation{1, 1}
         }, 
         std::array<Permutation, 4>{ 
             Permutation{0, 1},
@@ -219,10 +219,10 @@ void SpinLib::initializeSpins() {
     );
     addSpin(SpinId::F_PRIME, 
         std::array<Permutation, 4>{ 
-            Permutation{0, 1},
-            Permutation{1, 2},
-            Permutation{5, 1},
-            Permutation{4, 2}
+            Permutation{0, 2},
+            Permutation{1, 1},
+            Permutation{5, 2},
+            Permutation{4, 1}
         }, 
         std::array<Permutation, 4>{ 
             Permutation{0, 1},
@@ -247,10 +247,10 @@ void SpinLib::initializeSpins() {
     );
     addSpin(SpinId::B, 
         std::array<Permutation, 4>{ 
-            Permutation{2, 1},
-            Permutation{6, 2},
-            Permutation{7, 1},
-            Permutation{3, 2}
+            Permutation{2, 2},
+            Permutation{6, 1},
+            Permutation{7, 2},
+            Permutation{3, 1}
         },
         std::array<Permutation, 4>{ 
             Permutation{2, 1},
@@ -261,8 +261,8 @@ void SpinLib::initializeSpins() {
     );
     addSpin(SpinId::B_PRIME, 
         std::array<Permutation, 4>{
-            Permutation{2, 1},
-            Permutation{3, 2},
+            Permutation{2, 2},
+            Permutation{3, 1},
             Permutation{7, 1},
             Permutation{6, 2}
     }, 
