@@ -1,16 +1,19 @@
 NAME = rubik
 
-CXX = c++
-CXXFLAGS = -g -Wall -Wextra -Werror -std=c++20 -O2
-GTEST_LIB = -lgtest -lgtest_main -pthread
+CXX = g++
+CXXFLAGS = -g -Wall -Wextra -Werror -std=c++20 -O3
 # -pg
+GTEST_LIB = -lgtest -lgtest_main -pthread
+
 
 SRC = 		main.cpp \
 			src/Cube.cpp \
-			src/SpinLib.cpp
+			src/SpinLib.cpp \
+			src/CubePrinter.cpp \
 
 INC = 		include/Cube.hpp \
 			include/SpinLib.hpp \
+			include/CubePrinter.hpp \
 
 
 TEST_BIN = bin/tests/tests

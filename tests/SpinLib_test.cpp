@@ -14,8 +14,4 @@ TEST(SpinLibTest, GetSpinValidId) {
     EXPECT_EQ(spin.edgesMoves[0].index, 0);
 }
 
-TEST(SpinLibTest, GetSpinInvalidIdThrows) {
-    SpinLib& lib = SpinLib::getInstance();
-    EXPECT_THROW(lib.getSpin(static_cast<SpinId>(static_cast<uint8_t>(SpinId::COUNT))), std::out_of_range);
-}
 

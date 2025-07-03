@@ -24,9 +24,7 @@ SpinLib& SpinLib::getInstance() {
 }
 
 const Spin& SpinLib::getSpin(SpinId id) const {
-    size_t index = to_index(id);
-    if (index >= spins.size()) throw std::out_of_range("Invalid SpinId");
-    return spins[index];
+    return spins[to_index(id)];
 }
 
 

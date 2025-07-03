@@ -1,28 +1,44 @@
 #include "./include/Cube.hpp"
+#include "./include/CubePrinter.hpp"
+#include <chrono>
 
 #include <iostream>
 
-void applySpin(Cube& cube, SpinId id, bool verbose = true) {
+void applySpin(Cube& cube, CubePrinter printer, SpinId id, bool verbose = true) {
     cube.applySpin(id);
     if (verbose) {
-        std::cout << "Corners: " << cube.getCorners() << std::endl;
-        std::cout << "Corners orientations: " << cube.getCornerOrientations() << std::endl;
-        std::cout << "Edges: " << cube.getEdges() << std::endl;
-        std::cout << "Edges orientations: " << cube.getEdgeOrientations() << std::endl;
-        std::cout << "Cube state after spin:" << std::endl;
-        cube.print();
+        std::cout << std::endl;
+        std::cout << "================= Cube state =================" << std::endl << std::endl;
+        std::cout << "Corners:             ";
+        for (const auto& corner : cube.getCorners()) {
+            std::cout << static_cast<int>(corner) << " ";
+        }
+        std::cout << std::endl << "Corners Orientation: ";
+        for (const auto& cornerOrientation : cube.getCornerOrientations()) {
+            std::cout << static_cast<int>(cornerOrientation) << " ";
+        }
+        std::cout << std::endl << "Edge:                ";
+        for (const auto& edge : cube.getEdges()) {
+            std::cout << static_cast<int>(edge) << " ";
+        }
+        std::cout << std::endl << "Edge Orientation:    ";
+        for (const auto& edgeOrientation : cube.getEdgeOrientations()) {
+            std::cout << static_cast<int>(edgeOrientation) << " ";
+        }
+        std::cout << std::endl << std::endl;
+        printer.print();
     }
 }
 
 
 int main() {
+
     Cube cube;
+    CubePrinter printer(cube);
 
-    cube.print();
-
-    applySpin(cube, SpinId::D2);
-
-
+    printer.print();
+    applySpin(cube, printer,  SpinId::U);
+    applySpin(cube, printer,  SpinId::U);
 
     return 0;
 }

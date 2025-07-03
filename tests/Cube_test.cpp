@@ -7,7 +7,6 @@ class CubeTest : public ::testing::Test {
     protected:
         Cube cube;
         void SetUp() override {
-            cube = Cube();
         }
 
         void TearDown() override {
@@ -16,10 +15,10 @@ class CubeTest : public ::testing::Test {
 };
 
 TEST_F(CubeTest, InitialState) {
-    EXPECT_EQ(cube.getCorners(), "0 1 2 3 4 5 6 7 ");
-    EXPECT_EQ(cube.getEdges(), "0 1 2 3 4 5 6 7 8 9 10 11 ");
-    EXPECT_EQ(cube.getCornerOrientations(), "0 0 0 0 0 0 0 0 ");
-    EXPECT_EQ(cube.getEdgeOrientations(), "0 0 0 0 0 0 0 0 0 0 0 0 ");
+    EXPECT_EQ(cube.getCorners(), (std::array<uint8_t, 8>{0, 1, 2, 3, 4, 5, 6, 7}));
+    EXPECT_EQ(cube.getEdges(), (std::array<uint8_t, 12>{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}));
+    EXPECT_EQ(cube.getCornerOrientations(), (std::array<uint8_t, 8>{0, 0, 0, 0, 0, 0, 0, 0}));
+    EXPECT_EQ(cube.getEdgeOrientations(), (std::array<uint8_t, 12>{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}));
 }
 
 TEST_F(CubeTest, SexyMove) {
@@ -30,8 +29,8 @@ TEST_F(CubeTest, SexyMove) {
         cube.applySpin(SpinId::U_PRIME);
     }
 
-    EXPECT_EQ(cube.getCorners(), "0 1 2 3 4 5 6 7 ");
-    EXPECT_EQ(cube.getEdges(), "0 1 2 3 4 5 6 7 8 9 10 11 ");
-    EXPECT_EQ(cube.getCornerOrientations(), "0 0 0 0 0 0 0 0 ");
-    EXPECT_EQ(cube.getEdgeOrientations(), "0 0 0 0 0 0 0 0 0 0 0 0 ");
+    EXPECT_EQ(cube.getCorners(), (std::array<uint8_t, 8>{0, 1, 2, 3, 4, 5, 6, 7}));
+    EXPECT_EQ(cube.getEdges(), (std::array<uint8_t, 12>{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}));
+    EXPECT_EQ(cube.getCornerOrientations(), (std::array<uint8_t, 8>{0, 0, 0, 0, 0, 0, 0, 0}));
+    EXPECT_EQ(cube.getEdgeOrientations(), (std::array<uint8_t, 12>{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}));
 }
