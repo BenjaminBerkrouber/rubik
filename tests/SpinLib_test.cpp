@@ -10,10 +10,8 @@ TEST(SpinLibTest, SingletonReturnsSameInstance) {
 TEST(SpinLibTest, GetSpinValidId) {
     SpinLib& lib = SpinLib::getInstance();
     const Spin& spin = lib.getSpin(SpinId::U);
-    EXPECT_EQ(spin.cornersMoves[0].from, 0);
-    EXPECT_EQ(spin.cornersMoves[0].to, 1);
-    EXPECT_EQ(spin.edgesMoves[0].from, 0);
-    EXPECT_EQ(spin.edgesMoves[0].to, 1);
+    EXPECT_EQ(spin.cornersMoves[0].index, 0);
+    EXPECT_EQ(spin.edgesMoves[0].index, 0);
 }
 
 TEST(SpinLibTest, GetSpinInvalidIdThrows) {

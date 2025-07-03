@@ -48,19 +48,17 @@ constexpr size_t to_index(SpinId id) {
  * @brief   Represents a single piece's movement and orientation change due to a spin.
  *
  *          This struct contains:
- *              - from: The index of the piece before the spin.
- *              - to: The index of the piece after the spin.
+ *              - index: The index of the piece before the spin.
  *              - delta: The change in orientation (for corners and edges).
 */
 struct Permutation {
-    uint8_t from;
-    uint8_t to;
+    uint8_t index;
     uint8_t delta = 0;
 
     Permutation() = default;
 
-    Permutation(uint8_t from, uint8_t to, uint8_t delta = 0)
-        : from(from), to(to), delta(delta) {}
+    Permutation(uint8_t index, uint8_t delta = 0)
+        : index(index), delta(delta) {}
 };
 
 

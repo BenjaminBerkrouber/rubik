@@ -61,27 +61,27 @@ void Cube::initializeMapping() {
 
 
 void Cube::applySimpleMove(auto &dest, auto &dest_orientation, const auto& moves, int mod) {
-    auto lastVal = dest[moves.back().from];
-    auto lastOri = dest_orientation[moves.back().from];
+    auto lastVal = dest[moves.back().index];
+    auto lastOri = dest_orientation[moves.back().index];
 
     for (int i = moves.size() - 1; i > 0; --i) {
-        dest[moves[i].from] = dest[moves[i - 1].from];
-        dest_orientation[moves[i].from] = (dest_orientation[moves[i - 1].from] + moves[i - 1].delta) % mod;
+        dest[moves[i].index] = dest[moves[i - 1].index];
+        dest_orientation[moves[i].index] = (dest_orientation[moves[i - 1].index] + moves[i - 1].delta) % mod;
     }
 
-    dest[moves[0].from] = lastVal;
-    dest_orientation[moves[0].from] = (lastOri + moves.back().delta) % mod;
+    dest[moves[0].index] = lastVal;
+    dest_orientation[moves[0].index] = (lastOri + moves.back().delta) % mod;
 }
 
 void Cube::applyDubleMove(auto& dest, auto &dest_orientation, const auto& moves, int mod) {
 
-    std::swap(dest[moves[0].from], dest[moves[1].from]);
-    std::swap(dest[moves[2].from], dest[moves[3].from]);
+    std::swap(dest[moves[0].index], dest[moves[1].index]);
+    std::swap(dest[moves[2].index], dest[moves[3].index]);
 
-    dest_orientation[moves[0].from] = (dest_orientation[moves[0].from] + moves[0].delta) % mod;
-    dest_orientation[moves[1].from] = (dest_orientation[moves[1].from] + moves[1].delta) % mod;
-    dest_orientation[moves[2].from] = (dest_orientation[moves[2].from] + moves[2].delta) % mod;
-    dest_orientation[moves[3].from] = (dest_orientation[moves[3].from] + moves[3].delta) % mod;
+    dest_orientation[moves[0].index] = (dest_orientation[moves[0].index] + moves[0].delta) % mod;
+    dest_orientation[moves[1].index] = (dest_orientation[moves[1].index] + moves[1].delta) % mod;
+    dest_orientation[moves[2].index] = (dest_orientation[moves[2].index] + moves[2].delta) % mod;
+    dest_orientation[moves[3].index] = (dest_orientation[moves[3].index] + moves[3].delta) % mod;
 }
 
 
