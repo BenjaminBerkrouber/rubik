@@ -1,0 +1,4 @@
+add 
+
+Mémorisation / cache des états déjà explorés
+Une table de transposition (hash des états déjà visités) peut réduire beaucoup les noeuds explorés.
