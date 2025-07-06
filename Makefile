@@ -10,12 +10,12 @@ SRC = 		main.cpp \
 			src/Cube.cpp \
 			src/SpinLib.cpp \
 			src/CubePrinter.cpp \
-			src/algo/Kociemba/Pruning/PruningTableG1.cpp \
+			# src/algo/Kociemba/Pruning/PruningTableG1.cpp \
 
 INC = 		include/Cube.hpp \
 			include/SpinLib.hpp \
 			include/CubePrinter.hpp \
-			include/algo/Kociemba/Pruning/PruningTableG1.hpp \
+			# include/algo/Kociemba/Pruning/PruningTableG1.hpp \
 
 TEST_BIN = bin/tests/tests
 OBJ_BIN = bin/obj/

@@ -2,8 +2,6 @@
 #include "./include/CubePrinter.hpp"
 #include <chrono>
 
-#include "./include/algo/Kociemba/Pruning/PruningTableG1.hpp"
-
 
 #include <random>
 #include <iostream>
@@ -18,65 +16,135 @@
 #include <set>
 
 
-constexpr int MAX_DEPTH = 12; // raisonnable pour QTM
+#include <cstdint>
+
+uint64_t encodeEdges() {
+    uint64_t edges = 0;
+    for (int i = 0; i < 12; ++i) {
+        edges |= (static_cast<uint64_t>(i) & 0xF) << (4 * i);
+    }
+    return edges;
+}
 
 
-std::vector<SpinId> spins = {
-    SpinId::U,
-    SpinId::D,
-    SpinId::L,
-    SpinId::R,
-    SpinId::F,
-    SpinId::B,
-    SpinId::U2,
-    SpinId::D2,
-    SpinId::L2,
-    SpinId::R2,
-    SpinId::F2,
-    SpinId::B2,
-    SpinId::U_PRIME,
-    SpinId::D_PRIME,
-    SpinId::L_PRIME,
-    SpinId::R_PRIME,
-    SpinId::F_PRIME,
-    SpinId::B_PRIME
+uint64_t encodeCorners() {
+    uint64_t corners = 0;
+    for (int i = 0; i < 8; ++i) {
+        corners |= (static_cast<uint64_t>(i) & 0xF) << (i * 4);
+    }
+    return corners;
+}
+
+
+struct CubeState {
+    uint64_t edges;
+    uint64_t corners;
 };
 
-bool searchPhase1(Cube& cube, int depth, int maxDepth, std::vector<SpinId>& path, PruningTableG1& pruning) {
-    if (depth == maxDepth) {
-        if (pruning.encodeCornersOrientation(cube.getCornerOrientations()) == 0
-            && pruning.encodeEgdeOrientation(cube.getEdgeOrientations()) == 0
-            && pruning.encodeEdgesSlice(cube.getEdges()) == 0
-        ) {
-            return true;
-        }
-        return false;
+#include <iostream>
+#include <bitset>
+
+
+
+
+
+// void benshmark() {
+//     Cube cube;
+//     CubeState cubestate;
+
+//     cubestate.edges = encodeEdges();
+
+//     int N = 40000000;
+
+//     auto start = std::chrono::high_resolution_clock::now();
+
+//     for (int i = 0; i < N; ++i) {
+//         cube.applySpin(SpinId::U);
+//     }
+
+//     auto end = std::chrono::high_resolution_clock::now();
+//     auto duration_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+
+//     start = std::chrono::high_resolution_clock::now();
+//     for (int i = 0; i < N; ++i) {
+//         fast_spinU(cubestate);
+//     }
+//     end = std::chrono::high_resolution_clock::now();
+//     auto duration2_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+
+//     std::cout << "Duration for " << N << " spins:" << std::endl;
+
+//     std::cout << "Last: " << std::endl 
+//                             << std::setw(15) << duration_ns 
+//                             << " ns " << std::endl
+//                             << std::setw(15) << (duration_ns / 1e6) 
+//                             << " ms" 
+//                             << std::endl;
+
+//     std::cout << "New:  " << std::endl 
+//                             << std::setw(15) << duration2_ns 
+//                             << " ns " << std::endl
+//                             << std::setw(15) << (duration2_ns / 1e6) 
+//                             << " ms" 
+//                             << std::endl;
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void printEdgesBinary(uint64_t edges) {
+    constexpr int totalNibbles = 12;
+
+    std::cout << "Edge:                ";
+    for (int i = 0; i < totalNibbles; ++i) {
+        uint8_t nibble = (edges >> (i * 4)) & 0xF;
+        // std::cout << "["
+        //         << std::setw(2) << std::right << i
+        //         << "] " << std::bitset<4>(nibble) 
+        //         << " ("
+        //         << std::setw(2) << std::right << static_cast<unsigned int>(nibble)
+        //         << ")"
+        //         << std::endl;
+        std::cout << std::right << static_cast<unsigned int>(nibble)
+                << " ";
     }
 
+    std::cout << std::endl << "Edge Orientation:    ";
+    for (int i = 48; i < 60; ++i) {
+        std::cout << std::right << ((edges >> i) & 0x1)
+                << " ";
+    }
+    std::cout << std::endl;
+}
 
-    for (SpinId move : spins) {
-        Cube next = cube;
-        next.applySpin(move);
+void printCornersBinary(uint64_t corners) {
+    constexpr int totalCorners = 8;
 
-        int cornerIdx = pruning.encodeCornersOrientation(next.getCornerOrientations());
-        int edgeIdx = pruning.encodeEgdeOrientation(next.getEdgeOrientations());
-        int sliceIdx = pruning.encodeEdgesSlice(next.getEdges());
-
-        int heuristic = std::max({
-            pruning.getCornersOrientationPruningTable()[cornerIdx],
-            pruning.getEdgesOrientationPruningTable()[edgeIdx],
-            pruning.getEdgesSlicePruningTable()[sliceIdx]
-        });
-
-        if (depth + heuristic <= maxDepth) {
-            path.push_back(move);
-            if (searchPhase1(next, depth + 1, maxDepth, path, pruning))
-                return true;
-            path.pop_back();
-        }
+    std::cout << "Corners:             ";
+    for (int i = 0; i < totalCorners; ++i) {
+        uint8_t corner = (corners >> (i * 4)) & 0xF; // 4 bits par corner
+        std::cout << std::right << static_cast<unsigned int>(corner) << " ";
     }
 
-    return false;
+    std::cout << std::endl << "Corners Orientation: ";
+    for (int i = 0; i < totalCorners; ++i) {
+        uint8_t orientation = (corners >> (32 + i * 2)) & 0x3; // 2 bits par orientation
+        std::cout << std::right << static_cast<unsigned int>(orientation) << " ";
+    }
+
+    std::cout << std::endl;
 }
 
 
@@ -84,37 +152,7 @@ bool searchPhase1(Cube& cube, int depth, int maxDepth, std::vector<SpinId>& path
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void randomShuffle(Cube& cube, int moves = 20) {
-
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(0, spins.size() - 1);
-
-    for (int i = 0; i < moves; ++i) {
-        cube.applySpin(spins[dis(gen)]);
-    }
-}
-
-
-
-void printCubeState(const Cube& cube, CubePrinter& printer) {
-    std::cout << "================= Cube state =================" << std::endl << std::endl;
+void printCubeSate(const Cube& cube) {
     std::cout << "Corners:             ";
     for (const auto& corner : cube.getCorners()) {
         std::cout << static_cast<int>(corner) << " ";
@@ -131,79 +169,138 @@ void printCubeState(const Cube& cube, CubePrinter& printer) {
     for (const auto& edgeOrientation : cube.getEdgeOrientations()) {
         std::cout << static_cast<int>(edgeOrientation) << " ";
     }
-    std::cout << std::endl;
-    printer.print();
-    std::cout << std::endl;
+    std::cout << std::endl << std::endl;
 }
 
-void printMaxDeath(const Cube &cube, const PruningTableG1 &pruningTableG1) {
-    int cornerIndex = pruningTableG1.encodeCornersOrientation(cube.getCornerOrientations());
-    int edgeIndex = pruningTableG1.encodeEgdeOrientation(cube.getEdgeOrientations());
-    int sliceIndex = pruningTableG1.encodeEdgesSlice(cube.getEdges());
 
-    std::cout << "Corner table depth: " << unsigned(pruningTableG1.getCornersOrientationPruningTable()[cornerIndex]) << '\n';
-    std::cout << "Edge table depth: " << unsigned(pruningTableG1.getEdgesOrientationPruningTable()[edgeIndex]) << '\n';
-    std::cout << "Slice table depth: " << unsigned(pruningTableG1.getEdgesSlicePruningTable()[sliceIndex]) << '\n';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+inline void swapBits_xor(uint64_t &edges, int i, int j) {
+    int shift_i = i * 4;
+    int shift_j = j * 4;
+    uint64_t mask = 0xFULL;
+
+    uint64_t x = ((edges >> shift_i) & mask) ^ ((edges >> shift_j) & mask);
+
+    if (x == 0) return;
+
+    edges ^= (x << shift_i) | (x << shift_j);
 }
 
-std::vector<SpinId> searchSolvePhase1(Cube& cube, PruningTableG1& pruningTableG1) {
-    std::cout << "Starting Phase 1 search..." << std::endl;
-    auto startTime = std::chrono::high_resolution_clock::now();
+inline void flipEdgeOrientation(uint64_t &edges, int i) {
+    if (i < 0 || i >= 11) return;
+    int bitPos = 48 + i;
+    edges ^= (1ULL << bitPos);
+}
 
-    std::vector<SpinId> solution;
-    for (int depth = 0; depth < MAX_DEPTH; ++depth) {
-        if (searchPhase1(cube, 0, depth, solution, pruningTableG1)) {
-            std::cout << "Phase 1 solution found in " << solution.size() << " moves." << std::endl;
-            break;
-        } else {
-            std::cout << "No solution found at depth " << depth << ". Trying deeper..." << std::endl;
-        }
-    }
 
-    auto endTime = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> elapsed = endTime - startTime;
-    std::cout << "["<< elapsed.count() << "] s.  " << "[" << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count() << "] ms" << std::endl;
-    return solution;
-} 
+inline void flipCornerOrientation(uint64_t &corners, int i, int delta) {
+    if (i < 0 || i > 6) return;
 
-void applySolve(Cube& cube, const std::vector<SpinId>& solution) {
-    for (const auto& move : solution) {
-        cube.applySpin(move);
-    }
+    int shift = 32 + i * 2;
+    uint8_t val = (corners >> shift) & 0b11;
+
+    val = (val + delta) % 3;
+
+    corners = (corners & ~(0b11ULL << shift)) | (static_cast<uint64_t>(val) << shift);
+
+}
+
+
+
+
+
+
+void fast_spinU(CubeState &cubestate) {
+    // swap edges
+    swapBits_xor(cubestate.edges, 0, 1);
+    swapBits_xor(cubestate.edges, 0, 2);
+    swapBits_xor(cubestate.edges, 0, 3);
+
+    // swap corners
+    swapBits_xor(cubestate.corners, 0, 1);
+    swapBits_xor(cubestate.corners, 0, 2);
+    swapBits_xor(cubestate.corners, 0, 3);
+
+}
+
+void fast_spinR(CubeState &cubestate) {
+    // swap edges
+    swapBits_xor(cubestate.edges, 4, 3);
+    swapBits_xor(cubestate.edges, 4, 7);
+    swapBits_xor(cubestate.edges, 4, 11);
+
+    // swap corners
+    swapBits_xor(cubestate.corners, 0, 3);
+    swapBits_xor(cubestate.corners, 0, 7);
+    swapBits_xor(cubestate.corners, 0, 4);
+
+    flipCornerOrientation(cubestate.corners, 0, 2);
+    flipCornerOrientation(cubestate.corners, 3, 1);
+    flipCornerOrientation(cubestate.corners, 7, 2);
+    flipCornerOrientation(cubestate.corners, 4, 1);
 }
 
 
 
 int main() {
 
-    std::cout << sizeof(std::array<uint8_t, 8>) << " bytes for corners" << std::endl;
-    std::cout << sizeof(uint32_t) << " bytes for corners" << std::endl;
-
     Cube cube;
+    CubeState cubestate;
     CubePrinter printer(cube);
-    PruningTableG1 pruningTableG1;
+
+    cubestate.edges = encodeEdges();
+    cubestate.corners = encodeCorners();
 
 
-    printCubeState(cube, printer);
+    // printCornersBinary(cubestate.corners);
+    // std::cout << std::endl;
 
-    std::cout << "encoding slice: " << pruningTableG1.encodeEdgesSlice(cube.getEdges()) << std::endl;
+    // swapBits_xor(cubestate.corners, 0, 3);
+    // printCornersBinary(cubestate.corners);
+    // std::cout << std::endl;
 
-    // cube.applySpin(SpinId::U);
+    // swapBits_xor(cubestate.corners, 0, 7);
+    // printCornersBinary(cubestate.corners);
+    // std::cout << std::endl;
+
+    // swapBits_xor(cubestate.corners, 0, 4);
+    // printCornersBinary(cubestate.corners);
+    // std::cout << std::endl;
 
 
-    // printCubeState(cube, printer);
-    // std::cout << "cornerEncoding: " << pruningTableG1.encodeCornersOrientation(cube.getCornerOrientations()) << std::endl;
 
-    // randomShuffle(cube, 20);
-    // printCubeState(cube, printer);
-
-    // printMaxDeath(cube, pruningTableG1);
+    // flipCornerOrientation(cubestate.corners, 0, 2);
 
 
-    // std::vector<SpinId> solveSpins = searchSolvePhase1(cube, pruningTableG1);
-    // applySolve(cube, solveSpins);
+    cube.applySpin(SpinId::R);
+    fast_spinR(cubestate);
 
-    // printCubeState(cube, printer);
+    std::cout << "================== BEFORE ==================" << std::endl;
+
+    printCubeSate(cube);
+
+    std::cout << std::endl << "================== FAST ====================================" << std::endl;
+
+    printCornersBinary(cubestate.corners);
+    printEdgesBinary(cubestate.edges);
+
 
     return 0;
 }
