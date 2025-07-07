@@ -4,9 +4,30 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-Renderer::Renderer() : _width(800), _height(600), _title("Rubik"), _window(nullptr) {}
+static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
-Renderer::~Renderer() {this->cleanup();}
+    (void)scancode;
+    (void)mods;
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+    else if (key == GLFW_KEY_F11 && action == GLFW_PRESS) {
+
+        Renderer* renderer = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
+
+        renderer->ToggleFullscreen();
+    }
+}
+
+Renderer::Renderer() : _window(nullptr), _title("Rubik") {
+
+    _windowSize[WIDTH] = 800;
+    _windowSize[HEIGHT] = 600;
+    _windowPos[X] = 0;
+    _windowPos[Y] = 0;
+    this->_fullscreen = false;
+}
+
+Renderer::~Renderer() {this->_cleanup();}
 
 bool Renderer::init() {
 
@@ -20,7 +41,7 @@ bool Renderer::init() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    this->_window = glfwCreateWindow(this->_width, this->_height, this->_title.c_str(), nullptr, nullptr);
+    this->_window = glfwCreateWindow(this->_windowSize[WIDTH], this->_windowSize[HEIGHT], this->_title.c_str(), nullptr, nullptr);
     if (!this->_window) {
 
         std::cerr << "Failed to create GLFW window\n";
@@ -29,6 +50,9 @@ bool Renderer::init() {
     }
 
     glfwMakeContextCurrent(this->_window);
+
+    glfwSetWindowUserPointer(this->_window, this);
+    glfwSetKeyCallback(this->_window, keyCallback);
 
     if (!gladLoaderLoadGL()) {
 
@@ -52,9 +76,28 @@ void Renderer::renderLoop() {
     }
 }
 
-void Renderer::cleanup() {
+void Renderer::ToggleFullscreen() {
 
-    if (!this->_window) {
+    if (!this->_window)
+        return ;
+    this->_fullscreen = !this->_fullscreen;
+
+    if (this->_fullscreen) {
+
+        glfwGetWindowPos(this->_window, &this->_windowPos[X], &this->_windowPos[Y]);
+        glfwGetWindowSize(this->_window, &this->_windowSize[WIDTH], &this->_windowSize[HEIGHT]);
+
+        GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+        const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+        glfwSetWindowMonitor(this->_window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+    }
+    else
+        glfwSetWindowMonitor(_window, nullptr, this->_windowPos[X], this->_windowPos[Y], this->_windowSize[WIDTH], this->_windowSize[HEIGHT], 0);
+}
+
+void Renderer::_cleanup() {
+
+    if (this->_window) {
 
         glfwDestroyWindow(this->_window);
         this->_window = nullptr;

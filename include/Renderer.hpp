@@ -2,6 +2,11 @@
 
 #include <string>
 
+#define HEIGHT  0
+#define WIDTH   1
+#define X       0
+#define Y       1
+
 class Renderer {
 
 public:
@@ -11,14 +16,16 @@ public:
 
     bool init();
     void renderLoop();
+    void ToggleFullscreen();
 
 private:
 
-    int _width;
-    int _height;
-    const std::string _title;
     struct GLFWwindow* _window;
+    const std::string _title;
+    int _windowSize[2];
+    int _windowPos[2];
+    bool _fullscreen;
 
-    void cleanup();
+    void _cleanup();
 
 };
