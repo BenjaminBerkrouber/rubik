@@ -30,15 +30,26 @@ void applySpin(Cube& cube, CubePrinter printer, SpinId id, bool verbose = true) 
     }
 }
 
+#include "Renderer.hpp"
 
 int main() {
 
-    Cube cube;
-    CubePrinter printer(cube);
+    // Cube cube;
+    // CubePrinter printer(cube);
 
-    printer.print();
-    applySpin(cube, printer,  SpinId::U);
-    applySpin(cube, printer,  SpinId::U);
+    // printer.print();
+    // applySpin(cube, printer,  SpinId::U);
+    // applySpin(cube, printer,  SpinId::U);
 
-    return 0;
+    Renderer renderer{};
+
+    if (!renderer.init()) {
+
+        std::cerr << "Failed to initialize renderer." << std::endl;
+        return (-1);
+    }
+
+    renderer.renderLoop();
+
+    return (0);
 }

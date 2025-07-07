@@ -5,15 +5,18 @@ CXXFLAGS = -g -Wall -Wextra -Werror -std=c++20 -O3
 # -pg
 GTEST_LIB = -lgtest -lgtest_main -pthread
 
+GLIBFLAGS = libs/glad/libglad.a libs/glfw/libglfw3.a -ldl -lGL -lX11 -lpthread -lXrandr -lXi
 
 SRC = 		main.cpp \
 			src/Cube.cpp \
 			src/SpinLib.cpp \
 			src/CubePrinter.cpp \
+			src/Renderer.cpp \
 
 INC = 		include/Cube.hpp \
 			include/SpinLib.hpp \
 			include/CubePrinter.hpp \
+			include/Renderer.hpp \
 
 
 TEST_BIN = bin/tests/tests
@@ -43,7 +46,7 @@ start:
 $(NAME): $(OBJ)
 	@echo "$(BLUE)---------- Creating the executable ----------$(NC)"
 	@echo " $(NAME)"
-	@$(CXX) $(CXXFLAGS) $(OBJ) -o $(NAME)
+	@$(CXX) $(CXXFLAGS) $(OBJ) $(GLIBFLAGS) -o $(NAME)
 
 $(OBJ_BIN)%.o: %.cpp
 	@echo " $<"
