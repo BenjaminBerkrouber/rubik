@@ -1,3 +1,11 @@
+
+
+#include "./include/cube/CubeState.hpp"
+#include "./include/cube/SpinTable.hpp"
+#include "./include/cube/Spin.hpp"
+#include "./include/cube/SpinFunctions.hpp"
+
+
 #include "./include/Cube.hpp"
 #include "./include/CubePrinter.hpp"
 #include <chrono>
@@ -5,7 +13,7 @@
 
 #include <random>
 #include <iostream>
-
+#include <iomanip>
 
 #include <vector>
 #include <algorithm>
@@ -16,79 +24,63 @@
 #include <set>
 
 
-#include <cstdint>
-
-uint64_t encodeEdges() {
-    uint64_t edges = 0;
-    for (int i = 0; i < 12; ++i) {
-        edges |= (static_cast<uint64_t>(i) & 0xF) << (4 * i);
-    }
-    return edges;
-}
 
 
-uint64_t encodeCorners() {
-    uint64_t corners = 0;
-    for (int i = 0; i < 8; ++i) {
-        corners |= (static_cast<uint64_t>(i) & 0xF) << (i * 4);
-    }
-    return corners;
-}
 
-
-struct CubeState {
-    uint64_t edges;
-    uint64_t corners;
-};
-
-#include <iostream>
 #include <bitset>
 
 
 
 
 
-// void benshmark() {
-//     Cube cube;
-//     CubeState cubestate;
+void benshmark() {
+    Cube cube;
+    CubeState cubestate;
 
-//     cubestate.edges = encodeEdges();
+    int N = 40000000;
 
-//     int N = 40000000;
+    auto start = std::chrono::high_resolution_clock::now();
 
-//     auto start = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < N; ++i) {
+        cube.applySpin(SpinId::U);
+    }
 
-//     for (int i = 0; i < N; ++i) {
-//         cube.applySpin(SpinId::U);
-//     }
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
 
-//     auto end = std::chrono::high_resolution_clock::now();
-//     auto duration_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+    start = std::chrono::high_resolution_clock::now();
 
-//     start = std::chrono::high_resolution_clock::now();
-//     for (int i = 0; i < N; ++i) {
-//         fast_spinU(cubestate);
-//     }
-//     end = std::chrono::high_resolution_clock::now();
-//     auto duration2_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+    for (int i = 0; i < N; ++i) {
+        applyMove(cubestate, U);
+    }
 
-//     std::cout << "Duration for " << N << " spins:" << std::endl;
+    end = std::chrono::high_resolution_clock::now();
+    auto duration2_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
 
-//     std::cout << "Last: " << std::endl 
-//                             << std::setw(15) << duration_ns 
-//                             << " ns " << std::endl
-//                             << std::setw(15) << (duration_ns / 1e6) 
-//                             << " ms" 
-//                             << std::endl;
+    auto duration_ms = duration_ns / 1e6;
+    auto duration2_ms = duration2_ns / 1e6;
 
-//     std::cout << "New:  " << std::endl 
-//                             << std::setw(15) << duration2_ns 
-//                             << " ns " << std::endl
-//                             << std::setw(15) << (duration2_ns / 1e6) 
-//                             << " ms" 
-//                             << std::endl;
-// }
+    auto time_saved_ns = duration_ns - duration2_ns;
+    auto time_saved_ms = duration_ms - duration2_ms;
 
+    double percent_gain = 100.0 * time_saved_ns / duration_ns;
+
+    std::cout << "Duration for " << N << " spins:" << std::endl;
+
+    std::cout << "Last: " << std::endl
+                << std::setw(15) << duration_ns << " ns " << std::endl
+                << std::setw(15) << duration_ms << " ms" << std::endl;
+
+    std::cout << "New:  " << std::endl
+                << std::setw(15) << duration2_ns << " ns " << std::endl
+                << std::setw(15) << duration2_ms << " ms" << std::endl;
+
+    std::cout << "Gain: " << std::endl
+                << std::setw(15) << time_saved_ns << " ns" << std::endl
+                << std::setw(15) << time_saved_ms << " ms" << std::endl
+                << std::setw(14) << std::fixed << std::setprecision(2) << percent_gain << " % faster" << std::endl;
+
+}
 
 
 
@@ -173,133 +165,48 @@ void printCubeSate(const Cube& cube) {
 }
 
 
+// void fast_spinR(CubeState &cubestate) {
+//     // swap edges
+//     swapBits_xor(cubestate.edges, 4, 3);
+//     swapBits_xor(cubestate.edges, 4, 7);
+//     swapBits_xor(cubestate.edges, 4, 11);
 
+//     // swap corners
+//     swapBits_xor(cubestate.corners, 0, 3);
+//     swapBits_xor(cubestate.corners, 0, 7);
+//     swapBits_xor(cubestate.corners, 0, 4);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-inline void swapBits_xor(uint64_t &edges, int i, int j) {
-    int shift_i = i * 4;
-    int shift_j = j * 4;
-    uint64_t mask = 0xFULL;
-
-    uint64_t x = ((edges >> shift_i) & mask) ^ ((edges >> shift_j) & mask);
-
-    if (x == 0) return;
-
-    edges ^= (x << shift_i) | (x << shift_j);
-}
-
-inline void flipEdgeOrientation(uint64_t &edges, int i) {
-    if (i < 0 || i >= 11) return;
-    int bitPos = 48 + i;
-    edges ^= (1ULL << bitPos);
-}
-
-
-inline void flipCornerOrientation(uint64_t &corners, int i, int delta) {
-    if (i < 0 || i > 6) return;
-
-    int shift = 32 + i * 2;
-    uint8_t val = (corners >> shift) & 0b11;
-
-    val = (val + delta) % 3;
-
-    corners = (corners & ~(0b11ULL << shift)) | (static_cast<uint64_t>(val) << shift);
-
-}
-
-
-
-
-
-
-void fast_spinU(CubeState &cubestate) {
-    // swap edges
-    swapBits_xor(cubestate.edges, 0, 1);
-    swapBits_xor(cubestate.edges, 0, 2);
-    swapBits_xor(cubestate.edges, 0, 3);
-
-    // swap corners
-    swapBits_xor(cubestate.corners, 0, 1);
-    swapBits_xor(cubestate.corners, 0, 2);
-    swapBits_xor(cubestate.corners, 0, 3);
-
-}
-
-void fast_spinR(CubeState &cubestate) {
-    // swap edges
-    swapBits_xor(cubestate.edges, 4, 3);
-    swapBits_xor(cubestate.edges, 4, 7);
-    swapBits_xor(cubestate.edges, 4, 11);
-
-    // swap corners
-    swapBits_xor(cubestate.corners, 0, 3);
-    swapBits_xor(cubestate.corners, 0, 7);
-    swapBits_xor(cubestate.corners, 0, 4);
-
-    flipCornerOrientation(cubestate.corners, 0, 2);
-    flipCornerOrientation(cubestate.corners, 3, 1);
-    flipCornerOrientation(cubestate.corners, 7, 2);
-    flipCornerOrientation(cubestate.corners, 4, 1);
-}
+//     flipCornerOrientation(cubestate.corners, 0, 2);
+//     flipCornerOrientation(cubestate.corners, 3, 1);
+//     flipCornerOrientation(cubestate.corners, 7, 2);
+//     flipCornerOrientation(cubestate.corners, 4, 1);
+// }
 
 
 
 int main() {
 
-    Cube cube;
-    CubeState cubestate;
-    CubePrinter printer(cube);
+    benshmark();
+    // std::cout << "Static size (Cube):      " << sizeof(Cube) << " bytes" << std::endl;
+    // std::cout << "Static size (CubeState): " << sizeof(CubeState) << " bytes" << std::endl;
 
-    cubestate.edges = encodeEdges();
-    cubestate.corners = encodeCorners();
+    // Cube cube;
+    // CubeState cubestate;
+    
+    // CubePrinter printer(cube);
 
+    // cube.applySpin(SpinId::R_PRIME);
+    // applyMove(cubestate, R3);
+
+    // std::cout << "================== BEFORE ==================" << std::endl;
+
+    // printCubeSate(cube);
+
+    // std::cout << std::endl << "================== FAST ==================" << std::endl;
 
     // printCornersBinary(cubestate.corners);
-    // std::cout << std::endl;
+    // printEdgesBinary(cubestate.edges);
 
-    // swapBits_xor(cubestate.corners, 0, 3);
-    // printCornersBinary(cubestate.corners);
-    // std::cout << std::endl;
-
-    // swapBits_xor(cubestate.corners, 0, 7);
-    // printCornersBinary(cubestate.corners);
-    // std::cout << std::endl;
-
-    // swapBits_xor(cubestate.corners, 0, 4);
-    // printCornersBinary(cubestate.corners);
-    // std::cout << std::endl;
-
-
-
-    // flipCornerOrientation(cubestate.corners, 0, 2);
-
-
-    cube.applySpin(SpinId::R);
-    fast_spinR(cubestate);
-
-    std::cout << "================== BEFORE ==================" << std::endl;
-
-    printCubeSate(cube);
-
-    std::cout << std::endl << "================== FAST ====================================" << std::endl;
-
-    printCornersBinary(cubestate.corners);
-    printEdgesBinary(cubestate.edges);
 
 
     return 0;
