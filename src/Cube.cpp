@@ -83,3 +83,22 @@ const std::array<uint8_t, 12> &Cube::getEdgeOrientations() const {
     return edges_orientation;
 }
 
+// ============================================================================
+// ==== Setters
+// ============================================================================
+
+void Cube::setCorners(const std::array<uint8_t, 8>& new_corners) {
+    corners = new_corners;
+}
+
+void Cube::setCornerOrientations(const std::array<uint8_t, 8>& new_corners_orientation) {
+    corners_orientation = new_corners_orientation;
+}
+
+void Cube::setEdges(const std::array<uint8_t, 12>& new_edges) {
+    edges = new_edges;
+}
+
+void Cube::setEdgeOrientations(const std::array<uint8_t, 12>& new_edges_orientation) {
+    edges_orientation = new_edges_orientation;
+}

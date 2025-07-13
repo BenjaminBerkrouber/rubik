@@ -1,6 +1,9 @@
 #pragma once
 #include "./SpinLib.hpp"
 
+
+
+
 class Cube {
     public:
     
@@ -11,10 +14,17 @@ class Cube {
         void applySpin(SpinId id);
 
 
+
+
         const std::array<uint8_t, 8> &getCorners() const;
         const std::array<uint8_t, 8> &getCornerOrientations() const; 
         const std::array<uint8_t, 12> &getEdges() const; 
         const std::array<uint8_t, 12> &getEdgeOrientations() const;
+
+        void setCorners(const std::array<uint8_t, 8>& new_corners);
+        void setCornerOrientations(const std::array<uint8_t, 8>& new_corners_orientation);
+        void setEdges(const std::array<uint8_t, 12>& new_edges);
+        void setEdgeOrientations(const std::array<uint8_t, 12>& new_edges_orientation);
 
     private:
 
