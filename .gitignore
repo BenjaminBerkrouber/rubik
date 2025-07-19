@@ -39,6 +39,8 @@
 rubik
 bin/*
 
-
 # debug information files
 *.dwo
+
+# opengl/imgui temp files
+imgui.ini

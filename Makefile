@@ -5,7 +5,7 @@ CXXFLAGS = -g -Wall -Wextra -Werror -std=c++20 -O3
 # -pg
 GTEST_LIB = -lgtest -lgtest_main -pthread
 
-GLIBFLAGS = libs/glad/libglad.a libs/glfw/libglfw3.a -ldl -lGL -lX11 -lpthread -lXrandr -lXi
+GLIBFLAGS = libs/glad/libglad.a libs/glfw/libglfw3.a libs/imgui/libimgui.a -ldl -lGL -lX11 -lpthread -lXrandr -lXi
 
 SRC = 		main.cpp \
 			src/Cube.cpp \
@@ -51,7 +51,7 @@ $(NAME): $(OBJ)
 $(OBJ_BIN)%.o: %.cpp
 	@echo " $<"
 	@mkdir -p $(dir $@)
-	@$(CXX) $(CXXFLAGS) -I$(INCLUDES_DIR) -I$(INCLUDES_DIR)/Face_Type -c $< -o $@
+	@$(CXX) $(CXXFLAGS) -I$(INCLUDES_DIR) -c $< -o $@
 
 end:
 	@echo "$(GREEN)---------- Successfully compiled! ----------$(NC)"
