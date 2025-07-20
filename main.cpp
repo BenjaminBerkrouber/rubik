@@ -4,6 +4,7 @@
 #include "./include/cube/SpinTable.hpp"
 #include "./include/cube/Spin.hpp"
 #include "./include/cube/SpinFunctions.hpp"
+#include "./include/utils/CubeStateHelper.hpp"
 
 
 #include "./include/Cube.hpp"
@@ -83,115 +84,19 @@ void benshmark() {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-void printEdgesBinary(uint64_t edges) {
-    constexpr int totalNibbles = 12;
-
-    std::cout << "Edge:                ";
-    for (int i = 0; i < totalNibbles; ++i) {
-        uint8_t nibble = (edges >> (i * 4)) & 0xF;
-        // std::cout << "["
-        //         << std::setw(2) << std::right << i
-        //         << "] " << std::bitset<4>(nibble) 
-        //         << " ("
-        //         << std::setw(2) << std::right << static_cast<unsigned int>(nibble)
-        //         << ")"
-        //         << std::endl;
-        std::cout << std::right << static_cast<unsigned int>(nibble)
-                << " ";
-    }
-
-    std::cout << std::endl << "Edge Orientation:    ";
-    for (int i = 48; i < 60; ++i) {
-        std::cout << std::right << ((edges >> i) & 0x1)
-                << " ";
-    }
-    std::cout << std::endl;
-}
-
-void printCornersBinary(uint64_t corners) {
-    constexpr int totalCorners = 8;
-
-    std::cout << "Corners:             ";
-    for (int i = 0; i < totalCorners; ++i) {
-        uint8_t corner = (corners >> (i * 4)) & 0xF; // 4 bits par corner
-        std::cout << std::right << static_cast<unsigned int>(corner) << " ";
-    }
-
-    std::cout << std::endl << "Corners Orientation: ";
-    for (int i = 0; i < totalCorners; ++i) {
-        uint8_t orientation = (corners >> (32 + i * 2)) & 0x3; // 2 bits par orientation
-        std::cout << std::right << static_cast<unsigned int>(orientation) << " ";
-    }
-
-    std::cout << std::endl;
-}
-
-
-
-
-
-
-void printCubeSate(const Cube& cube) {
-    std::cout << "Corners:             ";
-    for (const auto& corner : cube.getCorners()) {
-        std::cout << static_cast<int>(corner) << " ";
-    }
-    std::cout << std::endl << "Corners Orientation: ";
-    for (const auto& cornerOrientation : cube.getCornerOrientations()) {
-        std::cout << static_cast<int>(cornerOrientation) << " ";
-    }
-    std::cout << std::endl << "Edge:                ";
-    for (const auto& edge : cube.getEdges()) {
-        std::cout << static_cast<int>(edge) << " ";
-    }
-    std::cout << std::endl << "Edge Orientation:    ";
-    for (const auto& edgeOrientation : cube.getEdgeOrientations()) {
-        std::cout << static_cast<int>(edgeOrientation) << " ";
-    }
-    std::cout << std::endl << std::endl;
-}
-
-
-// void fast_spinR(CubeState &cubestate) {
-//     // swap edges
-//     swapBits_xor(cubestate.edges, 4, 3);
-//     swapBits_xor(cubestate.edges, 4, 7);
-//     swapBits_xor(cubestate.edges, 4, 11);
-
-//     // swap corners
-//     swapBits_xor(cubestate.corners, 0, 3);
-//     swapBits_xor(cubestate.corners, 0, 7);
-//     swapBits_xor(cubestate.corners, 0, 4);
-
-//     flipCornerOrientation(cubestate.corners, 0, 2);
-//     flipCornerOrientation(cubestate.corners, 3, 1);
-//     flipCornerOrientation(cubestate.corners, 7, 2);
-//     flipCornerOrientation(cubestate.corners, 4, 1);
-// }
-
-
-
 int main() {
 
-    benshmark();
+    // benshmark();
     // std::cout << "Static size (Cube):      " << sizeof(Cube) << " bytes" << std::endl;
     // std::cout << "Static size (CubeState): " << sizeof(CubeState) << " bytes" << std::endl;
 
     // Cube cube;
-    // CubeState cubestate;
+    CubeState cubestate;
+    CubeStateHelper helper(cubestate);
+
+    helper.printState();
+    helper.printCube();
+
     
     // CubePrinter printer(cube);
 

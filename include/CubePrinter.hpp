@@ -106,4 +106,26 @@ private:
     };
 };
 
+
+// void printCubeSate(const Cube& cube) {
+//     std::cout << "Corners:             ";
+//     for (const auto& corner : cube.getCorners()) {
+//         std::cout << static_cast<int>(corner) << " ";
+//     }
+//     std::cout << std::endl << "Corners Orientation: ";
+//     for (const auto& cornerOrientation : cube.getCornerOrientations()) {
+//         std::cout << static_cast<int>(cornerOrientation) << " ";
+//     }
+//     std::cout << std::endl << "Edge:                ";
+//     for (const auto& edge : cube.getEdges()) {
+//         std::cout << static_cast<int>(edge) << " ";
+//     }
+//     std::cout << std::endl << "Edge Orientation:    ";
+//     for (const auto& edgeOrientation : cube.getEdgeOrientations()) {
+//         std::cout << static_cast<int>(edgeOrientation) << " ";
+//     }
+//     std::cout << std::endl << std::endl;
+// }
+
+
 void applySpin(Cube& cube, CubePrinter printer, SpinId id, bool verbose);

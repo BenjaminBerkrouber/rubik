@@ -9,6 +9,7 @@ GTEST_LIB = -lgtest -lgtest_main -pthread
 SRC = 		main.cpp \
 			src/cube/SpinFunctions.cpp \
 			src/cube/SpinTable.cpp \
+			src/utils/CubeStateHelper.cpp \
 			src/Cube.cpp \
 			src/SpinLib.cpp \
 			src/CubePrinter.cpp \
@@ -21,6 +22,7 @@ INC = 		include/Cube.hpp \
 			include/cube/Spin.hpp \
 			include/cube/SpinFunctions.hpp \
 			include/cube/SpinTable.hpp \
+			include/utils/CubeStateHelper.hpp \
 			include/SpinLib.hpp \
 			include/CubePrinter.hpp \
 			# include/algo/Kociemba/Pruning/PruningTableG1.hpp \
