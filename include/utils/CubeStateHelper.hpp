@@ -13,40 +13,7 @@
 #define BLUE "\e[44m"
 #define RESET "\033[0m"
 
-enum CornersPieceLst {
-    URF,
-    UFL,
-    ULB,
-    UBR,
-    DFR,
-    DLF,
-    DBL,
-    DRB
-};
 
-enum EdgesPieceLst {
-    UR, // 0
-    UF, // 1
-    UL, // 2
-    UB, // 3
-    DR, // 4
-    DF, // 5
-    DL, // 6
-    DB, // 7
-    FR, // 8
-    FL, // 9
-    BL, // 10
-    BR, // 11
-};
-
-enum Color {
-    e_YELLOW,
-    e_BLUE,
-    e_RED,
-    e_GREEN,
-    e_ORANGE,
-    e_WHITE
-};
 
 
 class CornersPiece {
@@ -96,7 +63,7 @@ class EdgesPiece {
         ~EdgesPiece() = default;
 
         int getColor(int i) const {
-            if (i < 0 || i >= 2)
+            if (i < 0 || i > 1)
                 throw std::out_of_range("Invalid index for edge piece color" + std::to_string(i));
             return _colors[i];
         }

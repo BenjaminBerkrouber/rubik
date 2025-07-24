@@ -109,25 +109,22 @@ std::string getColor(int i, std::string name) {
 
 std::string CubeStateHelper::getCcolor(int i, int o) {
     int index = getPieceAtIndex(_cube.corners, i);
-    int orientation = getPieceCornerOrientation(_cube.corners, o);
+    int orientation = getPieceCornerOrientation(_cube.corners, i);
     CornersPiece corner = _corners[index];
     int colorId = corner.getColor((o + orientation) % 3);
-    return getColor(colorId, corner.getName() + "." + std::to_string(o)) + "  ";
+    return getColor(colorId, corner.getName() + "." + std::to_string((o + orientation) % 3)) + "  ";
     // (void)i;
     // (void) o; // Avoid unused parameter warning
     // return "";
 }
 
 std::string CubeStateHelper::getEColor(int i, int o) {
-    // std::cout << "getEColor: i=" << i << ", o=" << o << std::endl;
     int index = getPieceAtIndex(_cube.edges, i);
-    int orientation = getPieceEdgeOrientation(_cube.edges, o);
-    // std::cout << "getEColor: index = " << index << ", orientation = " << orientation << std::endl;
+    int orientation = getPieceEdgeOrientation(_cube.edges, i);
     EdgesPiece edge = _edges[index];
-    // std::cout << "o = " << o << ", orientation = " << orientation << std::endl;
     // std::cout << (o + orientation) << std::endl;
-    int colorId = edge.getColor((o + orientation));
-    return getColor(colorId, edge.getName() + "." + std::to_string(o)) + "  ";
+    int colorId = edge.getColor((o + orientation) % 2);
+    return getColor(colorId, edge.getName() + "." + std::to_string((o + orientation) % 2)) + "  ";
 }
 
 std::string getCenter(int i) {
