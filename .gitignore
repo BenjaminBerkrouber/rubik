@@ -36,6 +36,9 @@
 *.exe
 *.out
 *.app
+rubik
+bin/*
+
 
 # debug information files
 *.dwo
