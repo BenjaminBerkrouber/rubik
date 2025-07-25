@@ -7,23 +7,18 @@ GTEST_LIB = -lgtest -lgtest_main -pthread
 
 
 SRC = 		main.cpp \
-			src/cube/SpinFunctions.cpp \
-			src/cube/SpinTable.cpp \
-			src/Cube.cpp \
-			src/SpinLib.cpp \
-			src/CubePrinter.cpp \
-			# src/algo/Kociemba/Pruning/PruningTableG1.cpp \
+			verif.cpp \
+			src/cube/CubeOperations.cpp \
+			src/spin/SpinManager.cpp \
+			src/utils/CubeStateHelper.cpp \
 
-INC = 		include/Cube.hpp \
-			include/cube/Constants.hpp \
+INC = 		include/utils/Constants.hpp \
+			include/utils.h \
 			include/cube/CubeState.hpp \
 			include/cube/CubeOperations.hpp \
-			include/cube/Spin.hpp \
-			include/cube/SpinFunctions.hpp \
-			include/cube/SpinTable.hpp \
-			include/SpinLib.hpp \
-			include/CubePrinter.hpp \
-			# include/algo/Kociemba/Pruning/PruningTableG1.hpp \
+			include/spin/Spin.hpp \
+			include/spin/SpinManager.cpp \
+			include/utils/CubeStateHelper.hpp \
 
 TEST_BIN = bin/tests/tests
 OBJ_BIN = bin/obj/
