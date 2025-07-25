@@ -1,3 +1,12 @@
+#pragma once
+
+#include "Spin.hpp"
+#include "../cube/CubeState.hpp"
+#include "../utils/Constants.hpp"
+#include "../cube/CubeOperations.hpp"
+#include <array>
+#include <stdexcept>
+
 /**
  * @struct SpinDefinition
  * @brief Defines a spin operation on a Rubik's Cube state.
