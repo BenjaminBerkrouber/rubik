@@ -95,25 +95,16 @@ class CubeStateHelper  {
         std::array<CornersPiece, 8> _corners;
         std::array<EdgesPiece, 12> _edges;
 
-
-
         std::pair<uint8_t, uint8_t> _uP[9] = { 
             {ULB, 0}, {UB, 0}, {UBR, 0}, 
             {UL, 0}, {0, 0}, {UR, 0},
             {UFL, 0}, {UF, 0}, {URF, 0} 
         };
-
-
-
         std::pair<uint8_t, uint8_t> _dP[9] = { 
             {DLF, 0}, {DF, 0}, {DFR, 0}, 
             {DL, 0}, {0, 0}, {DR, 0},
             {DBL, 0}, {DB, 0}, {DRB, 0} 
         };
-
-
-
-
         std::pair<uint8_t, uint8_t> _fP[9] = { 
             {UFL, 1}, {UF, 1}, {URF, 2}, 
             {FL, 0}, {0, 0}, {FR, 0},
@@ -124,9 +115,6 @@ class CubeStateHelper  {
             {BL, 1}, {0, 0}, {FL, 1},
             {DBL, 2}, {DL, 1}, {DLF, 1} 
         };
-
-
-
         std::pair<uint8_t, uint8_t> _rP[9] = { 
             {URF, 1}, {UR, 1}, {UBR, 2}, 
             {FR, 1}, {0, 0}, {BR, 1},

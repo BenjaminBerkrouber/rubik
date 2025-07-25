@@ -113,16 +113,12 @@ std::string CubeStateHelper::getCcolor(int i, int o) {
     CornersPiece corner = _corners[index];
     int colorId = corner.getColor((o + orientation) % 3);
     return getColor(colorId, corner.getName() + "." + std::to_string((o + orientation) % 3)) + "  ";
-    // (void)i;
-    // (void) o; // Avoid unused parameter warning
-    // return "";
 }
 
 std::string CubeStateHelper::getEColor(int i, int o) {
     int index = getPieceAtIndex(_cube.edges, i);
     int orientation = getPieceEdgeOrientation(_cube.edges, i);
     EdgesPiece edge = _edges[index];
-    // std::cout << (o + orientation) << std::endl;
     int colorId = edge.getColor((o + orientation) % 2);
     return getColor(colorId, edge.getName() + "." + std::to_string((o + orientation) % 2)) + "  ";
 }
@@ -148,15 +144,8 @@ void CubeStateHelper::printFace(std::pair<uint8_t, uint8_t> _face[9], int faceNa
 
 
 void CubeStateHelper::printCube() {
-
-
     std::string padding = "                       ";
     std::string smallSpace = "  ";
-
-    // int i = 5;
-    // std::cout << "dP[" << i << "].first = " << unsigned(_fP[i].first) << ", _fP[i].second = " << unsigned(_fP[i].second) << std::endl;
-    // std::cout << getCcolor(_fP[i].first, _fP[i].second)  << std::endl;
-    // std::cout << getEColor(_fP[i].first, _fP[i].second) << std::endl;
 
     printFace(_uP, e_YELLOW, padding);
 
@@ -177,5 +166,4 @@ void CubeStateHelper::printCube() {
 
     printFace(_dP, e_WHITE, padding);
     std::cout << std::endl;
-
 }
