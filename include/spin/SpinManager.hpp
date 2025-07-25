@@ -2,7 +2,7 @@
 
 #include "Spin.hpp"
 #include "../cube/CubeState.hpp"
-#include "../cube/Constants.hpp"
+#include "../utils/Constants.hpp"
 #include "../cube/CubeOperations.hpp"
 #include <array>
 #include <stdexcept>
@@ -25,5 +25,4 @@ class SpinManager {
         ~SpinManager() = default;
 
         void applyMove(CubeState& state, SpinLst spin);
-
 };
