@@ -38,7 +38,7 @@
 *.app
 rubik
 bin/*
-
+*.prune
 
 # debug information files
 *.dwo

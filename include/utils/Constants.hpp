@@ -55,3 +55,8 @@ enum Color {
     e_ORANGE, // face Back
     e_WHITE // face Down
 };
+
+
+#define cornersOrientation 2187 // 3^7
+#define edgesOrientation 2048 // 2^11
+#define sliceEdgesOrientation 495 // 9C4

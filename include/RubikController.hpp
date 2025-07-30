@@ -93,4 +93,8 @@ class RubikController {
          */
         void reset();
 
+        std::vector<SpinLst> getResults() const {
+            return _parser.getResults();
+        }   
+
 };

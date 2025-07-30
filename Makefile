@@ -24,6 +24,10 @@ INC = 		include/RubikController.hpp \
 			include/spin/SpinManager.cpp \
 			include/engine/CubeStateHelper.hpp \
 			include/parser/Parser.hpp \
+			include/solver/Kociemba/Pruning/TableGenerator.hpp \
+			include/solver/Kociemba/Pruning/TableIO.hpp \
+			include/solver/Kociemba/Pruning/PruningTable.hpp \
+			include/cube/OrientationEncoding.hpp \
 
 
 OBJ_SRC = bin/
