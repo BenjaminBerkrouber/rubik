@@ -63,3 +63,26 @@ const ParseResult Parser::parse(const std::string& input) {
 const std::vector<SpinLst>& Parser::getResults() const {
     return _results;
 }
+
+void Parser::clearResults() {
+    _results.clear();
+}
+
+void Parser::setResults(const std::vector<SpinLst>& results) {
+    _results = results;
+}
+
+
+std::vector<SpinLst> & Parser::generateRandomSpinLst(int count) {
+    static bool seeded = false;
+    if (!seeded) {
+        srand(static_cast<unsigned int>(time(nullptr)));
+        seeded = true;
+    }
+    _results.clear();
+    for (int i = 0; i < count; ++i) {
+        SpinLst spin = static_cast<SpinLst>(rand() % static_cast<int>(SPIN_COUNT));
+        _results.push_back(spin);
+    }
+    return _results;
+}

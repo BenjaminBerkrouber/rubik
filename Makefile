@@ -7,20 +7,22 @@ INCLUDES_DIR = include/
 
 
 SRC = 		main.cpp \
+			src/RubikController.cpp \
 			verif.cpp \
 			src/cube/CubeOperations.cpp \
 			src/spin/SpinManager.cpp \
-			src/utils/CubeStateHelper.cpp \
+			src/engine/CubeStateHelper.cpp \
 			src/parser/Parser.cpp \
 			src/utils/utils.cpp \
 
-INC = 		include/utils/Constants.hpp \
+INC = 		include/RubikController.hpp \
+			include/utils/Constants.hpp \
 			include/utils/utils.h \
 			include/cube/CubeState.hpp \
 			include/cube/CubeOperations.hpp \
 			include/spin/Spin.hpp \
 			include/spin/SpinManager.cpp \
-			include/utils/CubeStateHelper.hpp \
+			include/engine/CubeStateHelper.hpp \
 			include/parser/Parser.hpp \
 
 
