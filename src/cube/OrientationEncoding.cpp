@@ -22,7 +22,7 @@ inline void decodeCornersOrientation(CubeState& state, uint16_t code) {
         state.corners &= ~(uint64_t(0x3) << (32 + i * 2));
         state.corners |= uint64_t(ori) << (32 + i * 2);
     }
-    // Déduire le 8e coin
+
     uint8_t lastOri = (3 - (total % 3)) % 3;
     state.corners &= ~(uint64_t(0x3) << (32 + 7 * 2));
     state.corners |= uint64_t(lastOri) << (32 + 7 * 2);

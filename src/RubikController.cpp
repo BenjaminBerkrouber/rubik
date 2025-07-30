@@ -25,18 +25,13 @@ bool RubikController::randomSuffle(int count) {
     if (count <= 0) return error("Count must be greater than 0");
     _parser.clearResults();
     std::vector<SpinLst> spins = _parser.generateRandomSpinLst(count);
-    std::cout << "Generated random spins: ";
-    for (const auto& spin : spins) {
-        std::cout << spinToStr(spin) << " ";
-    }
-    std::cout << std::endl;
     _parser.setResults(spins);
     return true;
 }
 
 bool RubikController::parse(const std::string& input) {
     if (SHUFFLE_MODE) return parseInput(input);
-    return randomSuffle(5);
+    return randomSuffle(5000000);
 }
 
 void RubikController::applySuffle() {
