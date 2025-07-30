@@ -1,58 +1,29 @@
-#include "./include/cube/CubeState.hpp"
-#include "./include/utils/CubeStateHelper.hpp"
-
-#include "./include/spin/Spin.hpp"
-#include "./include/spin/SpinManager.hpp"
-
-#include "./include/utils.h"
-
 #include <iostream>
-#include <iomanip>
+#include <chrono>
 
-#include <vector>
-#include <algorithm>
-#include <utility>
-#include <cstdint>
-#include <array>
-#include <queue>
-#include <set>
+#include "include/RubikController.hpp"
 
 
-
-
-
-
-
-void printSpin(CubeState& cubestate, SpinLst spin) {
-    SpinManager spinManager;
-    std::cout << std::endl;
-    std::cout << "Applying move: " << std::endl;
-    std::cout << "----------------------------------------" << std::endl;
-    spinManager.applyMove(cubestate, spin);
-    CubeStateHelper helper(cubestate);
-    helper.printState();
-    helper.printCube();
-    std::cout << "----------------------------------------" << std::endl;
+static inline int error(const std::string& message) {
+    std::cerr << "Error: " << message << std::endl;
+    return 1;
 }
 
 
+int main(int argc, char* argv[]) {
 
-int main() {
+    if (argc != 2)
+        return error("Usage: " + std::string(argv[0]) + " \" ALL SPIN \" ");
 
-    CubeState cubestate;
-    SpinManager spinManager;
-    CubeStateHelper helper(cubestate);
-    
-    helper.printState();
-    helper.printCube();
+    RubikController controller;
 
+    if (!controller.parse(argv[1]))
+        return 1;
+    controller.applySuffle();
+    controller.print();
+    controller.solve();
+    // controller.print();
 
-    printSpin(cubestate, SpinLst::B);
-
-    helper.printState();
-    helper.printCube();
-
-    // checkSuffleReverse();
 
     return 0;
 }

@@ -1,4 +1,4 @@
-#include "../include/utils/CubeStateHelper.hpp"
+#include "../include/engine/CubeStateHelper.hpp"
 #include <iostream>
 #include <iomanip>
 
@@ -71,7 +71,7 @@ void printCornersBinary(uint64_t corners) {
 }
 
 
-void CubeStateHelper::printState() {
+void CubeStateHelper::printState() const {
     std::cout << "___ Cube State: ___" << std::endl;
     printCornersBinary(_cube.corners);
     printEdgesBinary(_cube.edges);
@@ -107,7 +107,7 @@ std::string getColor(int i, std::string name) {
     return color;
 }
 
-std::string CubeStateHelper::getCcolor(int i, int o) {
+std::string CubeStateHelper::getCcolor(int i, int o) const {
     int index = getPieceAtIndex(_cube.corners, i);
     int orientation = getPieceCornerOrientation(_cube.corners, i);
     CornersPiece corner = _corners[index];
@@ -115,7 +115,7 @@ std::string CubeStateHelper::getCcolor(int i, int o) {
     return getColor(colorId, corner.getName() + "." + std::to_string((o + orientation) % 3)) + "  ";
 }
 
-std::string CubeStateHelper::getEColor(int i, int o) {
+std::string CubeStateHelper::getEColor(int i, int o) const {
     int index = getPieceAtIndex(_cube.edges, i);
     int orientation = getPieceEdgeOrientation(_cube.edges, i);
     EdgesPiece edge = _edges[index];
@@ -123,7 +123,7 @@ std::string CubeStateHelper::getEColor(int i, int o) {
     return getColor(colorId, edge.getName() + "." + std::to_string((o + orientation) % 2)) + "  ";
 }
 
-std::string getCenter(int i) {
+std::string CubeStateHelper::getCenter(int i) const {
     switch (i) {
         case Color::e_YELLOW: return std::string(YELLOW) + "  U  " + RESET + "  ";
         case Color::e_BLUE: return std::string(BLUE) + "  L  " + RESET + "  ";
@@ -135,7 +135,7 @@ std::string getCenter(int i) {
     }
 }
 
-void CubeStateHelper::printFace(std::pair<uint8_t, uint8_t> _face[9], int faceName, std::string padding) {
+void CubeStateHelper::printFace(const std::pair<uint8_t, uint8_t> _face[9], int faceName, std::string padding) const {
     std::cout << padding << getCcolor(_face[0].first, _face[0].second) << getEColor(_face[1].first, _face[1].second) << getCcolor(_face[2].first, _face[2].second) << std::endl << std::endl;
     std::cout << padding << getEColor(_face[3].first, _face[3].second) << getCenter(faceName) << getEColor(_face[5].first, _face[5].second) << std::endl << std::endl;
     std::cout << padding << getCcolor(_face[6].first, _face[6].second) << getEColor(_face[7].first, _face[7].second) << getCcolor(_face[8].first, _uP[8].second) << std::endl << std::endl;
@@ -143,7 +143,7 @@ void CubeStateHelper::printFace(std::pair<uint8_t, uint8_t> _face[9], int faceNa
 }
 
 
-void CubeStateHelper::printCube() {
+void CubeStateHelper::print() const {
     std::string padding = "                       ";
     std::string smallSpace = "  ";
 
