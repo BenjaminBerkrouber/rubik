@@ -9,6 +9,8 @@
 
 #include "../spin/Spin.hpp"
 #include "../utils/Constants.hpp"
+#include "../utils/utils.h"
+
 
 /**
  * @struct ParseResult
@@ -67,4 +69,22 @@ class Parser {
         * @return A const reference to the vector of parsed SpinLst values.
         */
         const std::vector<SpinLst>& getResults() const;
+
+        /**
+        * @brief Clears the results of the parser.
+        */
+        void clearResults();
+
+        /**
+        * @brief Sets the results of the parser to a specific vector of SpinLst values.
+        * @param results The vector of SpinLst values to set.
+        */
+        void setResults(const std::vector<SpinLst>& results);
+
+        /**
+        * @brief Generates a vector of random SpinLst instructions.
+        * @param count The number of random SpinLst instructions to generate.
+        * @return A vector containing the generated SpinLst instructions.
+        */
+        std::vector<SpinLst> & generateRandomSpinLst(int count);
 };

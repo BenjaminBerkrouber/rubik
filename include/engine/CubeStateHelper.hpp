@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../cube/CubeState.hpp"
+#include "../engine/IEngine.hpp"
 #include <string>
 #include <array>
 #include <stdexcept>
@@ -88,39 +89,39 @@ class EdgesPiece {
         }
 };
 
-class CubeStateHelper  {
+class CubeStateHelper : public IEngine {
 
     private:
         CubeState& _cube;
         std::array<CornersPiece, 8> _corners;
         std::array<EdgesPiece, 12> _edges;
 
-        std::pair<uint8_t, uint8_t> _uP[9] = { 
+        const std::pair<uint8_t, uint8_t> _uP[9] = { 
             {ULB, 0}, {UB, 0}, {UBR, 0}, 
             {UL, 0}, {0, 0}, {UR, 0},
             {UFL, 0}, {UF, 0}, {URF, 0} 
         };
-        std::pair<uint8_t, uint8_t> _dP[9] = { 
+        const std::pair<uint8_t, uint8_t> _dP[9] = { 
             {DLF, 0}, {DF, 0}, {DFR, 0}, 
             {DL, 0}, {0, 0}, {DR, 0},
             {DBL, 0}, {DB, 0}, {DRB, 0} 
         };
-        std::pair<uint8_t, uint8_t> _fP[9] = { 
+        const std::pair<uint8_t, uint8_t> _fP[9] = { 
             {UFL, 1}, {UF, 1}, {URF, 2}, 
             {FL, 0}, {0, 0}, {FR, 0},
             {DLF, 2}, {DF, 1}, {DFR, 1}  
         };
-        std::pair<uint8_t, uint8_t> _lP[9] = { 
+        const std::pair<uint8_t, uint8_t> _lP[9] = { 
             {ULB, 1}, {UL, 1}, {UFL, 2}, 
             {BL, 1}, {0, 0}, {FL, 1},
             {DBL, 2}, {DL, 1}, {DLF, 1} 
         };
-        std::pair<uint8_t, uint8_t> _rP[9] = { 
+        const std::pair<uint8_t, uint8_t> _rP[9] = { 
             {URF, 1}, {UR, 1}, {UBR, 2}, 
             {FR, 1}, {0, 0}, {BR, 1},
             {DFR, 2}, {DR, 1}, {DRB, 1} 
         };
-        std::pair<uint8_t, uint8_t> _bP[9] = { 
+        const std::pair<uint8_t, uint8_t> _bP[9] = { 
             {UBR, 1}, {UB, 1}, {ULB, 2}, 
             {BR, 0}, {0, 0}, {BL, 0},
             {DRB, 2}, {DB, 1}, {DBL, 1} 
@@ -128,13 +129,14 @@ class CubeStateHelper  {
 
 
 
-        std::string getCcolor(int i, int o);
-        std::string getEColor(int i, int o);
+        std::string getCcolor(int i, int o) const;
+        std::string getEColor(int i, int o) const;
+        std::string getCenter(int i) const;
     public:
         CubeStateHelper(CubeState &cube);
         ~CubeStateHelper();
 
-        void printState();
-        void printFace(std::pair<uint8_t, uint8_t> _face[9], int faceName, std::string padding);
-        void printCube();
+        void printState() const ;
+        void printFace(const std::pair<uint8_t, uint8_t> _face[9], int faceName, std::string padding) const;
+        void print() const override;
 };

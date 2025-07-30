@@ -1,6 +1,6 @@
 
 #include "./include/cube/CubeState.hpp"
-#include "./include/utils/CubeStateHelper.hpp"
+#include "./include/engine/CubeStateHelper.hpp"
 
 #include "./include/spin/Spin.hpp"
 #include "./include/spin/SpinManager.hpp"
@@ -104,7 +104,7 @@ void checkSuffleReverse() {
         spinManager.applyMove(cubestate, spin);
         CubeStateHelper helper(cubestate);
         helper.printState();
-        helper.printCube();
+        helper.print();
         std::cout << "----------------------------------------" << std::endl;
     }
 
@@ -114,7 +114,7 @@ void checkSuffleReverse() {
         spinManager.applyMove(cubestate, spin);
         CubeStateHelper helper(cubestate);
         helper.printState();
-        helper.printCube();
+        helper.print();
         std::cout << "----------------------------------------" << std::endl;
     }
 }
