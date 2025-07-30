@@ -3,7 +3,7 @@ NAME = rubik
 CXX = g++
 CXXFLAGS = -g -Wall -Wextra -Werror -std=c++20 -O3
 # -pg
-GTEST_LIB = -lgtest -lgtest_main -pthread
+INCLUDES_DIR = include/
 
 
 SRC = 		main.cpp \
@@ -11,26 +11,26 @@ SRC = 		main.cpp \
 			src/cube/CubeOperations.cpp \
 			src/spin/SpinManager.cpp \
 			src/utils/CubeStateHelper.cpp \
+			src/parser/Parser.cpp \
+			src/utils/utils.cpp \
 
 INC = 		include/utils/Constants.hpp \
-			include/utils.h \
+			include/utils/utils.h \
 			include/cube/CubeState.hpp \
 			include/cube/CubeOperations.hpp \
 			include/spin/Spin.hpp \
 			include/spin/SpinManager.cpp \
 			include/utils/CubeStateHelper.hpp \
+			include/parser/Parser.hpp \
 
-TEST_BIN = bin/tests/tests
+
+OBJ_SRC = bin/
+
 OBJ_BIN = bin/obj/
 OBJ = $(addprefix $(OBJ_BIN), $(SRC:.cpp=.o))
-OBJ_DEBOG = $(addprefix $(OBJ_BIN), $(SRCTEST:.cpp=.o))
 
 INCLUDES_DIR = include/
 DEPS = $(INC)
-
-TESTS = tests/SpinLib_test.cpp \
-		tests/Cube_test.cpp \
-		tests/spins/spin_*_test.cpp \
 
 
 RED=\033[0;31m
@@ -58,23 +58,16 @@ end:
 	@echo "$(GREEN)---------- Successfully compiled! ----------$(NC)"
 	@echo " "
 
-SRC_NO_MAIN = $(filter-out main.cpp, $(SRC))
-
-test: $(TESTS) $(SRC)
-	@echo "$(BLUE)---------- Building and running tests ----------$(NC)"
-	$(CXX) $(CXXFLAGS) -o $(TEST_BIN) $(TESTS) $(SRC_NO_MAIN) $(LDFLAGS) $(GTEST_LIB)
-	./$(TEST_BIN)
-
 clean:
 	@echo "$(RED)---------- Cleaning up files ----------$(NC)"
-	@echo " $(OBJ_BIN)"
+	@echo " $(OBJ_SRC)"
 	@echo " "
-	@rm -rf $(OBJ_BIN)
+	@rm -rf $(OBJ_SRC)
 
 fclean: clean
 	@echo "$(RED)---------- Full cleanup... ----------$(NC)"
 	@echo " "
-	@rm -rf $(NAME) a.out
+	@rm -rf $(NAME)
 
 re: fclean all
 

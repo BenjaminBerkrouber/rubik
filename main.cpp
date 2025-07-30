@@ -4,7 +4,8 @@
 #include "./include/spin/Spin.hpp"
 #include "./include/spin/SpinManager.hpp"
 
-#include "./include/utils.h"
+#include "./include/utils/utils.h"
+#include "./include/parser/Parser.hpp"
 
 #include <iostream>
 #include <iomanip>
@@ -35,22 +36,41 @@ void printSpin(CubeState& cubestate, SpinLst spin) {
     std::cout << "----------------------------------------" << std::endl;
 }
 
+int error(const std::string& message) {
+    std::cerr << "Error: " << message << std::endl;
+    return 1;
+}
 
+#include <chrono>
 
-int main() {
+int main(int argc, char* argv[]) {
+    Parser parser;
 
-    CubeState cubestate;
-    SpinManager spinManager;
-    CubeStateHelper helper(cubestate);
+    std::string input = "U D F B L R";
+    if (argc != 2) return error("Usage: " + std::string(argv[0]) + " \" ALL SPIN \" ");
     
-    helper.printState();
-    helper.printCube();
+    ParseResult parsed = parser.parse(argv[1]);
+    if (!parsed.ok) return error(std::string(parsed.message));
+
+    std::vector<SpinLst> results = parser.getResults();
+    std::cout << "Parsed moves: ";
+    for (const auto& move : results) {
+        std::cout << spinToStr(move) << " ";
+    }
+    std::cout << std::endl;
+
+    // CubeState cubestate;
+    // SpinManager spinManager;
+    // CubeStateHelper helper(cubestate);
+    
+    // helper.printState();
+    // helper.printCube();
 
 
-    printSpin(cubestate, SpinLst::B);
+    // printSpin(cubestate, SpinLst::B);
 
-    helper.printState();
-    helper.printCube();
+    // helper.printState();
+    // helper.printCube();
 
     // checkSuffleReverse();
 
