@@ -67,6 +67,7 @@ $(NAME): $(OBJ)
 $(OBJ_BIN)%.o: %.cpp
 	@echo " $<"
 	@mkdir -p $(dir $@)
+	@mkdir -p './table'
 	@$(CXX) $(CXXFLAGS) -I$(INCLUDES_DIR) -I$(INCLUDES_DIR)/Face_Type -c $< -o $@
 
 end:

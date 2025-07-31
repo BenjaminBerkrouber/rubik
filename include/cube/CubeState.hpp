@@ -2,6 +2,7 @@
 
 #include "../utils/Constants.hpp"
 #include <cstdint>
+#include <functional>
 
 /**
  * @brief Represents the complete state of a Rubik's Cube using compact bit-level encoding.
@@ -29,4 +30,17 @@ struct CubeState
     bool isSolved() const {
         return edges == EDGES_SOLVED_STATE && corners == CORNERS_SOLVED_STATE;
     }
+
+    bool operator==(const CubeState& other) const {
+        return edges == other.edges && corners == other.corners;
+    }
 };
+
+namespace std {
+    template<>
+    struct hash<CubeState> {
+        size_t operator()(const CubeState& cs) const noexcept {
+            return cs.edges ^ (cs.corners + 0x9e3779b9 + (cs.edges << 6) + (cs.edges >> 2));
+        }
+    };
+}

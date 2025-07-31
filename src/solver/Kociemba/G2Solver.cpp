@@ -1,9 +1,13 @@
 #include "../../../include/solver/Kociemba/G2Solver.hpp"
 
 
+
+#include <iostream>
+
 G2Solver::G2Solver() : _spinManager() {
-    // pruning::io::load("g1_corners_edges.prune", _pruningOrientation, 0x01);
-    // pruning::io::load("g1_Mslice.prune", _pruningMSlice, 0x02);
+    pruning::io::load("./table/g2_corners_permutation.prune", _pruningCornersPermutation, 0x01);
+    pruning::io::load("./table/g2_mSLice_permutation.prune", _pruningMSlicePermutation, 0x01);
+    pruning::io::load("./table/g2_uDSlice_permutation.prune", _pruningUDSlicePermutation, 0x01);
 }
 
 
@@ -19,24 +23,33 @@ bool G2Solver::areInverseMoves(SpinLst a, SpinLst b) {
 }
 
 #include <iostream>
+#include <unordered_map>
 
 bool G2Solver::IDA(
     CubeState state,
     int maxDepth,
+    std::unordered_map<CubeState, int> &visited,
     int depth,
     bool hasLastMove,
     SpinLst lastMove
 ) {
+    size_t indexCorners = encodeCornerPermutation(state);
+    size_t indexMSlice = encodeMSliceEdgePermutation(state);
+    size_t indexUDSlice = encodeUDSlicePermutation(state);
 
-    // size_t indexOrient = encodeOrientationIndex(state);
-    // size_t indexMSlice = encodeMSlice(state);
+    uint8_t heuristic = std::max({
+        _pruningCornersPermutation[indexCorners],
+        _pruningMSlicePermutation[indexMSlice],
+        _pruningUDSlicePermutation[indexUDSlice]
+    });
 
-    // uint8_t heuristic = std::max(_pruningOrientation[indexOrient], _pruningMSlice[indexMSlice]);
-    uint8_t heuristic = 0;
-    // if (heuristic == 0) return true;
-    if (depth == 10 ) return false; // 8 is the max depth for G2 REMOVE THIS LINE
-    if (state.isSolved()) return true;
+    if (heuristic == 0) return true;
     if (depth + heuristic > maxDepth) return false;
+
+    auto it = visited.find(state);
+    if (it != visited.end() && it->second <= depth) return false;
+    visited[state] = depth;
+
 
     for (SpinLst move : _allowSpin) {
         if (hasLastMove && areInverseMoves(lastMove, move)) continue;
@@ -45,9 +58,7 @@ bool G2Solver::IDA(
         _spinManager.applyMove(next, move);
         _solution.push_back(move);
 
-        if (IDA(next, maxDepth, depth + 1, true, move)) {
-            return true;
-        }
+        if (IDA(next, maxDepth, visited, depth + 1, true, move)) return true;
 
         _solution.pop_back();
     }
@@ -58,9 +69,10 @@ bool G2Solver::IDA(
 
 
 bool G2Solver::solve(CubeState &state) {
-    for (int depth = 0; depth <= 12; ++depth) {
+    for (int depth = 0; depth <= 20; ++depth) {
         _solution.clear();
-        if (IDA(state, depth)) return true;
+        std::unordered_map<CubeState, int> visited;
+        if (IDA(state, depth, visited)) return true;
     }
     return false;
 }

@@ -40,5 +40,8 @@ rubik
 bin/*
 *.prune
 
+# static analyzers
+*.csv
+
 # debug information files
 *.dwo

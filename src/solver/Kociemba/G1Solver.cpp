@@ -2,8 +2,8 @@
 
 
 G1Solver::G1Solver() : _spinManager() {
-    pruning::io::load("g1_corners_edges.prune", _pruningOrientation, 0x01);
-    pruning::io::load("g1_Mslice.prune", _pruningMSlice, 0x02);
+    pruning::io::load("./table/g1_corners_edges.prune", _pruningOrientation, 0x01);
+    pruning::io::load("./table/g1_Mslice.prune", _pruningMSlice, 0x02);
 }
 
 
@@ -57,7 +57,7 @@ bool G1Solver::IDA(
 
 
 bool G1Solver::solve(CubeState &state) {
-    for (int depth = 0; depth <= 10; ++depth) {
+    for (int depth = 0; depth <= 20; ++depth) {
         _solution.clear();
         if (IDA(state, depth)) return true;
     }
