@@ -1,23 +1,11 @@
-#pragma once
-#include "./CubeState.hpp"
+#include "../../include/cube/Encoding.h"
 
-uint16_t encodeEdgesOrientation(const CubeState& state);
-void     decodeEdgesOrientation(uint16_t val, CubeState& state);
-
-uint16_t encodeCornersOrientation(const CubeState& state);
-void     decodeCornersOrientation(uint16_t val, CubeState& state);
-
-inline size_t encodeOrientationIndex(const CubeState& state) {
-    uint16_t c = encodeCornersOrientation(state);
-    uint16_t e = encodeEdgesOrientation(state);
-    return static_cast<size_t>(c) * 2048 + e; // 3⁷ * 2¹¹
-}
 
 // =================================================================================
 // ==== Corners Orientation Encoding ====
 // =================================================================================
 
-inline uint16_t encodeCornersOrientation(const CubeState& state) {
+uint16_t encodeCornersOrientation(const CubeState& state) {
     uint16_t code = 0;
     for (int i = 0; i < 7; ++i) {
         uint8_t ori = (state.corners >> (32 + i * 2)) & 0x3; // 2 bits par coin
@@ -26,7 +14,7 @@ inline uint16_t encodeCornersOrientation(const CubeState& state) {
     return code;
 }
 
-inline void decodeCornersOrientation(CubeState& state, uint16_t code) {
+void decodeCornersOrientation(CubeState& state, uint16_t code) {
     uint8_t total = 0;
     for (int i = 6; i >= 0; --i) {
         uint8_t ori = code % 3;
@@ -45,7 +33,7 @@ inline void decodeCornersOrientation(CubeState& state, uint16_t code) {
 // ==== Edges Orientation Encoding ====
 // =================================================================================
 
-inline uint16_t encodeEdgesOrientation(const CubeState& state) {
+uint16_t encodeEdgesOrientation(const CubeState& state) {
     uint16_t code = 0;
     for (int i = 0; i < 11; ++i) {
         uint8_t ori = (state.edges >> (48 + i)) & 0x1; // 1 bit par arête
@@ -54,7 +42,7 @@ inline uint16_t encodeEdgesOrientation(const CubeState& state) {
     return code;
 }
 
-inline void decodeEdgesOrientation(CubeState& state, uint16_t code) {
+void decodeEdgesOrientation(CubeState& state, uint16_t code) {
     uint8_t total = 0;
     for (int i = 0; i < 11; ++i) {
         uint8_t ori = (code >> i) & 0x1;
@@ -69,10 +57,19 @@ inline void decodeEdgesOrientation(CubeState& state, uint16_t code) {
 }
 
 // =================================================================================
+// ==== Orientation Index Encoding ====
+// =================================================================================
+
+size_t encodeOrientationIndex(const CubeState& state) {
+    uint16_t c = encodeCornersOrientation(state);
+    uint16_t e = encodeEdgesOrientation(state);
+    return static_cast<size_t>(c) * 2048 + e; // 3⁷ * 2¹¹
+}
+
+// =================================================================================
 // ==== Slice Edges Encoding ====
 // =================================================================================
 
-uint16_t encodeMSlice(const CubeState& state);
 
 /**
  * @brief Calcule le coefficient binomial (n choose k)

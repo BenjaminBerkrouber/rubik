@@ -10,24 +10,33 @@ SRC = 		main.cpp \
 			src/RubikController.cpp \
 			verif.cpp \
 			src/cube/CubeOperations.cpp \
+			src/cube/Encoding.cpp \
 			src/spin/SpinManager.cpp \
 			src/engine/CubeStateHelper.cpp \
 			src/parser/Parser.cpp \
 			src/utils/utils.cpp \
+			src/solver/Kociemba/KociembaSolver.cpp \
+			src/solver/Kociemba/G1Solver.cpp \
+			src/solver/Kociemba/G2Solver.cpp \
+			src/solver/Pruning/TableIO.cpp \
 
 INC = 		include/RubikController.hpp \
 			include/utils/Constants.hpp \
 			include/utils/utils.h \
+			include/cube/Encoding.hpp \
 			include/cube/CubeState.hpp \
 			include/cube/CubeOperations.hpp \
 			include/spin/Spin.hpp \
 			include/spin/SpinManager.cpp \
 			include/engine/CubeStateHelper.hpp \
 			include/parser/Parser.hpp \
-			include/solver/Kociemba/Pruning/TableGenerator.hpp \
-			include/solver/Kociemba/Pruning/TableIO.hpp \
-			include/solver/Kociemba/Pruning/PruningTable.hpp \
+			include/BuildPruningTable/TableGenerator.hpp \
+			include/solver/Pruning/TableIO.hpp \
+			include/solver/Pruning/PruningTable.hpp \
 			include/cube/OrientationEncoding.hpp \
+			include/solver/Kociemba/KociembaSolver.hpp \
+			include/solver/Kociemba/G1Solver.hpp \
+			include/solver/Kociemba/G2Solver.hpp \
 
 
 OBJ_SRC = bin/

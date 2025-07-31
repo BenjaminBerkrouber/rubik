@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../../cube/CubeState.hpp"
-#include "../../../spin/Spin.hpp"
+#include "../cube/CubeState.hpp"
+#include "../spin/Spin.hpp"
 #include <functional>
 #include <vector>
 #include <queue>
