@@ -7,7 +7,6 @@
 #include "../../include/solver/Kociemba/G1Solver.hpp"
 #include "../../include/solver/Kociemba/G2Solver.hpp"
 #include "../../include/solver/Pruning/TableIO.hpp"
-#include "../../include/solver/Pruning/PruningTable.hpp"
 #include "../../include/BuildPruningTable/TableGenerator.hpp"
 
 

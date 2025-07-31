@@ -1,24 +1,21 @@
 #include "../../../include/solver/Kociemba/G1Solver.hpp"
 
 
+// ==============================================================================================================================
+// ==== Constructor and Destructor ====
+// ==============================================================================================================================
+
+
 G1Solver::G1Solver() : _spinManager() {
     pruning::io::load("./table/g1_corners_edges.prune", _pruningOrientation, 0x01);
     pruning::io::load("./table/g1_Mslice.prune", _pruningMSlice, 0x02);
 }
 
 
-bool G1Solver::areInverseMoves(SpinLst a, SpinLst b) {
-    int faceA = static_cast<int>(a) / 3;
-    int faceB = static_cast<int>(b) / 3;
+// ==============================================================================================================================
+// ==== Solve Method ====
+// ==============================================================================================================================
 
-    if (faceA != faceB) return false;
-
-    int turnA = static_cast<int>(a) % 3;
-    int turnB = static_cast<int>(b) % 3;
-    return (turnA + turnB) == 3;
-}
-
-#include <iostream>
 
 bool G1Solver::IDA(
     CubeState state,
@@ -63,6 +60,34 @@ bool G1Solver::solve(CubeState &state) {
     }
     return false;
 }
+
+
+// ==============================================================================================================================
+// ==== Utils Method ====
+// ==============================================================================================================================
+
+
+bool G1Solver::checkTable() const {
+    return (_pruningOrientation.size() == 2048 * 2187 && 
+            _pruningMSlice.size() == 495);
+}
+
+bool G1Solver::areInverseMoves(SpinLst a, SpinLst b) {
+    int faceA = static_cast<int>(a) / 3;
+    int faceB = static_cast<int>(b) / 3;
+
+    if (faceA != faceB) return false;
+
+    int turnA = static_cast<int>(a) % 3;
+    int turnB = static_cast<int>(b) % 3;
+    return (turnA + turnB) == 3;
+}
+
+
+// ====================================================================================
+// ==== Getter ====
+// ====================================================================================
+
 
 std::vector<SpinLst> G1Solver::getSolution() const {
     return _solution;

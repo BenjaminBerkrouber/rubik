@@ -6,7 +6,11 @@ import os
 import csv
 import random
 
-CSV_PATH = "./stats/Kociemba.csv"
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(BASE_DIR, '..', 'data')
+CSV_PATH = os.path.abspath(os.path.join(DATA_DIR, 'Kociemba.csv'))
 
 MOVES = [
     "B", "B'", "B2",
@@ -31,7 +35,6 @@ def generate_scramble(length):
     return " ".join(scramble)
 
 def run_benchmark(executable: str, runs: int, scramble_length: int):
-    os.makedirs("./stats", exist_ok=True)
 
     with open(CSV_PATH, mode='w', newline='') as file:
         writer = csv.writer(file)
@@ -54,11 +57,15 @@ def run_benchmark(executable: str, runs: int, scramble_length: int):
                 writer.writerow([duration, num_spins, scramble, output])
                 print(f"[{i+1}/{runs}] ✅ {num_spins} spins in {duration:.4f}s")
 
-    print(f"\nRésultats enregistrés dans {CSV_PATH}")
+    print(f"\nResults saved in {CSV_PATH}")
 
 def read_stats():
     if not os.path.exists(CSV_PATH):
-        print(f"Fichier non trouvé : {CSV_PATH}")
+        print(f"File not found: {CSV_PATH}")
+        return
+
+    if os.path.getsize(CSV_PATH) == 0:
+        print(f"File is empty: {CSV_PATH}")
         return
 
     times = []
@@ -67,7 +74,11 @@ def read_stats():
 
     with open(CSV_PATH, mode='r') as file:
         reader = csv.DictReader(file)
-        for row in reader:
+        rows = list(reader)
+        if not rows:
+            print(f"No data available in {CSV_PATH}")
+            return
+        for row in rows:
             t = float(row["time"])
             s = int(row["spins"])
             times.append(t)
@@ -78,28 +89,28 @@ def read_stats():
 
     def display(label, data):
         if not data:
-            print(f"\n--- {label} ---\nAucune donnée.")
+            print(f"\n--- {label} ---\nNo data available.")
             return
         print(f"\n--- {label} ---")
         print(f"Total       : {len(data)}")
-        print(f"Moyenne     : {statistics.mean(data):.4f}")
-        print(f"Médiane     : {statistics.median(data):.4f}")
+        print(f"Mean        : {statistics.mean(data):.4f}")
+        print(f"Median      : {statistics.median(data):.4f}")
         print(f"Min         : {min(data):.4f}")
         print(f"Max         : {max(data):.4f}")
-        print(f"Écart-type  : {statistics.stdev(data):.4f}" if len(data) > 1 else "Écart-type  : N/A")
+        print(f"Std. dev.   : {statistics.stdev(data):.4f}" if len(data) > 1 else "Std. dev.   : N/A")
 
-    display("Temps d'exécution (s)", times)
-    display("Nombre de spins", spins)
+    display("Execution time (s)", times)
+    display("Number of spins", spins)
 
-    print(f"\n[KO] rencontrés : {errors} / {len(times)} ({(errors / len(times) * 100):.2f}%)")
+    print(f"\n[KO] encountered: {errors} / {len(times)} ({(errors / len(times) * 100):.2f}%)")
 
 def main():
-    parser = argparse.ArgumentParser(description="Benchmark du solver Kociemba.")
-    parser.add_argument("--run", action="store_true", help="Lancer les tests et écrire dans le fichier CSV.")
-    parser.add_argument("--read", action="store_true", help="Lire les résultats depuis le CSV.")
-    parser.add_argument("-n", "--number", type=int, default=100, help="Nombre de tests (par défaut: 100)")
-    parser.add_argument("--exec", type=str, default="./rubik", help="Chemin vers l'exécutable (défaut: ./rubik)")
-    parser.add_argument("--scramble", type=int, default=25, help="Longueur du scramble (par défaut: 25)")
+    parser = argparse.ArgumentParser(description="Benchmark for the Kociemba solver.")
+    parser.add_argument("--run", action="store_true", help="Run tests and write to the CSV file.")
+    parser.add_argument("--read", action="store_true", help="Read results from the CSV file.")
+    parser.add_argument("-n", "--number", type=int, default=100, help="Number of tests (default: 100)")
+    parser.add_argument("--exec", type=str, default="./rubik", help="Path to the executable (default: ./rubik)")
+    parser.add_argument("--scramble", type=int, default=25, help="Scramble length (default: 25)")
 
     args = parser.parse_args()
 

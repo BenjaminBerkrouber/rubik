@@ -1,8 +1,10 @@
 #include "../../../include/solver/Kociemba/G2Solver.hpp"
 
 
+// ==============================================================================================================================
+// ==== Constructor and Destructor ====
+// ==============================================================================================================================
 
-#include <iostream>
 
 G2Solver::G2Solver() : _spinManager() {
     pruning::io::load("./table/g2_corners_permutation.prune", _pruningCornersPermutation, 0x01);
@@ -11,19 +13,10 @@ G2Solver::G2Solver() : _spinManager() {
 }
 
 
-bool G2Solver::areInverseMoves(SpinLst a, SpinLst b) {
-    int faceA = static_cast<int>(a) / 3;
-    int faceB = static_cast<int>(b) / 3;
+// ==============================================================================================================================
+// ==== Solve Method ====
+// ==============================================================================================================================
 
-    if (faceA != faceB) return false;
-
-    int turnA = static_cast<int>(a) % 3;
-    int turnB = static_cast<int>(b) % 3;
-    return (turnA + turnB) == 3;
-}
-
-#include <iostream>
-#include <unordered_map>
 
 bool G2Solver::IDA(
     CubeState state,
@@ -66,8 +59,6 @@ bool G2Solver::IDA(
     return false;
 }
 
-
-
 bool G2Solver::solve(CubeState &state) {
     for (int depth = 0; depth <= 20; ++depth) {
         _solution.clear();
@@ -76,6 +67,35 @@ bool G2Solver::solve(CubeState &state) {
     }
     return false;
 }
+
+
+// ==============================================================================================================================
+// ==== Utils Method ====
+// ==============================================================================================================================
+
+
+bool G2Solver::checkTable() const {
+    return  (_pruningCornersPermutation.size() == 40320 &&
+            _pruningMSlicePermutation.size() == 24 &&
+            _pruningUDSlicePermutation.size() == 40320);
+}
+
+bool G2Solver::areInverseMoves(SpinLst a, SpinLst b) {
+    int faceA = static_cast<int>(a) / 3;
+    int faceB = static_cast<int>(b) / 3;
+
+    if (faceA != faceB) return false;
+
+    int turnA = static_cast<int>(a) % 3;
+    int turnB = static_cast<int>(b) % 3;
+    return (turnA + turnB) == 3;
+}
+
+
+// ====================================================================================
+// ==== Getter ====
+// ====================================================================================
+
 
 std::vector<SpinLst> G2Solver::getSolution() const {
     return _solution;

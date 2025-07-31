@@ -47,7 +47,7 @@ class RubikController {
         /**
         * @brief Default destructor.
         */
-        ~RubikController() = default;
+        ~RubikController();
 
         /**
         * @brief Parses and applies a string of moves or applies a random shuffle based on environment variable.

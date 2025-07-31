@@ -45,3 +45,6 @@ bin/*
 
 # debug information files
 *.dwo
+
+analysis/data
+analysis/results

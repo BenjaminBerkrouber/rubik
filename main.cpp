@@ -5,7 +5,6 @@
 
 #include "include/BuildPruningTable/TableGenerator.hpp"
 #include "include/solver/Pruning/TableIO.hpp"
-#include "include/solver/Pruning/PruningTable.hpp"
 #include "include/cube/Encoding.h"
 
 #include "include/spin/SpinManager.hpp"

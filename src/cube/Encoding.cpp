@@ -72,6 +72,13 @@ size_t encodeOrientationIndex(const CubeState& state) {
     return static_cast<size_t>(c) * 2048 + e; // 3⁷ * 2¹¹
 }
 
+void decodeOrientationIndex(CubeState& state, size_t index) {
+    uint16_t e = index % 2048;
+    uint16_t c = index / 2048;
+    decodeEdgesOrientation(state, e);
+    decodeCornersOrientation(state, c);
+}
+
 // =================================================================================
 // ==== Slice Edges Encoding ====
 // =================================================================================
@@ -104,6 +111,30 @@ uint16_t encodeMSlice(const CubeState& state) {
     }
 
     return 494 - index; // 494 = binomial(12, 4) - 1
+}
+
+
+void decodeMSlice(CubeState& state, uint16_t code) {
+    uint8_t slicePositions[4];
+    int count = 0;
+
+    for (int pos = 0; pos < 12; ++pos) {
+        uint8_t edge = (state.edges >> (pos * 4)) & 0xF;
+        if (edge >= 8 && edge <= 11) {
+            slicePositions[count++] = pos;
+        }
+    }
+    if (count != 4) return;
+
+    uint16_t index = 494 - code;
+    for (int i = 3; i >= 0; --i) {
+        int binom = binomial(12 - i, i + 1);
+        int selected = index / binom;
+        index %= binom;
+
+        state.edges &= ~(0xFULL << (slicePositions[i] * 4));
+        state.edges |= (uint64_t(selected + 8) & 0xF) << (slicePositions[i] * 4);
+    }
 }
 
 
