@@ -147,6 +147,8 @@ void CubeStateHelper::print() const {
     std::string padding = "                       ";
     std::string smallSpace = "  ";
 
+    printState();
+
     printFace(_uP, e_YELLOW, padding);
 
     std::cout << getCcolor(_lP[0].first, _lP[0].second) << getEColor(_lP[1].first, _lP[1].second) << getCcolor(_lP[2].first, _lP[2].second) << smallSpace

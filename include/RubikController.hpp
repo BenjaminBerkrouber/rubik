@@ -31,20 +31,12 @@ class RubikController {
         IEngine         *_engine = nullptr; /**< Pointer to the engine interface (display handler) */
 
         /**
-        * @brief Parses a string input and applies moves to the cube.
-        * 
-        * @param input A string representing a sequence of moves (e.g., "R U R' U'")
-        * @return true if parsing and application succeeded, false otherwise
-        */
-        bool parseInput(const std::string& input);
-
-        /**
         * @brief Applies a random shuffle of the cube.
         *
         * @param count Number of random spins to apply
         * @return true if shuffle succeeded, false otherwise
         */
-        bool randomSuffle(int count);
+        ParseResult randomSuffle(int count);
 
     public:
         /**
@@ -55,7 +47,7 @@ class RubikController {
         /**
         * @brief Default destructor.
         */
-        ~RubikController() = default;
+        ~RubikController();
 
         /**
         * @brief Parses and applies a string of moves or applies a random shuffle based on environment variable.
@@ -66,7 +58,7 @@ class RubikController {
         * @param input A string representing the sequence of spins (ignored if random shuffle)
         * @return true if the operation succeeds, false otherwise
         */
-        bool parse(const std::string& input);
+        ParseResult parse(const std::string& input);
 
         /**
         * @brief Applies a shuffle to the cube (used for randomizing).
@@ -92,5 +84,9 @@ class RubikController {
          * ready for new operations.
          */
         void reset();
+
+        std::vector<SpinLst> getShuffle() const;
+
+        std::vector<SpinLst> getSolution() const;
 
 };

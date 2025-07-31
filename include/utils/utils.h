@@ -4,7 +4,7 @@
 
 # include <string>
 # include <stdexcept>
-#include <ctime>
+# include <ctime>
 # include "../spin/Spin.hpp"
 
 void checkSuffleReverse();

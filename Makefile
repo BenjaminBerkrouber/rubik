@@ -1,76 +1,107 @@
-NAME = rubik
+# ====================================================================================
+# Makefile for Rubik's Cube Solver
+# ====================================================================================
 
-CXX = g++
-CXXFLAGS = -g -Wall -Wextra -Werror -std=c++20 -O3
-# -pg
-INCLUDES_DIR = include/
+# ====================================================================================
+# Settings and Variables
+# ====================================================================================
+
+NAME        := rubik
+
+CXX         := g++
+CXXFLAGS    := -Wall -Wextra -Werror -std=c++20 -O3 -g
+INCLUDES    := -Iinclude
+SRC_DIR     := src
+BIN_DIR     := bin
+OBJ_DIR     := $(BIN_DIR)/obj
+TABLE_DIR   := table
+
+# ====================================================================================
+# Source Files
+# ====================================================================================
+
+SRC_FILES := \
+	main.cpp \
+	$(SRC_DIR)/RubikController.cpp \
+	$(SRC_DIR)/cube/CubeOperations.cpp \
+	$(SRC_DIR)/cube/Encoding.cpp \
+	$(SRC_DIR)/spin/SpinManager.cpp \
+	$(SRC_DIR)/engine/CubeStateHelper.cpp \
+	$(SRC_DIR)/parser/Parser.cpp \
+	$(SRC_DIR)/utils/utils.cpp \
+	$(SRC_DIR)/solver/Kociemba/KociembaSolver.cpp \
+	$(SRC_DIR)/solver/Kociemba/G1Solver.cpp \
+	$(SRC_DIR)/solver/Kociemba/G2Solver.cpp \
+	$(SRC_DIR)/solver/Pruning/TableIO.cpp
 
 
-SRC = 		main.cpp \
-			src/RubikController.cpp \
-			verif.cpp \
-			src/cube/CubeOperations.cpp \
-			src/spin/SpinManager.cpp \
-			src/engine/CubeStateHelper.cpp \
-			src/parser/Parser.cpp \
-			src/utils/utils.cpp \
-
-INC = 		include/RubikController.hpp \
-			include/utils/Constants.hpp \
-			include/utils/utils.h \
-			include/cube/CubeState.hpp \
-			include/cube/CubeOperations.hpp \
-			include/spin/Spin.hpp \
-			include/spin/SpinManager.cpp \
-			include/engine/CubeStateHelper.hpp \
-			include/parser/Parser.hpp \
+TABLE_SRC := \
+	$(SRC_DIR)/BuildPruningTable/main.cpp \
+	$(SRC_DIR)/spin/SpinManager.cpp \
+	$(SRC_DIR)/cube/CubeOperations.cpp \
+	$(SRC_DIR)/cube/Encoding.cpp \
+	$(SRC_DIR)/solver/Pruning/TableIO.cpp \
 
 
-OBJ_SRC = bin/
+OBJ_FILES := $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
 
-OBJ_BIN = bin/obj/
-OBJ = $(addprefix $(OBJ_BIN), $(SRC:.cpp=.o))
-
-INCLUDES_DIR = include/
-DEPS = $(INC)
+TABLE_OBJ := $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(TABLE_SRC))
 
 
-RED=\033[0;31m
-GREEN=\033[0;32m
-BLUE=\033[0;34m
-NC=\033[0m
+# ====================================================================================
+# Color Codes for Output
+# ====================================================================================
+
+RED     := \033[0;31m
+GREEN   := \033[0;32m
+BLUE    := \033[0;34m
+NC      := \033[0m
+
+# ====================================================================================
+# Makefile Rules
+# ====================================================================================
+
+.PHONY: all clean fclean re start end
 
 all: start $(NAME) end
 
+$(NAME): $(OBJ_FILES) table
+	@echo "$(BLUE)[LINK] Create the executable ...$(NC)"
+	@$(CXX) $(CXXFLAGS) $(OBJ_FILES) -o $(NAME)
+
+$(OBJ_DIR)/%.o: %.cpp
+	@echo "[BUILD] $<"
+	@mkdir -p $(dir $@) $(TABLE_DIR)
+	@$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+
 start:
-	@echo " "
-	@echo "$(GREEN)---------- Starting the compilation of $(NAME) ----------$(NC)"
-
-$(NAME): $(OBJ)
-	@echo "$(BLUE)---------- Creating the executable ----------$(NC)"
-	@echo " $(NAME)"
-	@$(CXX) $(CXXFLAGS) $(OBJ) -o $(NAME)
-
-$(OBJ_BIN)%.o: %.cpp
-	@echo " $<"
-	@mkdir -p $(dir $@)
-	@$(CXX) $(CXXFLAGS) -I$(INCLUDES_DIR) -I$(INCLUDES_DIR)/Face_Type -c $< -o $@
+	@echo "$(GREEN)========== Compilation $(NAME) started ==========$(NC)"
 
 end:
-	@echo "$(GREEN)---------- Successfully compiled! ----------$(NC)"
-	@echo " "
+	@echo "$(GREEN)========== Compilation ended ✅ ==========$(NC)"
 
 clean:
-	@echo "$(RED)---------- Cleaning up files ----------$(NC)"
-	@echo " $(OBJ_SRC)"
-	@echo " "
-	@rm -rf $(OBJ_SRC)
+	@echo "$(RED)[CLEAN] Remove objets...$(NC)"
+	@rm -rf $(OBJ_DIR)
 
 fclean: clean
-	@echo "$(RED)---------- Full cleanup... ----------$(NC)"
-	@echo " "
-	@rm -rf $(NAME)
+	@echo "$(RED)[FCLEAN] Remove the executable...$(NC)"
+	@rm -rf $(BIN_DIR)
+	@rm -f $(NAME)
 
 re: fclean all
 
-.PHONY: all clean fclean re start end
+# -----------------------------------------------------------
+# Special Targets for Table Compilation
+# -----------------------------------------------------------
+
+table: $(TABLE_OBJ)
+	@echo "$(BLUE)[LINK] Compilation des fichiers Table uniquement...$(NC)"
+	@$(CXX) $(CXXFLAGS) $(TABLE_OBJ) -o $(BIN_DIR)/table_exec
+	@echo "$(GREEN)Table compilation completed ✅$(NC)"
+	@mkdir -p $(TABLE_DIR)
+	@./$(BIN_DIR)/table_exec
+
+table_clean:
+	@echo "$(RED)[CLEAN] Nettoyage des objets Table uniquement...$(NC)"
+	@rm -rf $(TABLE_DIR) $(BIN_DIR)/table_exec

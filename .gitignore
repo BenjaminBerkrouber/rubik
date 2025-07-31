@@ -38,7 +38,13 @@
 *.app
 rubik
 bin/*
+*.prune
 
+# static analyzers
+*.csv
 
 # debug information files
 *.dwo
+
+analysis/data
+analysis/results
