@@ -29,7 +29,7 @@
 # Compiled Static libraries
 *.lai
 *.la
-*.a
+#*.a
 *.lib
 
 # Executables
@@ -48,3 +48,6 @@ bin/*
 
 analysis/data
 analysis/results
+
+# opengl/imgui temp files
+imgui.ini

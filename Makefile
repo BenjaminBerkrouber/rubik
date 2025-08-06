@@ -16,6 +16,7 @@ BIN_DIR     := bin
 OBJ_DIR     := $(BIN_DIR)/obj
 TABLE_DIR   := table
 
+GLIBFLAGS   := libs/glad/libglad.a libs/glfw/libglfw3.a libs/imgui/libimgui.a -ldl -lGL -lX11 -lpthread -lXrandr -lXi
 # ====================================================================================
 # Source Files
 # ====================================================================================
@@ -32,7 +33,8 @@ SRC_FILES := \
 	$(SRC_DIR)/solver/Kociemba/KociembaSolver.cpp \
 	$(SRC_DIR)/solver/Kociemba/G1Solver.cpp \
 	$(SRC_DIR)/solver/Kociemba/G2Solver.cpp \
-	$(SRC_DIR)/solver/Pruning/TableIO.cpp
+	$(SRC_DIR)/solver/Pruning/TableIO.cpp \
+	$(SRC_DIR)/Renderer.cpp \
 
 
 TABLE_SRC := \
@@ -67,7 +69,7 @@ all: start $(NAME) end
 
 $(NAME): $(OBJ_FILES) table
 	@echo "$(BLUE)[LINK] Create the executable ...$(NC)"
-	@$(CXX) $(CXXFLAGS) $(OBJ_FILES) -o $(NAME)
+	@$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(GLIBFLAGS) -o $(NAME)
 
 $(OBJ_DIR)/%.o: %.cpp
 	@echo "[BUILD] $<"
