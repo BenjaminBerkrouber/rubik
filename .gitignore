@@ -38,9 +38,16 @@
 *.app
 rubik
 bin/*
+*.prune
+
+# static analyzers
+*.csv
 
 # debug information files
 *.dwo
+
+analysis/data
+analysis/results
 
 # opengl/imgui temp files
 imgui.ini

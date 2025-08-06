@@ -1,80 +1,109 @@
-NAME = rubik
+# ====================================================================================
+# Makefile for Rubik's Cube Solver
+# ====================================================================================
 
-CXX = g++
-CXXFLAGS = -g -Wall -Wextra -Werror -std=c++20 -O3
-# -pg
-GTEST_LIB = -lgtest -lgtest_main -pthread
+# ====================================================================================
+# Settings and Variables
+# ====================================================================================
 
-GLIBFLAGS = libs/glad/libglad.a libs/glfw/libglfw3.a libs/imgui/libimgui.a -ldl -lGL -lX11 -lpthread -lXrandr -lXi
+NAME        := rubik
 
-SRC = 		main.cpp \
-			src/Cube.cpp \
-			src/SpinLib.cpp \
-			src/CubePrinter.cpp \
-			src/Renderer.cpp \
+CXX         := g++
+CXXFLAGS    := -Wall -Wextra -Werror -std=c++20 -O3 -g
+INCLUDES    := -Iinclude
+SRC_DIR     := src
+BIN_DIR     := bin
+OBJ_DIR     := $(BIN_DIR)/obj
+TABLE_DIR   := table
 
-INC = 		include/Cube.hpp \
-			include/SpinLib.hpp \
-			include/CubePrinter.hpp \
-			include/Renderer.hpp \
+GLIBFLAGS   := libs/glad/libglad.a libs/glfw/libglfw3.a libs/imgui/libimgui.a -ldl -lGL -lX11 -lpthread -lXrandr -lXi
+# ====================================================================================
+# Source Files
+# ====================================================================================
+
+SRC_FILES := \
+	main.cpp \
+	$(SRC_DIR)/RubikController.cpp \
+	$(SRC_DIR)/cube/CubeOperations.cpp \
+	$(SRC_DIR)/cube/Encoding.cpp \
+	$(SRC_DIR)/spin/SpinManager.cpp \
+	$(SRC_DIR)/engine/CubeStateHelper.cpp \
+	$(SRC_DIR)/parser/Parser.cpp \
+	$(SRC_DIR)/utils/utils.cpp \
+	$(SRC_DIR)/solver/Kociemba/KociembaSolver.cpp \
+	$(SRC_DIR)/solver/Kociemba/G1Solver.cpp \
+	$(SRC_DIR)/solver/Kociemba/G2Solver.cpp \
+	$(SRC_DIR)/solver/Pruning/TableIO.cpp \
+	$(SRC_DIR)/Renderer.cpp \
 
 
-TEST_BIN = bin/tests/tests
-OBJ_BIN = bin/obj/
-OBJ = $(addprefix $(OBJ_BIN), $(SRC:.cpp=.o))
-OBJ_DEBOG = $(addprefix $(OBJ_BIN), $(SRCTEST:.cpp=.o))
-
-INCLUDES_DIR = include/
-DEPS = $(INC)
-
-TESTS = tests/SpinLib_test.cpp \
-		tests/Cube_test.cpp \
-		tests/spins/spin_*_test.cpp \
+TABLE_SRC := \
+	$(SRC_DIR)/BuildPruningTable/main.cpp \
+	$(SRC_DIR)/spin/SpinManager.cpp \
+	$(SRC_DIR)/cube/CubeOperations.cpp \
+	$(SRC_DIR)/cube/Encoding.cpp \
+	$(SRC_DIR)/solver/Pruning/TableIO.cpp \
 
 
-RED=\033[0;31m
-GREEN=\033[0;32m
-BLUE=\033[0;34m
-NC=\033[0m
+OBJ_FILES := $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
+
+TABLE_OBJ := $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(TABLE_SRC))
+
+
+# ====================================================================================
+# Color Codes for Output
+# ====================================================================================
+
+RED     := \033[0;31m
+GREEN   := \033[0;32m
+BLUE    := \033[0;34m
+NC      := \033[0m
+
+# ====================================================================================
+# Makefile Rules
+# ====================================================================================
+
+.PHONY: all clean fclean re start end
 
 all: start $(NAME) end
 
+$(NAME): $(OBJ_FILES) table
+	@echo "$(BLUE)[LINK] Create the executable ...$(NC)"
+	@$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(GLIBFLAGS) -o $(NAME)
+
+$(OBJ_DIR)/%.o: %.cpp
+	@echo "[BUILD] $<"
+	@mkdir -p $(dir $@) $(TABLE_DIR)
+	@$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+
 start:
-	@echo " "
-	@echo "$(GREEN)---------- Starting the compilation of $(NAME) ----------$(NC)"
-
-$(NAME): $(OBJ)
-	@echo "$(BLUE)---------- Creating the executable ----------$(NC)"
-	@echo " $(NAME)"
-	@$(CXX) $(CXXFLAGS) $(OBJ) $(GLIBFLAGS) -o $(NAME)
-
-$(OBJ_BIN)%.o: %.cpp
-	@echo " $<"
-	@mkdir -p $(dir $@)
-	@$(CXX) $(CXXFLAGS) -I$(INCLUDES_DIR) -c $< -o $@
+	@echo "$(GREEN)========== Compilation $(NAME) started ==========$(NC)"
 
 end:
-	@echo "$(GREEN)---------- Successfully compiled! ----------$(NC)"
-	@echo " "
-
-SRC_NO_MAIN = $(filter-out main.cpp, $(SRC))
-
-test: $(TESTS) $(SRC)
-	@echo "$(BLUE)---------- Building and running tests ----------$(NC)"
-	$(CXX) $(CXXFLAGS) -o $(TEST_BIN) $(TESTS) $(SRC_NO_MAIN) $(LDFLAGS) $(GTEST_LIB)
-	./$(TEST_BIN)
+	@echo "$(GREEN)========== Compilation ended ✅ ==========$(NC)"
 
 clean:
-	@echo "$(RED)---------- Cleaning up files ----------$(NC)"
-	@echo " $(OBJ_BIN)"
-	@echo " "
-	@rm -rf $(OBJ_BIN)
+	@echo "$(RED)[CLEAN] Remove objets...$(NC)"
+	@rm -rf $(OBJ_DIR)
 
 fclean: clean
-	@echo "$(RED)---------- Full cleanup... ----------$(NC)"
-	@echo " "
-	@rm -rf $(NAME) a.out
+	@echo "$(RED)[FCLEAN] Remove the executable...$(NC)"
+	@rm -rf $(BIN_DIR)
+	@rm -f $(NAME)
 
 re: fclean all
 
-.PHONY: all clean fclean re start end
+# -----------------------------------------------------------
+# Special Targets for Table Compilation
+# -----------------------------------------------------------
+
+table: $(TABLE_OBJ)
+	@echo "$(BLUE)[LINK] Compilation des fichiers Table uniquement...$(NC)"
+	@$(CXX) $(CXXFLAGS) $(TABLE_OBJ) -o $(BIN_DIR)/table_exec
+	@echo "$(GREEN)Table compilation completed ✅$(NC)"
+	@mkdir -p $(TABLE_DIR)
+	@./$(BIN_DIR)/table_exec
+
+table_clean:
+	@echo "$(RED)[CLEAN] Nettoyage des objets Table uniquement...$(NC)"
+	@rm -rf $(TABLE_DIR) $(BIN_DIR)/table_exec
