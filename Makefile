@@ -36,6 +36,9 @@ SRC_FILES := \
 	$(SRC_DIR)/solver/Pruning/TableIO.cpp \
 	$(SRC_DIR)/renderer/Renderer.cpp \
 	$(SRC_DIR)/renderer/stb_image.cpp \
+	$(SRC_DIR)/renderer/Shader.cpp \
+	$(SRC_DIR)/renderer/Camera.cpp \
+	$(SRC_DIR)/renderer/Mesh.cpp \
 
 
 TABLE_SRC := \
