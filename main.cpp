@@ -20,10 +20,11 @@ static inline int error(const std::string& message) {
     return 1;
 }
 
-#include "Renderer.hpp"
+#include "renderer/Renderer.hpp"
 
+int main() {
 
-int main(int argc, char* argv[]) {
+// int main(int argc, char* argv[]) {
 //     if (argc != 2)    
 //         return error("Usage: " + std::string(argv[0]) + " \" ALL SPIN \" ");
 

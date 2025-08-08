@@ -34,7 +34,8 @@ SRC_FILES := \
 	$(SRC_DIR)/solver/Kociemba/G1Solver.cpp \
 	$(SRC_DIR)/solver/Kociemba/G2Solver.cpp \
 	$(SRC_DIR)/solver/Pruning/TableIO.cpp \
-	$(SRC_DIR)/Renderer.cpp \
+	$(SRC_DIR)/renderer/Renderer.cpp \
+	$(SRC_DIR)/renderer/stb_image.cpp \
 
 
 TABLE_SRC := \
