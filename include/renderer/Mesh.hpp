@@ -1,6 +1,7 @@
 #pragma once
 
-#include <vector>
+#include <string>
+
 #include <glm/glm.hpp>
 
 struct Vertex {
@@ -10,18 +11,16 @@ struct Vertex {
     glm::vec2 texCoords;
 };
 
+class Shader;
+
 class Mesh {
 
 public:
 
-    Mesh(const std::vector<Vertex> & vertices, const std::vector<unsigned int> & indices);
-    Mesh();
+    Mesh(const Shader & shader);
     ~Mesh();
 
-    void init();
-
-    const glm::mat4 & getModel() const;
-    const unsigned int & getTexture() const;
+    void init(const std::string gltPath);
 
     void translate(const glm::vec3 & offset);
     void rotate(const float angleRadians, const glm::vec3 & axis);
@@ -31,14 +30,13 @@ public:
 
 private:
 
+    const Shader & _shader;
+
     glm::mat4 _model;
     unsigned int _vao;
     unsigned int _vbo;
     unsigned int _ebo;
     unsigned int _indexCount;
 
-    int imgSize[2];
-    int numColCh;
-    unsigned char * imgBytes;
     unsigned int _texture;
 };

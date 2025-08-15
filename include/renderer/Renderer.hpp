@@ -1,16 +1,20 @@
 #pragma once
 
-#include <string>
 #include "Camera.hpp"
 #include "Shader.hpp"
-#include "Mesh.hpp"
+#include "RubiksCube.hpp"
+
+#include <string>
 
 constexpr int HEIGHT = 0;
 constexpr int WIDTH  = 1;
 constexpr int DEFAULT_WIDTH  = 720;
-constexpr int DEFAULT_HEIGHT = 517;
+constexpr int DEFAULT_HEIGHT = 480;
 constexpr int X = 0;
 constexpr int Y = 1;
+
+class Mesh;
+class GLFWwindow;
 
 class Renderer {
 
@@ -19,26 +23,35 @@ public:
     Renderer();
     ~Renderer();
 
-    bool init();
-    void renderLoop();
-    void toggleFullscreen();
     const int * getWindowSize() const ;
 
-    void objectRenderer(const std::string );
+    bool init();
+    void renderLoop();
 
-private:
+    static void staticKeyCallback(GLFWwindow * window, int key, int scancode, int action, int mods);
+    static void staticMouseButtonCallback(GLFWwindow * window, int button, int action, int mods);
+    static void staticCursorPosCallback(GLFWwindow * window, double xpos, double ypos);
+    static void staticScrollCallback(GLFWwindow * window, double xoffset, double yoffset);
+
+    void keyCallback(int key, int scancode, int action, int mods);
+    void mouseButtonCallback(int button, int action, int mods);
+    void cursorPosCallback(double xpos, double ypos);
+    void scrollCallback(double xoffset, double yoffset);
+
+    private:
 
     struct GLFWwindow* _window;
     const std::string _title;
     int _windowSize[2];
     int _windowPos[2];
-    bool _fullscreen;
+    bool _rotatingCam;
 
     Camera _camera;
     Shader _shader;
-    Mesh _mesh;
+    RubiksCube _rubiksCube;
 
+    void _toggleFullscreen();
     // void _renderGui();
     void _renderCube();
-    void _cleanup();
+
 };

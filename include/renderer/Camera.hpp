@@ -2,32 +2,37 @@
 
 #include <glm/glm.hpp>
 
-constexpr float SPEED = 0.1f;
-constexpr float SENSITIVITY  = 100.0f;
-
 class Renderer;
+class Shader;
 
 class Camera {
 
 public:
 
-    Camera(const Renderer & renderer);
+    Camera(const Renderer & renderer, const Shader & shader);
     ~Camera();
 
     void init();
     const glm::mat4 getMatrix() const ;
 
-    void updateProjection() ;
-
-    // void orbitAround(glm::vec3 target, const float speed);
+    void orbitAround(const double rotation[2]);
+    void zoom(const double delta);
 
 private:
 
     const Renderer & _renderer;
+    const Shader & _shader;
+
+    float _fov;
+    float _radius;
+    float _yaw;
+    float _pitch;
     glm::vec3 _position;
-    glm::vec3 _orientation;
-    glm::vec3 _up;
 
     glm::mat4 _view;
     glm::mat4 _projection;
+
+    void _updatePosition();
+    void _updateView();
+    void _updateProjection();
 };

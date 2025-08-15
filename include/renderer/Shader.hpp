@@ -25,6 +25,6 @@ private:
     unsigned int _id;
     int _matLoc[3];
 
-    unsigned int _compile(const std::string& source, unsigned int type);
-    std::string _loadFromFile(const std::string& path);
+    unsigned int _compile(const std::string & source, unsigned int type);
+    std::string _loadFromFile(const std::string & path);
 };

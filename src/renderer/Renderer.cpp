@@ -1,4 +1,5 @@
 #include "renderer/Renderer.hpp"
+#include "renderer/Mesh.hpp"
 
 #include <iostream>
 
@@ -9,30 +10,32 @@
 #include <imgui/imgui_impl_opengl3.h>
 #include <imgui/imgui_impl_glfw.h>
 
-static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+Renderer::Renderer() : _window(nullptr), _title("Rubik"), _camera(*this, this->_shader), _rubiksCube(this->_shader) {
 
-    (void)scancode;
-    (void)mods;
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-    else if (key == GLFW_KEY_F11 && action == GLFW_PRESS) {
+    this->_windowSize[WIDTH] = DEFAULT_WIDTH;
+    this->_windowSize[HEIGHT] = DEFAULT_HEIGHT;
+    this->_windowPos[X] = 0;
+    this->_windowPos[Y] = 0;
+    this->_rotatingCam = false;
+}
 
-        Renderer* renderer = static_cast<Renderer*>(glfwGetWindowUserPointer(window));
+Renderer::~Renderer() {
 
-        renderer->toggleFullscreen();
+    if (ImGui::GetCurrentContext()) {
+
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplGlfw_Shutdown();
+        ImGui::DestroyContext();
     }
+    if (this->_window) {
+
+        glfwDestroyWindow(this->_window);
+        this->_window = nullptr;
+    }
+    glfwTerminate();
 }
 
-Renderer::Renderer() : _window(nullptr), _title("Rubik"), _camera(*this) {
-
-    _windowSize[WIDTH] = DEFAULT_WIDTH;
-    _windowSize[HEIGHT] = DEFAULT_HEIGHT;
-    _windowPos[X] = 0;
-    _windowPos[Y] = 0;
-    this->_fullscreen = false;
-}
-
-Renderer::~Renderer() {this->_cleanup();}
+const int * Renderer::getWindowSize() const {return(this->_windowSize);};
 
 bool Renderer::init() {
 
@@ -54,12 +57,15 @@ bool Renderer::init() {
         return (false);
     }
 
-    this->toggleFullscreen();
+    this->_toggleFullscreen();
 
     glfwMakeContextCurrent(this->_window);
 
     glfwSetWindowUserPointer(this->_window, this);
-    glfwSetKeyCallback(this->_window, keyCallback);
+    glfwSetKeyCallback(this->_window, staticKeyCallback);
+    glfwSetMouseButtonCallback(this->_window, staticMouseButtonCallback);
+    glfwSetCursorPosCallback(this->_window, staticCursorPosCallback);
+    glfwSetScrollCallback(this->_window, staticScrollCallback);
 
     if (!gladLoaderLoadGL()) {
 
@@ -69,8 +75,8 @@ bool Renderer::init() {
 
     glEnable(GL_DEPTH_TEST);
     this->_shader.init();
-    this->_mesh.init();
     this->_camera.init();
+    this->_rubiksCube.init();
 
     // IMGUI_CHECKVERSION();
     // ImGui::CreateContext();
@@ -84,7 +90,41 @@ bool Renderer::init() {
     return (true);
 }
 
-const int * Renderer::getWindowSize() const {return(this->_windowSize);};
+void Renderer::renderLoop() {
+
+    while (!glfwWindowShouldClose(this->_window)) {
+
+        glfwGetFramebufferSize(this->_window, &this->_windowSize[WIDTH], &this->_windowSize[HEIGHT]);
+        glViewport(0, 0, this->_windowSize[WIDTH], this->_windowSize[HEIGHT]);
+        glfwPollEvents();
+
+        _renderCube();
+        // _renderGui();
+
+        glfwSwapBuffers(this->_window);
+    }
+}
+
+void Renderer::_toggleFullscreen() {
+
+    static bool fullscreen = false;
+
+    if (!this->_window)
+        return ;
+    fullscreen = !fullscreen;
+
+    if (fullscreen) {
+
+        static GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+        static const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+        glfwGetWindowPos(this->_window, &this->_windowPos[X], &this->_windowPos[Y]);
+        glfwGetWindowSize(this->_window, &this->_windowSize[WIDTH], &this->_windowSize[HEIGHT]);
+        glfwSetWindowMonitor(this->_window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+    }
+    else
+        glfwSetWindowMonitor(this->_window, nullptr, this->_windowPos[X], this->_windowPos[Y], DEFAULT_WIDTH, DEFAULT_HEIGHT, 0);
+}
 
 // void Renderer::_renderGui() {
 
@@ -128,70 +168,12 @@ const int * Renderer::getWindowSize() const {return(this->_windowSize);};
 
 void Renderer::_renderCube() {
 
-    // temp
-    glClearColor(0.1f, 0.1f, 0.15f, 1.0f);
+    glClearColor(0.5f, 0.6f, 0.75f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // camera update
-    this->_camera.updateProjection();
-    this->_shader.setMat4(CAMERA, this->_camera.getMatrix());
-
-    // temp rotate
-    this->_mesh.rotate(0.005f, {0.0f, 1.0f, 0.0f});
+    // // temp rotate
+    // this->_rubiksCube.spin(U);
 
     // cube update
-    this->_shader.setMat4(MODEL, this->_mesh.getModel());
-    this->_shader.setTexture();
-    this->_mesh.draw();
-}
-
-void Renderer::renderLoop() {
-
-    while (!glfwWindowShouldClose(this->_window)) {
-
-        glfwGetFramebufferSize(this->_window, &this->_windowSize[WIDTH], &this->_windowSize[HEIGHT]);
-        glfwPollEvents();
-
-        _renderCube();
-        // _renderGui();
-
-        glfwSwapBuffers(this->_window);
-    }
-}
-
-void Renderer::toggleFullscreen() {
-
-    if (!this->_window)
-        return ;
-    this->_fullscreen = !this->_fullscreen;
-
-    if (this->_fullscreen) {
-
-        glfwGetWindowPos(this->_window, &this->_windowPos[X], &this->_windowPos[Y]);
-        glfwGetWindowSize(this->_window, &this->_windowSize[WIDTH], &this->_windowSize[HEIGHT]);
-
-        GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-        const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-        glfwSetWindowMonitor(this->_window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
-    }
-    else
-        glfwSetWindowMonitor(_window, nullptr, this->_windowPos[X], this->_windowPos[Y], DEFAULT_WIDTH, DEFAULT_HEIGHT, 0);
-    
-    std::cout << this->_windowSize[WIDTH] << ", " << this->_windowSize[HEIGHT] << "\n";
-}
-
-void Renderer::_cleanup() {
-
-    if (ImGui::GetCurrentContext()) {
-
-        ImGui_ImplOpenGL3_Shutdown();
-        ImGui_ImplGlfw_Shutdown();
-        ImGui::DestroyContext();
-    }
-    if (this->_window) {
-
-        glfwDestroyWindow(this->_window);
-        this->_window = nullptr;
-    }
-    glfwTerminate();
+    this->_rubiksCube.draw();
 }

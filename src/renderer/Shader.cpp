@@ -6,7 +6,6 @@
 #include <iostream>
 
 #include <glad/gl.h>
-
 #include <glm/gtc/type_ptr.hpp>
 
 Shader::Shader() {}
@@ -42,9 +41,11 @@ void Shader::init() {
     this->_matLoc[MODEL] = glGetUniformLocation(this->_id, "model");
     this->_matLoc[CAMERA] = glGetUniformLocation(this->_id, "camMatrix");
     this->_matLoc[TEXTURE] = glGetUniformLocation(this->_id, "tex0");
+
+    glUniform1i(this->_matLoc[TEXTURE], 0);
 }
 
-void Shader::setMat4(const int name, const glm::mat4& mat) const {
+void Shader::setMat4(const int name, const glm::mat4 & mat) const {
 
     glUniformMatrix4fv(this->_matLoc[name], 1, GL_FALSE, glm::value_ptr(mat));
 }
@@ -54,17 +55,18 @@ void Shader::setTexture() const {
     glUniform1i(this->_matLoc[TEXTURE], 0);
 }
 
-std::string Shader::_loadFromFile(const std::string& path) {
+std::string Shader::_loadFromFile(const std::string & path) {
 
     std::ifstream file(path);
     std::stringstream buffer;
     buffer << file.rdbuf();
-    return buffer.str();
+
+    return (buffer.str());
 }
 
-unsigned int Shader::_compile(const std::string& src, unsigned int type) {
+unsigned int Shader::_compile(const std::string & src, unsigned int type) {
 
-    const char* cstr = src.c_str();
+    const char * cstr = src.c_str();
     unsigned int shader = glCreateShader(type);
     glShaderSource(shader, 1, &cstr, nullptr);
     glCompileShader(shader);
@@ -78,5 +80,5 @@ unsigned int Shader::_compile(const std::string& src, unsigned int type) {
         std::cerr << "Shader compile error:\n" << log << "\n";
     }
 
-    return shader;
+    return (shader);
 }
