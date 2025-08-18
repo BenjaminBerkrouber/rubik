@@ -104,16 +104,6 @@ void RubikController::reset() {
     _engine = new CubeStateHelper(_cubeState);
 }
 
-std::vector<SpinLst> RubikController::getInverseSpins(const std::vector<SpinLst> &spins) const {
-    std::vector<SpinLst> inverseSpins;
-    for (const SpinLst& spin : spins) {
-        SpinLst inverseSpin = _spinManager.getInverseSpin(spin);
-        inverseSpins.push_back(inverseSpin);
-    }
-    std::reverse(inverseSpins.begin(), inverseSpins.end());
-    return inverseSpins;
-}
-
 // =============================================================================================================================
 // ==== Getters ====
 // =============================================================================================================================

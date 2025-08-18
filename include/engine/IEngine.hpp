@@ -13,7 +13,16 @@ class IEngine {
         CubeState _state;
         
         std::vector<SpinLst> _solutionSpins;
-        std::vector<std::pair<std::string, std::vector<SpinLst>>> _solutionSteps;
+
+        /**
+            vector of pairs where each pair contains:
+            - a string representing the step name (e.g., "Cross", "F2L", "OLL", "PLL")
+            - a pair of vectors:
+                - first vector contains the spins for that step
+                - second vector contains the inverse spins for that step
+            
+        */
+        std::vector<std::pair<std::string, std::pair<std::vector<SpinLst>,std::vector<SpinLst>>>> _solutionSteps;
 
         std::vector<SpinLst> _shuffleSpins;
 
@@ -35,7 +44,7 @@ class IEngine {
             _solutionSpins = solutionSpins;
         }
 
-        void setSolutionSteps(const std::vector<std::pair<std::string, std::vector<SpinLst>>>& solutionSteps) {
+        void setSolutionSteps(const std::vector<std::pair<std::string, std::pair<std::vector<SpinLst>,std::vector<SpinLst>>>>& solutionSteps) {
             _solutionSteps = solutionSteps;
 
             // std::cout << "[Engine] Setting solution steps." << std::endl;
@@ -44,11 +53,18 @@ class IEngine {
             //     return;
             // }
             // for (const auto& step : solutionSteps) {
-            //     std::cout << "[Engine] Step: " << step.first << " - Moves: ";
-            //     for (const auto& move : step.second) {
+            //     std::cout << std::endl;
+            //     std::cout << "[Engine] Step: " << step.first << std::endl;
+            //     std::cout << "[Engine] Spins:         ";
+            //     for (const auto& move : step.second.first) {
             //         std::cout << std::left << std::setw(2) << spinToStr(move) << " ";
             //     }
             //     std::cout << std::endl;
+            //     std::cout << "[Engine] Inverse Spins: ";
+            //     for (const auto& move : step.second.second) {
+            //         std::cout << std::left << std::setw(2) << spinToStr(move) << " ";
+            //     }
+            //     std::cout << std::endl << std::endl;
             // }
             // std::cout << std::endl;
         }
