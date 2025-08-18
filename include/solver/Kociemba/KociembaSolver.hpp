@@ -72,5 +72,6 @@ class KociembaSolver : public ISolver {
         * @return Vector containing the moves needed to solve the cube.
         */
         std::vector<SpinLst> getSolution() const override;
+        std::vector<std::pair<std::string, std::vector<SpinLst>>> getSolutionSteps() const override;
 };
 

@@ -32,6 +32,8 @@ class ISolver {
         */
         virtual std::vector<SpinLst> getSolution() const = 0;
 
+        virtual std::vector<std::pair<std::string, std::vector<SpinLst>>> getSolutionSteps() const = 0;
+
         /**
         * @brief Default virtual destructor.
         */

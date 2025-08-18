@@ -12,15 +12,20 @@
 RubikController::RubikController()
     :   _parser(),
         _spinManager(),
-        _solver(nullptr) {
+        _KociembaSolver(nullptr) {
     _engine = new CubeStateHelper(_cubeState);
-    _solver = new KociembaSolver(_cubeState);
+    _KociembaSolver = new KociembaSolver(_cubeState);
+    // _ThiswlitheSolver = new ThiswlitheSolver(_cubeState);
 }
 
 RubikController::~RubikController() {
-    if (_solver) {
-        delete _solver;
-        _solver = nullptr;
+    if (_KociembaSolver) {
+        delete _KociembaSolver;
+        _KociembaSolver = nullptr;
+    }
+    if (_ThiswlitheSolver) {
+        delete _ThiswlitheSolver;
+        _ThiswlitheSolver = nullptr;
     }
     if (_engine) {
         delete _engine;
@@ -39,8 +44,6 @@ static inline int error(const std::string& message) {
     return false;
 }
 
-
-
 // ==============================================================================================================================
 // ==== Public Methods ====
 // ==============================================================================================================================
@@ -48,6 +51,18 @@ static inline int error(const std::string& message) {
 
 ParseResult RubikController::parse(const std::string& input) {
     return SHUFFLE_MODE ? _parser.parse(input) : randomSuffle(500);
+}
+
+void RubikController::generateRandomSpinLst(int count) {
+    _parser.clearResults();
+    ParseResult result = randomSuffle(count);
+    if (!result.ok) {
+        error(result.message);
+        return;
+    }
+    _parser.setResults(_parser.getResults());
+    applySuffle();
+    _engine->setShuffleSpins(getShuffle());
 }
 
 void RubikController::applySuffle() {
@@ -63,21 +78,24 @@ void RubikController::print() const {
     _engine->print();
 }
 
-void RubikController::solve() {
-    if (!_solver->solve()) 
+void RubikController::solve(int algorithm) {
+    ISolver* solver = algorithm == 0 ? _KociembaSolver : _ThiswlitheSolver;
+    if (!solver->solve()) 
         return;
-    std::vector<SpinLst> solution = _solver->getSolution();
-    for (const SpinLst& move : solution)
-        std::cout << std::left << std::setw(2) << spinToStr(move) << " ";
-    std::cout << std::endl;
+    _engine->setSolutionSpins(solver->getSolution());
+    _engine->setSolutionSteps(solver->getSolutionSteps());
 }
 
 void RubikController::reset() {
     _cubeState = CubeState();
     _parser.clearResults();
-    if (_solver) {
-        delete _solver;
-        _solver = nullptr;
+    if (_KociembaSolver) {
+        delete _KociembaSolver;
+        _KociembaSolver = nullptr;
+    }
+    if (_ThiswlitheSolver) {
+        delete _ThiswlitheSolver;
+        _ThiswlitheSolver = nullptr;
     }
     if (_engine) {
         delete _engine;
@@ -86,6 +104,15 @@ void RubikController::reset() {
     _engine = new CubeStateHelper(_cubeState);
 }
 
+std::vector<SpinLst> RubikController::getInverseSpins(const std::vector<SpinLst> &spins) const {
+    std::vector<SpinLst> inverseSpins;
+    for (const SpinLst& spin : spins) {
+        SpinLst inverseSpin = _spinManager.getInverseSpin(spin);
+        inverseSpins.push_back(inverseSpin);
+    }
+    std::reverse(inverseSpins.begin(), inverseSpins.end());
+    return inverseSpins;
+}
 
 // =============================================================================================================================
 // ==== Getters ====
@@ -97,7 +124,7 @@ std::vector<SpinLst> RubikController::getShuffle() const {
 }
 
 std::vector<SpinLst> RubikController::getSolution() const {
-    return _solver->getSolution();
+    return _KociembaSolver->getSolution();
 }  
 
 

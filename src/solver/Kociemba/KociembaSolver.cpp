@@ -62,3 +62,13 @@ std::vector<SpinLst> KociembaSolver::getSolution() const {
     g1Solution.insert(g1Solution.end(), g2Solution.begin(), g2Solution.end());
     return g1Solution;
 }
+
+
+std::vector<std::pair<std::string, std::vector<SpinLst>>> KociembaSolver::getSolutionSteps() const {
+    std::vector<std::pair<std::string, std::vector<SpinLst>>> steps;
+    std::pair<std::string, std::vector<SpinLst>> g1Step("G1", _g1Solver.getSolution());
+    std::pair<std::string, std::vector<SpinLst>> g2Step("G2", _g2Solver.getSolution());
+    steps.push_back(g1Step);
+    steps.push_back(g2Step);
+    return steps;
+}

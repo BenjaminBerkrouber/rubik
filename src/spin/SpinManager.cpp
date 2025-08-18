@@ -32,3 +32,15 @@ void SpinManager::applyMove(CubeState& state, SpinLst spin) {
 
     def.cycleFunc(state, def.cornersIndex, def.edgeIndex, def.deltaCorners, def.deltaEdges);
 }
+
+SpinLst SpinManager::getInverseSpin(SpinLst spin) const {
+    int group = static_cast<int>(spin) / 3;
+    int pos = static_cast<int>(spin) % 3;
+    switch (pos) {
+        case 0: return static_cast<SpinLst>(group * 3 + 2);
+        case 2: return static_cast<SpinLst>(group * 3 + 0);
+        case 1: return static_cast<SpinLst>(group * 3 + 1);
+        default:
+            throw std::invalid_argument("Invalid spin value");
+    }
+}
