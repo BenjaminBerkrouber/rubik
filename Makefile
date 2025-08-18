@@ -16,7 +16,7 @@ BIN_DIR     := bin
 OBJ_DIR     := $(BIN_DIR)/obj
 TABLE_DIR   := table
 
-GLIBFLAGS   := libs/glad/libglad.a libs/glfw/libglfw3.a libs/imgui/libimgui.a -ldl -lGL -lX11 -lpthread -lXrandr -lXi
+GLIBFLAGS   := libs/glad/libglad.a libs/glfw/libglfw3.a libs/tinygltf/libtinygltf.a libs/imgui/libimgui.a -ldl -lGL -lX11 -lpthread -lXrandr -lXi
 # ====================================================================================
 # Source Files
 # ====================================================================================
@@ -34,7 +34,12 @@ SRC_FILES := \
 	$(SRC_DIR)/solver/Kociemba/G1Solver.cpp \
 	$(SRC_DIR)/solver/Kociemba/G2Solver.cpp \
 	$(SRC_DIR)/solver/Pruning/TableIO.cpp \
-	$(SRC_DIR)/Renderer.cpp \
+	$(SRC_DIR)/renderer/Renderer.cpp \
+	$(SRC_DIR)/renderer/Renderer_callbacks.cpp \
+	$(SRC_DIR)/renderer/Shader.cpp \
+	$(SRC_DIR)/renderer/Camera.cpp \
+	$(SRC_DIR)/renderer/Mesh.cpp \
+	$(SRC_DIR)/renderer/RubiksCube.cpp \
 
 
 TABLE_SRC := \
