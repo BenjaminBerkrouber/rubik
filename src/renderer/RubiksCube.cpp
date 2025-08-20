@@ -29,8 +29,11 @@ void RubiksCube::init() {
     }
 }
 
+#include "utils/utils.h"
+
 void RubiksCube::spin(SpinLst spin) {
 
+    std::cout << "spin = " << spinToStr(spin) << "\n";
     float angle = 0.0f;
     glm::vec3 axis(0.0f);
 

@@ -12,8 +12,9 @@ public:
     Camera(const Renderer & renderer, const Shader & shader);
     ~Camera();
 
+    void setFov(float fov);
+
     void init();
-    const glm::mat4 getMatrix() const ;
 
     void orbitAround(const double rotation[2]);
     void zoom(const double delta);

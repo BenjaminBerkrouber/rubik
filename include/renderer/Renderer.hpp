@@ -1,5 +1,7 @@
 #pragma once
 
+#include "engine/IEngine.hpp"
+
 #include "Camera.hpp"
 #include "Shader.hpp"
 #include "RubiksCube.hpp"
@@ -13,19 +15,28 @@ constexpr int DEFAULT_HEIGHT = 480;
 constexpr int X = 0;
 constexpr int Y = 1;
 
+class RubikController;
 class Mesh;
 class GLFWwindow;
 
-class Renderer {
+#include <iostream>
+
+class Renderer : public IEngine {
 
 public:
 
     Renderer();
     ~Renderer();
 
+    void print() const ;
+    void setSolutionSpins(const std::vector<SpinLst>& solutionSpins);
+    void setSolutionSteps(const std::vector<std::pair<std::string, std::pair<std::vector<SpinLst>,std::vector<SpinLst>>>> \
+        & solutionSteps);
+    void setShuffleSpins(const std::vector<SpinLst> & shuffleSpins);
+
     const int * getWindowSize() const ;
 
-    bool init();
+    bool init(RubikController * controller);
     void renderLoop();
 
     static void staticKeyCallback(GLFWwindow * window, int key, int scancode, int action, int mods);
@@ -40,18 +51,24 @@ public:
 
     private:
 
+    RubikController * _controller;
     struct GLFWwindow* _window;
     const std::string _title;
     int _windowSize[2];
     int _windowPos[2];
     bool _rotatingCam;
 
+    int _currentStep;
+    int _currentSpin;
+
     Camera _camera;
     Shader _shader;
     RubiksCube _rubiksCube;
 
     void _toggleFullscreen();
-    // void _renderGui();
+    void _renderGui();
     void _renderCube();
+    void _nextSpin();
+    void _prevSpin();
 
 };

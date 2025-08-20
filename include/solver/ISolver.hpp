@@ -27,7 +27,7 @@ class ISolver {
                 SpinLst inverseSpin = spinManager.getInverseSpin(spin);
                 inverseSpins.push_back(inverseSpin);
             }
-            std::reverse(inverseSpins.begin(), inverseSpins.end());
+            // std::reverse(inverseSpins.begin(), inverseSpins.end());
             return inverseSpins;
         }
 

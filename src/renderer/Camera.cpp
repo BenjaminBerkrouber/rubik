@@ -7,6 +7,12 @@ Camera::Camera(const Renderer & renderer, const Shader & shader) : _renderer(ren
 
 Camera::~Camera() {}
 
+void Camera::setFov(float fov) {
+
+    this->_fov = fov;
+    this->_updateProjection();
+}
+
 void Camera::init() {
 
     this->_fov = 60.0f;
@@ -19,7 +25,7 @@ void Camera::init() {
     this->_position.z = this->_radius * cos(this->_pitch) * cos(this->_yaw);
 
     this->_view = glm::lookAt(this->_position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    this->_projection = glm::perspective(glm::radians(this->_fov), (float)(this->_renderer.getWindowSize()[WIDTH] / this->_renderer.getWindowSize()[HEIGHT]), 0.1f, 110.0f);
+    this->_projection = glm::perspective(glm::radians(this->_fov), static_cast<float>(this->_renderer.getWindowSize()[WIDTH] / this->_renderer.getWindowSize()[HEIGHT]), 0.1f, 110.0f);
     this->_shader.setMat4(CAMERA, this->_projection * this->_view);
 }
 
@@ -65,6 +71,6 @@ void Camera::_updateView() {
 
 void Camera::_updateProjection() {
 
-    this->_projection = glm::perspective(glm::radians(this->_fov), (float)(this->_renderer.getWindowSize()[WIDTH] / this->_renderer.getWindowSize()[HEIGHT]), 0.1f, 110.0f);
+    this->_projection = glm::perspective(glm::radians(this->_fov), static_cast<float>(this->_renderer.getWindowSize()[WIDTH] / this->_renderer.getWindowSize()[HEIGHT]), 0.1f, 110.0f);
     this->_shader.setMat4(CAMERA, this->_projection * this->_view);
 }

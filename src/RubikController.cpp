@@ -9,11 +9,11 @@
 // ==============================================================================================================================
 
 
-RubikController::RubikController()
+RubikController::RubikController(IEngine * engine)
     :   _parser(),
         _spinManager(),
         _KociembaSolver(nullptr) {
-    _engine = new CubeStateHelper(_cubeState);
+    _engine = engine;
     _KociembaSolver = new KociembaSolver(_cubeState);
     // _ThiswlitheSolver = new ThiswlitheSolver(_cubeState);
 }
@@ -27,10 +27,10 @@ RubikController::~RubikController() {
         delete _ThiswlitheSolver;
         _ThiswlitheSolver = nullptr;
     }
-    if (_engine) {
-        delete _engine;
-        _engine = nullptr;
-    }
+    // if (_engine) {
+    //     delete _engine;
+    //     _engine = nullptr;
+    // }
 }
 
 
@@ -97,11 +97,11 @@ void RubikController::reset() {
         delete _ThiswlitheSolver;
         _ThiswlitheSolver = nullptr;
     }
-    if (_engine) {
-        delete _engine;
-        _engine = nullptr;
-    }
-    _engine = new CubeStateHelper(_cubeState);
+    // if (_engine) {
+    //     delete _engine;
+    //     _engine = nullptr;
+    // }
+    // _engine = new CubeStateHelper(_cubeState);
 }
 
 // =============================================================================================================================

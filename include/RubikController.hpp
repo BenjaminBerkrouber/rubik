@@ -43,8 +43,8 @@ class RubikController {
         /**
         * @brief Constructs a RubikController and initializes all components.
         */
-        RubikController();
-        
+        RubikController(IEngine * engine);
+
         /**
         * @brief Default destructor.
         */
