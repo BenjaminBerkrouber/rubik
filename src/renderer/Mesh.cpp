@@ -124,9 +124,16 @@ void Mesh::translate(const glm::vec3 & offset) {
     this->_model = glm::translate(this->_model, offset);
 }
 
-void Mesh::rotate(const float angleRadians, const glm::vec3 & axis) {
+void Mesh::rotate(const float angle, const glm::vec3 & axis) {
 
-    this->_model = glm::rotate(this->_model, angleRadians, axis);
+    this->_model = glm::rotate(this->_model, angle, axis);
+}
+
+void Mesh::rotateAround(const float angle, const glm::vec3 & axis, const glm::vec3 & origin) {
+
+    this->_model = glm::translate(glm::mat4(1.0f), origin) * this->_model;
+    this->_model = glm::rotate(glm::mat4(1.0f), angle, axis) * this->_model;
+    this->_model = glm::translate(glm::mat4(1.0f), -origin) * this->_model;
 }
 
 void Mesh::scale(const glm::vec3 & factor) {
@@ -134,14 +141,11 @@ void Mesh::scale(const glm::vec3 & factor) {
     this->_model = glm::scale(this->_model, factor);
 }
 
-void Mesh::draw() const {
+void Mesh::draw(const glm::mat4 & localModel) const {
 
-    this->_shader.setMat4(MODEL, this->_model);
+    this->_shader.setMat4(MODEL, localModel * this->_model);
 
     glBindVertexArray(this->_vao);
-
-    // glActiveTexture(GL_TEXTURE0);
-    // glBindTexture(GL_TEXTURE_2D, this->_texture);
 
     glDrawElements(GL_TRIANGLES, this->_indexCount, GL_UNSIGNED_SHORT, 0);
     glBindVertexArray(0);

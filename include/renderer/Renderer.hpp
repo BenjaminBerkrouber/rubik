@@ -52,11 +52,13 @@ public:
     private:
 
     RubikController * _controller;
-    struct GLFWwindow* _window;
+    struct GLFWwindow * _window;
     const std::string _title;
     int _windowSize[2];
     int _windowPos[2];
     bool _rotatingCam;
+
+    float _time;
 
     int _currentStep;
     int _currentSpin;
@@ -67,7 +69,7 @@ public:
 
     void _toggleFullscreen();
     void _renderGui();
-    void _renderCube();
+    void _renderCube(const float deltaTime);
     void _nextSpin();
     void _prevSpin();
 

@@ -19,6 +19,7 @@ Renderer::Renderer() : _window(nullptr), _title("Rubik"), _camera(*this, this->_
     this->_windowPos[X] = 0;
     this->_windowPos[Y] = 0;
     this->_rotatingCam = false;
+    this->_time = 0;
     this->_currentStep = 0;
     this->_currentSpin = 0;
 }
@@ -193,11 +194,16 @@ void Renderer::renderLoop() {
 
     while (!glfwWindowShouldClose(this->_window)) {
 
+        const float currentTime = glfwGetTime();
+        const float deltaTime = currentTime - this->_time;
+
+        this->_time = currentTime;
+
         glfwGetFramebufferSize(this->_window, &this->_windowSize[WIDTH], &this->_windowSize[HEIGHT]);
         glViewport(0, 0, this->_windowSize[WIDTH], this->_windowSize[HEIGHT]);
         glfwPollEvents();
 
-        _renderCube();
+        _renderCube(deltaTime);
         _renderGui();
 
         glfwSwapBuffers(this->_window);
@@ -261,16 +267,33 @@ void Renderer::_renderGui() {
     if (ImGui::Button("_", buttonSize))
         glfwIconifyWindow(this->_window);
 
-    ImGui::SetCursorPos(ImVec2(windowSize.x * 0.5f - buttonSize.x * 0.5f - 2, windowSize.y - buttonSize.y - 5));
+    ImGui::SetCursorPos(ImVec2(windowSize.x * 0.5f - buttonSize.x - 2, windowSize.y - buttonSize.y - 5));
     if (ImGui::Button("Shuffle", buttonSize)) {
 
         this->_controller->generateRandomSpinLst(shuffleValue);
         this->_controller->applySuffle();
     }
 
-    ImGui::SetCursorPos(ImVec2(windowSize.x * 0.5f + buttonSize.x * 0.5f + 2, windowSize.y - buttonSize.y - 5));
+    ImGui::SetCursorPos(ImVec2(windowSize.x * 0.5f + 2, windowSize.y - buttonSize.y - 5));
     if (ImGui::Button("Solve", buttonSize))
         this->_controller->solve();
+
+    if (!this->_solutionSteps.empty()) {
+
+        const char * text = this->_solutionSteps[this->_currentStep].first.c_str();
+        const ImVec2 textSize = ImGui::CalcTextSize(text);
+
+        ImGui::SetCursorPos(ImVec2(windowSize.x * 0.5f - textSize.x * 0.5f, windowSize.y * 0.2f - textSize.y * 0.5f));
+        ImGui::TextWrapped(text);
+
+        ImGui::SetCursorPos(ImVec2(windowSize.x * 0.2f - buttonSize.x * 0.5f, windowSize.y * 0.5f - buttonSize.y * 0.5f));
+        if (ImGui::Button("<-", buttonSize))
+            this->_prevSpin();
+
+        ImGui::SetCursorPos(ImVec2(windowSize.x * 0.8f - buttonSize.x * 0.5f, windowSize.y * 0.5f - buttonSize.y * 0.5f));
+        if (ImGui::Button("->", buttonSize))
+            this->_nextSpin();
+    }
 
     ImGui::End();
 
@@ -311,12 +334,12 @@ void Renderer::_renderGui() {
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void Renderer::_renderCube() {
+void Renderer::_renderCube(const float deltaTime) {
 
     glClearColor(0.3f, 0.4f, 0.55f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // cube update
+    this->_rubiksCube.animate(deltaTime);
     this->_rubiksCube.draw();
 }
 
@@ -330,7 +353,7 @@ void Renderer::_nextSpin() {
 
     if (this->_currentSpin < static_cast<int>(step.second.first.size())) {
 
-        this->_rubiksCube.spin(step.second.first[this->_currentSpin]);
+        this->_rubiksCube.spin(step.second.first[this->_currentSpin], 0.5f);
         this->_currentSpin++;
     }
     else if (this->_currentStep + 1 < static_cast<int>(this->_solutionSteps.size())) {
@@ -344,13 +367,16 @@ void Renderer::_prevSpin() {
 
     if (this->_solutionSteps.empty())
         return;
+        
+    std::pair<std::string, std::pair<std::vector<SpinLst>, std::vector<SpinLst>>> & step \
+        = this->_solutionSteps[this->_currentStep];
 
-    if (this->_currentSpin > 0)
+    if (this->_currentSpin > 0) {
+
         this->_currentSpin--;
+        this->_rubiksCube.spin(step.second.second[this->_currentSpin], 0.5f);
+    }
     else if (this->_currentStep > 0) {
-
-        std::pair<std::string, std::pair<std::vector<SpinLst>, std::vector<SpinLst>>> & step \
-            = this->_solutionSteps[this->_currentStep];
 
         this->_currentStep--;
         this->_currentSpin = static_cast<int>(step.second.second.size()) - 1;
