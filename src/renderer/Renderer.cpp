@@ -300,7 +300,7 @@ void Renderer::_renderGui() {
         const ImVec2 textSize = ImGui::CalcTextSize(text);
 
         ImGui::SetCursorPos(ImVec2(windowSize.x * 0.5f - textSize.x * 0.5f, windowSize.y * 0.2f - textSize.y * 0.5f));
-        ImGui::TextWrapped(text);
+        ImGui::TextWrapped("%s", text);
 
         ImGui::SetCursorPos(ImVec2(windowSize.x * 0.2f - buttonSize.x * 0.5f, windowSize.y * 0.5f - buttonSize.y * 0.5f));
         if (ImGui::Button("<-", buttonSize))

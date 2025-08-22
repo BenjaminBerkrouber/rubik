@@ -35,13 +35,13 @@ void Renderer::mouseButtonCallback(int button, int action, int mods) {
 
             this->_rotatingCam = true;
             glfwSetInputMode(this->_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-            this->_rubiksCube.enableAnimation(CUBE_ROTATION_ANIMATION, false);
+            // this->_rubiksCube.enableAnimation(CUBE_ROTATION_ANIMATION, false);
         }
         else {
 
             this->_rotatingCam = false;
             glfwSetInputMode(this->_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-            this->_rubiksCube.enableAnimation(CUBE_ROTATION_ANIMATION, true);
+            // this->_rubiksCube.enableAnimation(CUBE_ROTATION_ANIMATION, true);
         }
     }
 }

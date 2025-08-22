@@ -48,25 +48,25 @@ void RubiksCube::spin(SpinLst spin, const float duration) {
         case U2: angle = -glm::pi<float>();      axis = {0, 1, 0}; break;
         case U3: angle =  glm::half_pi<float>(); axis = {0, 1, 0}; break;
 
-        case D:  angle =  glm::half_pi<float>(); axis = {0,-1, 0}; break;
-        case D2: angle =  glm::pi<float>();      axis = {0,-1, 0}; break;
-        case D3: angle = -glm::half_pi<float>(); axis = {0,-1, 0}; break;
+        case D:  angle = -glm::half_pi<float>(); axis = {0,-1, 0}; break;
+        case D2: angle = -glm::pi<float>();      axis = {0,-1, 0}; break;
+        case D3: angle =  glm::half_pi<float>(); axis = {0,-1, 0}; break;
 
         case F:  angle = -glm::half_pi<float>(); axis = {0, 0, 1}; break;
         case F2: angle = -glm::pi<float>();      axis = {0, 0, 1}; break;
         case F3: angle =  glm::half_pi<float>(); axis = {0, 0, 1}; break;
 
-        case B:  angle =  glm::half_pi<float>(); axis = {0, 0,-1}; break;
-        case B2: angle =  glm::pi<float>();      axis = {0, 0,-1}; break;
-        case B3: angle = -glm::half_pi<float>(); axis = {0, 0,-1}; break;
+        case B:  angle = -glm::half_pi<float>(); axis = {0, 0,-1}; break;
+        case B2: angle = -glm::pi<float>();      axis = {0, 0,-1}; break;
+        case B3: angle =  glm::half_pi<float>(); axis = {0, 0,-1}; break;
 
-        case L:  angle = -glm::half_pi<float>(); axis = {1, 0, 0}; break;
-        case L2: angle = -glm::pi<float>();      axis = {1, 0, 0}; break;
-        case L3: angle =  glm::half_pi<float>(); axis = {1, 0, 0}; break;
+        case L:  angle = -glm::half_pi<float>(); axis = {-1, 0, 0}; break;
+        case L2: angle = -glm::pi<float>();      axis = {-1, 0, 0}; break;
+        case L3: angle =  glm::half_pi<float>(); axis = {-1, 0, 0}; break;
 
-        case R:  angle =  glm::half_pi<float>(); axis = {-1, 0, 0}; break;
-        case R2: angle =  glm::pi<float>();      axis = {-1, 0, 0}; break;
-        case R3: angle = -glm::half_pi<float>(); axis = {-1, 0, 0}; break;
+        case R:  angle = -glm::half_pi<float>(); axis = {1, 0, 0}; break;
+        case R2: angle = -glm::pi<float>();      axis = {1, 0, 0}; break;
+        case R3: angle =  glm::half_pi<float>(); axis = {1, 0, 0}; break;
     }
 
     for (t_cube & cube : this->_cubes) {
