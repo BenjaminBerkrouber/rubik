@@ -2,6 +2,15 @@
 
 #include <glm/glm.hpp>
 
+constexpr float CAM_FOV_DEFAULT = 90.0f;
+constexpr float CAM_FOV_MIN = 10.0f;
+constexpr float CAM_FOV_MAX = 170.0f;
+
+constexpr float CAM_RADIUS_DEFAULT = 30.0f;
+constexpr float CAM_YAW_DEFAULT = -0.2f;
+constexpr float CAM_PITCH_DEFAULT = 0.2f;
+
+
 class Renderer;
 class Shader;
 

@@ -5,6 +5,19 @@
 
 #include <vector>
 
+constexpr bool CUBE_ROTATION_ANIMATION_DEFAULT = true;
+constexpr bool CUBE_SPIN_ANIMATION_DEFAULT = true;
+
+constexpr int CUBE_ROTATION_ANIMATION = 0;
+constexpr float CUBE_ROTATION_SPEED_DEFAULT = 0.5f;
+constexpr float CUBE_ROTATION_SPEED_MIN = 0.1f;
+constexpr float CUBE_ROTATION_SPEED_MAX = 5.0f;
+
+constexpr int CUBE_SPIN_ANIMATION = 1;
+constexpr float CUBE_SPIN_SPEED_DEFAULT = 1.0f;
+constexpr float CUBE_SPIN_SPEED_MIN = 0.1f;
+constexpr float CUBE_SPIN_SPEED_MAX = 5.0f;
+
 class Shader;
 
 struct t_cube {
@@ -39,6 +52,8 @@ public:
     void init();
     void spin(SpinLst spin, const float duration = 1.0f);
     void animate(const float deltaTime);
+    void enableAnimation(const int animation, const bool state);
+    void setAnimationSpeed(const int animation, const float speed);
 
     void translate(const glm::vec3 & offset);
     void rotate(const float angle, const glm::vec3 & axis);
@@ -56,4 +71,7 @@ private:
     std::vector<t_cube> _cubes;
 
     std::vector<t_animation> _animations;
+
+    bool _animation[2];
+    float _animationSpeed[2];
 };

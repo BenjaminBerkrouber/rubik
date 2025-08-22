@@ -7,7 +7,9 @@
 
 #include <iostream>
 
-RubiksCube::RubiksCube(const Shader & shader) : _shader(shader), _model(1.0f) {}
+RubiksCube::RubiksCube(const Shader & shader) \
+    : _shader(shader), _model(1.0f), _animation(true, true) \
+    , _animationSpeed(CUBE_ROTATION_SPEED_DEFAULT, CUBE_SPIN_SPEED_DEFAULT) {}
 
 RubiksCube::~RubiksCube() {}
 
@@ -83,13 +85,17 @@ void RubiksCube::spin(SpinLst spin, const float duration) {
 
 void RubiksCube::animate(float deltaTime) {
 
+    if (this->_animation[CUBE_ROTATION_ANIMATION])
+        this->rotate(deltaTime * this->_animationSpeed[CUBE_ROTATION_ANIMATION], glm::vec3(0.0f, 1.0f, 0.0f));
+
     if (this->_animations.empty())
         return ;
     t_animation & animation = this->_animations.front();
 
+    deltaTime *= this->_animationSpeed[CUBE_SPIN_ANIMATION];
     float ratio = deltaTime / animation.duration;
 
-    if (ratio > 1.0f)
+    if (!this->_animation[CUBE_SPIN_ANIMATION] || ratio > 1.0f)
         ratio = 1.0f;
 
     float deltaAngle = animation.angle * ratio;
@@ -103,6 +109,10 @@ void RubiksCube::animate(float deltaTime) {
     if (animation.duration <= 0.0f)
         this->_animations.erase(this->_animations.begin());
 }
+
+void RubiksCube::enableAnimation(const int animation, const bool state) {this->_animation[animation] = state;}
+
+void RubiksCube::setAnimationSpeed(const int animation, const float speed) {this->_animationSpeed[animation] = speed;}
 
 void RubiksCube::translate(const glm::vec3 & offset) {
 

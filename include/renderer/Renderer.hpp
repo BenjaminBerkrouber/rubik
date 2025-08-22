@@ -15,6 +15,15 @@ constexpr int DEFAULT_HEIGHT = 480;
 constexpr int X = 0;
 constexpr int Y = 1;
 
+constexpr int GUI_BUTTON_OFFSET = 5;
+
+constexpr bool VSYNC_DEFAULT = true;
+constexpr bool MSAA_DEFAULT = true;
+
+constexpr float GUI_SCALE_DEFAULT = 1.0f;
+constexpr float GUI_SCALE_MIN = 0.5f;
+constexpr float GUI_SCALE_MAX = 5.0f;
+
 class RubikController;
 class Mesh;
 class GLFWwindow;
@@ -59,6 +68,8 @@ public:
     bool _rotatingCam;
 
     float _time;
+    float _deltaTime;
+    float _fps;
 
     int _currentStep;
     int _currentSpin;
@@ -69,7 +80,7 @@ public:
 
     void _toggleFullscreen();
     void _renderGui();
-    void _renderCube(const float deltaTime);
+    void _renderCube();
     void _nextSpin();
     void _prevSpin();
 

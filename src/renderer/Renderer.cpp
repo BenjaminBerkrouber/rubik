@@ -19,7 +19,9 @@ Renderer::Renderer() : _window(nullptr), _title("Rubik"), _camera(*this, this->_
     this->_windowPos[X] = 0;
     this->_windowPos[Y] = 0;
     this->_rotatingCam = false;
-    this->_time = 0;
+    this->_time = 0.0;
+    this->_deltaTime = 0.0;
+    this->_fps = 0.0;
     this->_currentStep = 0;
     this->_currentSpin = 0;
 }
@@ -146,6 +148,7 @@ bool Renderer::init(RubikController * controller) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_SAMPLES, 8);
 
     this->_window = glfwCreateWindow(this->_windowSize[WIDTH], this->_windowSize[HEIGHT], this->_title.c_str(), nullptr, nullptr);
     if (!this->_window) {
@@ -172,15 +175,16 @@ bool Renderer::init(RubikController * controller) {
     }
 
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_FRONT);
+    glFrontFace(GL_CW);
+
     this->_shader.init();
     this->_camera.init();
     this->_rubiksCube.init();
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    // ImGuiIO& io = ImGui::GetIO();
-    // (void)io;
-    // ImGui::StyleColorsDark();
 
     ImGui_ImplGlfw_InitForOpenGL(this->_window, true);
     ImGui_ImplOpenGL3_Init("#version 460");
@@ -192,18 +196,30 @@ bool Renderer::init(RubikController * controller) {
 
 void Renderer::renderLoop() {
 
+    int frameCount = 0;
+    float sumDeltaTime = 0.0f;
+
     while (!glfwWindowShouldClose(this->_window)) {
 
         const float currentTime = glfwGetTime();
-        const float deltaTime = currentTime - this->_time;
 
+        this->_deltaTime = currentTime - this->_time;
         this->_time = currentTime;
+
+        sumDeltaTime += this->_deltaTime;
+        frameCount++;
+        if(frameCount >= 30) {
+
+            this->_fps = frameCount / sumDeltaTime;
+            sumDeltaTime = 0.0f;
+            frameCount = 0;
+        }
 
         glfwGetFramebufferSize(this->_window, &this->_windowSize[WIDTH], &this->_windowSize[HEIGHT]);
         glViewport(0, 0, this->_windowSize[WIDTH], this->_windowSize[HEIGHT]);
         glfwPollEvents();
 
-        _renderCube(deltaTime);
+        _renderCube();
         _renderGui();
 
         glfwSwapBuffers(this->_window);
@@ -238,7 +254,7 @@ void Renderer::_renderGui() {
         static_cast<float>(this->_windowSize[HEIGHT]));
     ImVec2 buttonSize;
     static int shuffleValue = 20;
-    static float guiZoom = 1.0f;
+    static float guiZoom = GUI_SCALE_DEFAULT;
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
@@ -255,26 +271,26 @@ void Renderer::_renderGui() {
 
     buttonSize = ImVec2(windowSize.x * 0.05f * guiZoom, windowSize.y * 0.05f * guiZoom);
 
-    ImGui::SetCursorPos(ImVec2(windowSize.x - buttonSize.x - 5, 5));
+    ImGui::SetCursorPos(ImVec2(windowSize.x - (buttonSize.x + GUI_BUTTON_OFFSET), GUI_BUTTON_OFFSET));
     if (ImGui::Button("X", buttonSize))
         glfwSetWindowShouldClose(this->_window, true);
 
-    ImGui::SetCursorPos(ImVec2(windowSize.x - buttonSize.x * 2 - 10, 5));
+    ImGui::SetCursorPos(ImVec2(windowSize.x - (buttonSize.x + GUI_BUTTON_OFFSET) * 2, GUI_BUTTON_OFFSET));
     if (ImGui::Button("[]", buttonSize))
         this->_toggleFullscreen();
 
-    ImGui::SetCursorPos(ImVec2(windowSize.x - buttonSize.x * 3 - 15, 5));
+    ImGui::SetCursorPos(ImVec2(windowSize.x - (buttonSize.x + GUI_BUTTON_OFFSET) * 3, GUI_BUTTON_OFFSET));
     if (ImGui::Button("_", buttonSize))
         glfwIconifyWindow(this->_window);
 
-    ImGui::SetCursorPos(ImVec2(windowSize.x * 0.5f - buttonSize.x - 2, windowSize.y - buttonSize.y - 5));
+    ImGui::SetCursorPos(ImVec2(windowSize.x * 0.5f - buttonSize.x - 2, windowSize.y - buttonSize.y - GUI_BUTTON_OFFSET));
     if (ImGui::Button("Shuffle", buttonSize)) {
 
         this->_controller->generateRandomSpinLst(shuffleValue);
         this->_controller->applySuffle();
     }
 
-    ImGui::SetCursorPos(ImVec2(windowSize.x * 0.5f + 2, windowSize.y - buttonSize.y - 5));
+    ImGui::SetCursorPos(ImVec2(windowSize.x * 0.5f + 2, windowSize.y - buttonSize.y - GUI_BUTTON_OFFSET));
     if (ImGui::Button("Solve", buttonSize))
         this->_controller->solve();
 
@@ -297,13 +313,14 @@ void Renderer::_renderGui() {
 
     ImGui::End();
 
-    static bool collapsed = false;
+    static bool collapsed = true;
 
     if (collapsed)
         ImGui::SetNextWindowPos(ImVec2(0, windowSize.y - ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f - 20));
     else
-        ImGui::SetNextWindowPos(ImVec2(0, windowSize.y - (windowSize.y * 0.25f * guiZoom - 1.0f)));
-    ImGui::SetNextWindowSize(ImVec2(windowSize.x * 0.20 * guiZoom, windowSize.y * 0.25f * guiZoom));
+        ImGui::SetNextWindowPos(ImVec2(0, windowSize.y - (windowSize.y * 0.4f * guiZoom - 1.0f)));
+    ImGui::SetNextWindowSize(ImVec2(windowSize.x * 0.3 * guiZoom, windowSize.y * 0.4f * guiZoom));
+    ImGui::SetNextWindowCollapsed(true, ImGuiCond_FirstUseEver);
     ImGui::Begin("Settings", nullptr, \
         ImGuiWindowFlags_NoMove \
         | ImGuiWindowFlags_NoSavedSettings \
@@ -311,21 +328,50 @@ void Renderer::_renderGui() {
 
     collapsed = ImGui::IsWindowCollapsed();
 
+    if (ImGui::CollapsingHeader("Info", ImGuiTreeNodeFlags_DefaultOpen)) {
+
+        ImGui::Text("FPS: %.1f", this->_fps);
+    }
+
     if (ImGui::CollapsingHeader("Rubiks Cube", ImGuiTreeNodeFlags_DefaultOpen)) {
+
+        static bool rotationAnimation = CUBE_ROTATION_ANIMATION_DEFAULT;
+        static bool spinAnimation = CUBE_SPIN_ANIMATION_DEFAULT;
+        static float rotationSpeed = CUBE_ROTATION_SPEED_DEFAULT;
+        static float spinSpeed = CUBE_SPIN_SPEED_DEFAULT;
 
         ImGui::SetNextItemWidth(100 * guiZoom);
         if (ImGui::InputInt("Shuffle Depth", &shuffleValue, 1, 10) && shuffleValue < 0)
             shuffleValue *= -1;
+        if (ImGui::Checkbox("Cube Rotation", &rotationAnimation))
+            this->_rubiksCube.enableAnimation(CUBE_ROTATION_ANIMATION, rotationAnimation);
+        if (rotationAnimation && ImGui::SliderFloat("Rotation Speed", &rotationSpeed, CUBE_ROTATION_SPEED_MIN, CUBE_ROTATION_SPEED_MAX))
+            this->_rubiksCube.setAnimationSpeed(CUBE_ROTATION_ANIMATION, rotationSpeed);
+        if (ImGui::Checkbox("Spin Animation", &spinAnimation))
+            this->_rubiksCube.enableAnimation(CUBE_SPIN_ANIMATION, spinAnimation);
+        if (spinAnimation && ImGui::SliderFloat("Spin Speed", &spinSpeed, CUBE_SPIN_SPEED_MIN, CUBE_SPIN_SPEED_MAX))
+            this->_rubiksCube.setAnimationSpeed(CUBE_SPIN_ANIMATION, spinSpeed);
     }
 
     if (ImGui::CollapsingHeader("Graphiques", ImGuiTreeNodeFlags_DefaultOpen)) {
 
-        static int fov = 60.0f;
+        static int fov = CAM_FOV_DEFAULT;
+        static bool vsync = VSYNC_DEFAULT;
+        static bool MSAA = MSAA_DEFAULT;
 
-        if (ImGui::SliderFloat("GUI Scale", &guiZoom, 0.5f, 5.0f))
+        if (ImGui::SliderFloat("GUI Scale", &guiZoom, GUI_SCALE_MIN, GUI_SCALE_MAX))
             ImGui::GetIO().FontGlobalScale = guiZoom;
-        if (ImGui::SliderInt("Fov", &fov, 10.0f, 170.0f))
+        if (ImGui::SliderInt("Fov", &fov, CAM_FOV_MIN, CAM_FOV_MAX))
             this->_camera.setFov(fov);
+        if (ImGui::Checkbox("V-Sync", &vsync))
+            glfwSwapInterval(vsync);
+        if (ImGui::Checkbox("MSAA x8", &MSAA)) {
+
+            if (MSAA)
+                glEnable(GL_MULTISAMPLE);
+            else
+                glDisable(GL_MULTISAMPLE);
+        }
     }
 
     ImGui::End();
@@ -334,12 +380,12 @@ void Renderer::_renderGui() {
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void Renderer::_renderCube(const float deltaTime) {
+void Renderer::_renderCube() {
 
     glClearColor(0.3f, 0.4f, 0.55f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    this->_rubiksCube.animate(deltaTime);
+    this->_rubiksCube.animate(this->_deltaTime);
     this->_rubiksCube.draw();
 }
 
@@ -353,7 +399,7 @@ void Renderer::_nextSpin() {
 
     if (this->_currentSpin < static_cast<int>(step.second.first.size())) {
 
-        this->_rubiksCube.spin(step.second.first[this->_currentSpin], 0.5f);
+        this->_rubiksCube.spin(step.second.first[this->_currentSpin], 0.2f);
         this->_currentSpin++;
     }
     else if (this->_currentStep + 1 < static_cast<int>(this->_solutionSteps.size())) {
@@ -374,7 +420,7 @@ void Renderer::_prevSpin() {
     if (this->_currentSpin > 0) {
 
         this->_currentSpin--;
-        this->_rubiksCube.spin(step.second.second[this->_currentSpin], 0.5f);
+        this->_rubiksCube.spin(step.second.second[this->_currentSpin], 0.2f);
     }
     else if (this->_currentStep > 0) {
 

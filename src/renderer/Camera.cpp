@@ -15,10 +15,10 @@ void Camera::setFov(float fov) {
 
 void Camera::init() {
 
-    this->_fov = 60.0f;
-    this->_radius = 45.0f;
-    this->_yaw = -0.2f;
-    this->_pitch = 0.2f;
+    this->_fov = CAM_FOV_DEFAULT;
+    this->_radius = CAM_RADIUS_DEFAULT;
+    this->_yaw = CAM_YAW_DEFAULT;
+    this->_pitch = CAM_PITCH_DEFAULT;
 
     this->_position.x = this->_radius * cos(this->_pitch) * sin(this->_yaw);
     this->_position.y = this->_radius * sin(this->_pitch);
