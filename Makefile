@@ -32,7 +32,9 @@ SRC_FILES := \
 	$(SRC_DIR)/solver/Kociemba/KociembaSolver.cpp \
 	$(SRC_DIR)/solver/Kociemba/G1Solver.cpp \
 	$(SRC_DIR)/solver/Kociemba/G2Solver.cpp \
-	$(SRC_DIR)/solver/Pruning/TableIO.cpp
+	$(SRC_DIR)/solver/Pruning/TableIO.cpp \
+	$(SRC_DIR)/solver/Thistlethwaite/IPhaseSolver.cpp \
+	$(SRC_DIR)/solver/Thistlethwaite/ThistlethwaiteSolver.cpp \
 
 
 TABLE_SRC := \
@@ -65,7 +67,7 @@ NC      := \033[0m
 
 all: start $(NAME) end
 
-$(NAME): $(OBJ_FILES) table
+$(NAME): $(OBJ_FILES) 
 	@echo "$(BLUE)[LINK] Create the executable ...$(NC)"
 	@$(CXX) $(CXXFLAGS) $(OBJ_FILES) -o $(NAME)
 
@@ -100,6 +102,8 @@ table: $(TABLE_OBJ)
 	@$(CXX) $(CXXFLAGS) $(TABLE_OBJ) -o $(BIN_DIR)/table_exec
 	@echo "$(GREEN)Table compilation completed ✅$(NC)"
 	@mkdir -p $(TABLE_DIR)
+	@mkdir -p $(TABLE_DIR)/Thistlethwaite
+	@mkdir -p $(TABLE_DIR)/Kociemba
 	@./$(BIN_DIR)/table_exec
 
 table_clean:

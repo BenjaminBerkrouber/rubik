@@ -4,18 +4,23 @@ SpinManager::SpinManager() : _spinTable  {{
         { cycle4, {URF, UFL, ULB, UBR}, {UR, UF, UL, UB}, },
         { cycle2, {URF, UFL, ULB, UBR}, {UR, UF, UL, UB}, },
         { cycle4, {URF, UBR, ULB, UFL}, {UR, UB, UL, UF}, },
+
         { cycle4, {DFR, DRB, DBL, DLF}, {DF, DR, DB, DL}, },
         { cycle2, {DFR, DRB, DBL, DLF}, {DF, DR, DB, DL}, },
         { cycle4, {DFR, DLF, DBL, DRB}, {DF, DL, DB, DR}, },
+
         { cycle4, {URF, DFR, DLF, UFL}, {UF, FR, DF, FL}, true, true },
         { cycle2, {URF, DFR, DLF, UFL}, {UF, FR, DF, FL}, },
         { cycle4, {URF, UFL, DLF, DFR}, {UF, FL, DF, FR}, true, true },
+
         { cycle4, {ULB, DBL, DRB, UBR}, {UB, BL, DB, BR}, true, true },
         { cycle2, {ULB, DBL, DRB, UBR}, {UB, BL, DB, BR}, },
         { cycle4, {ULB, UBR, DRB, DBL}, {UB, BR, DB, BL}, true, true },
+
         { cycle4, {UFL, DLF, DBL, ULB}, {UL, FL, DL, BL}, true },
         { cycle2, {UFL, DLF, DBL, ULB}, {UL, FL, DL, BL}, },
         { cycle4, {UFL, ULB, DBL, DLF}, {UL, BL, DL, FL}, true },
+        
         { cycle4, {UBR, DRB, DFR, URF}, {UR, BR, DR, FR}, true },
         { cycle2, {UBR, DRB, DFR, URF}, {UR, BR, DR, FR}, },
         { cycle4, {UBR, URF, DFR, DRB}, {UR, FR, DR, BR}, true },

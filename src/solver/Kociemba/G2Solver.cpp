@@ -7,9 +7,9 @@
 
 
 G2Solver::G2Solver() : _spinManager() {
-    pruning::io::load("./table/g2_corners_permutation.prune", _pruningCornersPermutation, 0x01);
-    pruning::io::load("./table/g2_mSLice_permutation.prune", _pruningMSlicePermutation, 0x01);
-    pruning::io::load("./table/g2_uDSlice_permutation.prune", _pruningUDSlicePermutation, 0x01);
+    pruning::io::load("./table/Kociemba/g2_corners_permutation.prune", _pruningCornersPermutation, 0x01);
+    pruning::io::load("./table/Kociemba/g2_mSLice_permutation.prune", _pruningMSlicePermutation, 0x01);
+    pruning::io::load("./table/Kociemba/g2_uDSlice_permutation.prune", _pruningUDSlicePermutation, 0x01);
 }
 
 

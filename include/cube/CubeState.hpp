@@ -43,7 +43,6 @@ struct CubeState
  * This specialization allows CubeState to be used as a key in hash-based
  * containers like `std::unordered_map` or `std::unordered_set`.
  */
-
 namespace std {
 
     /**

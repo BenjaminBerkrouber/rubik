@@ -7,8 +7,8 @@
 
 
 G1Solver::G1Solver() : _spinManager() {
-    pruning::io::load("./table/g1_corners_edges.prune", _pruningOrientation, 0x01);
-    pruning::io::load("./table/g1_Mslice.prune", _pruningMSlice, 0x02);
+    pruning::io::load("./table/Kociemba/g1_corners_edges.prune", _pruningOrientation, 0x01);
+    pruning::io::load("./table/Kociemba/g1_Mslice.prune", _pruningMSlice, 0x02);
 }
 
 
