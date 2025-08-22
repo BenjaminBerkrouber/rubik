@@ -60,13 +60,13 @@ void RubiksCube::spin(SpinLst spin, const float duration) {
         case B2: angle =  glm::pi<float>();      axis = {0, 0,-1}; break;
         case B3: angle = -glm::half_pi<float>(); axis = {0, 0,-1}; break;
 
-        case L:  angle = -glm::half_pi<float>(); axis = {-1, 0, 0}; break;
-        case L2: angle = -glm::pi<float>();      axis = {-1, 0, 0}; break;
-        case L3: angle =  glm::half_pi<float>(); axis = {-1, 0, 0}; break;
+        case L:  angle = -glm::half_pi<float>(); axis = {1, 0, 0}; break;
+        case L2: angle = -glm::pi<float>();      axis = {1, 0, 0}; break;
+        case L3: angle =  glm::half_pi<float>(); axis = {1, 0, 0}; break;
 
-        case R:  angle =  glm::half_pi<float>(); axis = {1, 0, 0}; break;
-        case R2: angle =  glm::pi<float>();      axis = {1, 0, 0}; break;
-        case R3: angle = -glm::half_pi<float>(); axis = {1, 0, 0}; break;
+        case R:  angle =  glm::half_pi<float>(); axis = {-1, 0, 0}; break;
+        case R2: angle =  glm::pi<float>();      axis = {-1, 0, 0}; break;
+        case R3: angle = -glm::half_pi<float>(); axis = {-1, 0, 0}; break;
     }
 
     for (t_cube & cube : this->_cubes) {
