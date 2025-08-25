@@ -5,13 +5,21 @@
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <iostream>
+RubiksCube::RubiksCube(const Shader & shader) : _shader(shader), _model(1.0f) {
 
-RubiksCube::RubiksCube(const Shader & shader) \
-    : _shader(shader), _model(1.0f), _animation(true, true) \
-    , _animationSpeed(CUBE_ROTATION_SPEED_DEFAULT, CUBE_SPIN_SPEED_DEFAULT) {}
+    this->_animation[CUBE_ROTATION_ANIMATION] = true;
+    this->_animation[CUBE_SPIN_ANIMATION] = true;
+    this->_animationSpeed[CUBE_ROTATION_ANIMATION] = CUBE_ROTATION_SPEED_DEFAULT;
+    this->_animationSpeed[CUBE_SPIN_ANIMATION] = CUBE_SPIN_SPEED_DEFAULT;
+}
 
 RubiksCube::~RubiksCube() {}
+
+void RubiksCube::setAnimationState(const int animation, const bool state) {this->_animation[animation] = state;}
+
+void RubiksCube::setAnimationSpeed(const int animation, const float speed) {this->_animationSpeed[animation] = speed;}
+
+bool RubiksCube::getAnimationState(const int animation) {return (this->_animation[animation]);}
 
 void RubiksCube::init() {
 
@@ -32,11 +40,28 @@ void RubiksCube::init() {
     }
 }
 
+void RubiksCube::resetPos() {
+
+    this->_animations.clear();
+    for (int x = -1; x <= 1; ++x) {
+
+        for (int y = -1; y <= 1; ++y) {
+
+            for (int z = -1; z <= 1; ++z) {
+
+                int index = (x + 1) * 9 + (y + 1) * 3 + (z + 1);
+
+                this->_cubes[index].position = glm::ivec3(x, y, z);
+                this->_cubes[index].mesh.resetPos();
+                this->_cubes[index].mesh.translate(this->_cubes[index].position * 2);
+            }
+        }
+    }
+}
+
 #include "utils/utils.h"
 
 void RubiksCube::spin(SpinLst spin, const float duration) {
-
-    std::cout << "spin = " << spinToStr(spin) << "\n";
 
     float angle = 0.0f;
     glm::ivec3 axis(0.0f);
@@ -109,10 +134,6 @@ void RubiksCube::animate(float deltaTime) {
     if (animation.duration <= 0.0f)
         this->_animations.erase(this->_animations.begin());
 }
-
-void RubiksCube::enableAnimation(const int animation, const bool state) {this->_animation[animation] = state;}
-
-void RubiksCube::setAnimationSpeed(const int animation, const float speed) {this->_animationSpeed[animation] = speed;}
 
 void RubiksCube::translate(const glm::vec3 & offset) {
 

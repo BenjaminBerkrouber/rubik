@@ -119,6 +119,11 @@ void Mesh::init(const std::string gltPath) {
     this->_model = glm::mat4(1.0f);
 }
 
+void Mesh::resetPos() {
+
+    this->_model = glm::mat4(1.0f);
+}
+
 void Mesh::translate(const glm::vec3 & offset) {
 
     this->_model = glm::translate(this->_model, offset);

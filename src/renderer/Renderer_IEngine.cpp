@@ -5,9 +5,6 @@ void Renderer::print() const {return ;};
 void Renderer::setSolutionSpins(const std::vector<SpinLst>& solutionSpins) {
 
     this->_solutionSpins = solutionSpins;
-    if (solutionSpins.empty())
-        std::cout << "solver vide.\n";
-    std::cout << "solver - " << solutionSpins.size() << "\n";
     for (int i = 0; i < static_cast<int>(this->_solutionSpins.size()); i++)
         this->_rubiksCube.spin(this->_solutionSpins[i], 0.1f);
 };
@@ -23,9 +20,6 @@ void Renderer::setSolutionSteps(const std::vector<std::pair<std::string, std::pa
 void Renderer::setShuffleSpins(const std::vector<SpinLst> & shuffleSpins) {
 
     this->_shuffleSpins = shuffleSpins;
-    if (shuffleSpins.empty())
-        std::cout << "shuffle vide.\n";
-    std::cout << "shuffle - " << shuffleSpins.size() << "\n";
     for (int i = 0; i < static_cast<int>(shuffleSpins.size()); i++)
         this->_rubiksCube.spin(shuffleSpins[i], 0.1f);
 };

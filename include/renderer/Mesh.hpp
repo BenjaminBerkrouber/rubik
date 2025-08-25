@@ -22,6 +22,8 @@ public:
 
     void init(const std::string gltPath);
 
+    void resetPos();
+
     void translate(const glm::vec3 & offset);
     void rotate(const float angle, const glm::vec3 & axis);
     void rotateAround(const float angle, const glm::vec3 & axis, const glm::vec3 & origin);

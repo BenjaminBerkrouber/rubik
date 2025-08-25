@@ -49,11 +49,16 @@ public:
     RubiksCube(const Shader & shader);
     ~RubiksCube();
 
+    void setAnimationState(const int animation, const bool state);
+    void setAnimationSpeed(const int animation, const float speed);
+
+    bool getAnimationState(const int animation);
+
     void init();
+    void resetPos();
+
     void spin(SpinLst spin, const float duration = 1.0f);
     void animate(const float deltaTime);
-    void enableAnimation(const int animation, const bool state);
-    void setAnimationSpeed(const int animation, const float speed);
 
     void translate(const glm::vec3 & offset);
     void rotate(const float angle, const glm::vec3 & axis);

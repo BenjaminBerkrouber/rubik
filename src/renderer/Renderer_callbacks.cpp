@@ -28,6 +28,8 @@ void Renderer::staticMouseButtonCallback(GLFWwindow * window, int button, int ac
 
 void Renderer::mouseButtonCallback(int button, int action, int mods) {
 
+    static bool state = true;
+
     (void)mods;
     if (button == GLFW_MOUSE_BUTTON_MIDDLE) {
 
@@ -35,13 +37,16 @@ void Renderer::mouseButtonCallback(int button, int action, int mods) {
 
             this->_rotatingCam = true;
             glfwSetInputMode(this->_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-            // this->_rubiksCube.enableAnimation(CUBE_ROTATION_ANIMATION, false);
+            state = this->_rubiksCube.getAnimationState(CUBE_ROTATION_ANIMATION);
+            if (state)
+                this->_rubiksCube.setAnimationState(CUBE_ROTATION_ANIMATION, false);
         }
         else {
 
             this->_rotatingCam = false;
             glfwSetInputMode(this->_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-            // this->_rubiksCube.enableAnimation(CUBE_ROTATION_ANIMATION, true);
+            if (state)
+                this->_rubiksCube.setAnimationState(CUBE_ROTATION_ANIMATION, true);
         }
     }
 }

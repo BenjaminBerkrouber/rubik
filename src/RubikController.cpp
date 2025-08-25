@@ -89,19 +89,6 @@ void RubikController::solve(int algorithm) {
 void RubikController::reset() {
     _cubeState = CubeState();
     _parser.clearResults();
-    if (_KociembaSolver) {
-        delete _KociembaSolver;
-        _KociembaSolver = nullptr;
-    }
-    if (_ThiswlitheSolver) {
-        delete _ThiswlitheSolver;
-        _ThiswlitheSolver = nullptr;
-    }
-    // if (_engine) {
-    //     delete _engine;
-    //     _engine = nullptr;
-    // }
-    // _engine = new CubeStateHelper(_cubeState);
 }
 
 // =============================================================================================================================

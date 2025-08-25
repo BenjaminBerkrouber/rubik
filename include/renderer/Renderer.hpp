@@ -24,6 +24,9 @@ constexpr float GUI_SCALE_DEFAULT = 1.0f;
 constexpr float GUI_SCALE_MIN = 0.5f;
 constexpr float GUI_SCALE_MAX = 5.0f;
 
+constexpr int SOLVER_KOCIEMBA = 0;
+constexpr int SOLVER_PRUNING = 1;
+
 class RubikController;
 class Mesh;
 class GLFWwindow;
@@ -47,6 +50,8 @@ public:
 
     bool init(RubikController * controller);
     void renderLoop();
+
+    void SetupImGuiStyle();
 
     static void staticKeyCallback(GLFWwindow * window, int key, int scancode, int action, int mods);
     static void staticMouseButtonCallback(GLFWwindow * window, int button, int action, int mods);
