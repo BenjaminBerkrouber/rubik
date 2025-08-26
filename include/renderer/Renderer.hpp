@@ -51,8 +51,6 @@ public:
     bool init(RubikController * controller);
     void renderLoop();
 
-    void SetupImGuiStyle();
-
     static void staticKeyCallback(GLFWwindow * window, int key, int scancode, int action, int mods);
     static void staticMouseButtonCallback(GLFWwindow * window, int button, int action, int mods);
     static void staticCursorPosCallback(GLFWwindow * window, double xpos, double ypos);
@@ -88,5 +86,7 @@ public:
     void _renderCube();
     void _nextSpin();
     void _prevSpin();
+
+    void _setupImGuiStyle(const int style, const bool rounded);
 
 };

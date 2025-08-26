@@ -98,7 +98,7 @@ bool Renderer::init(RubikController * controller) {
     ImGui_ImplGlfw_InitForOpenGL(this->_window, true);
     ImGui_ImplOpenGL3_Init("#version 460");
 
-    Renderer::SetupImGuiStyle();
+    Renderer::_setupImGuiStyle(2, true);
 
     return (true);
 }
@@ -158,7 +158,7 @@ void Renderer::_toggleFullscreen() {
 
 void Renderer::_renderCube() {
 
-    glClearColor(0.3f, 0.4f, 0.55f, 1.0f);
+    glClearColor(0.4f, 0.5f, 0.65f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     this->_rubiksCube.animate(this->_deltaTime);
