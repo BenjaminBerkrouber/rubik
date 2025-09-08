@@ -88,9 +88,8 @@ bool Renderer::init(RubikController * controller) {
     glCullFace(GL_FRONT);
     glFrontFace(GL_CW);
 
-    this->_shader.init();
-    this->_camera.init();
-    this->_rubiksCube.init();
+    if (!this->_shader.init() || !this->_camera.init() || !this->_rubiksCube.init())
+        return (false);
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();

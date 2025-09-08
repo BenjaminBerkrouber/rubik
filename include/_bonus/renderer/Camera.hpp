@@ -23,7 +23,7 @@ public:
 
     void setFov(float fov);
 
-    void init();
+    bool init();
 
     void orbitAround(const double rotation[2]);
     void zoom(const double delta);

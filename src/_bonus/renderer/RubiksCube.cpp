@@ -21,7 +21,7 @@ void RubiksCube::setAnimationSpeed(const int animation, const float speed) {this
 
 bool RubiksCube::getAnimationState(const int animation) {return (this->_animation[animation]);}
 
-void RubiksCube::init() {
+bool RubiksCube::init() {
 
     this->_cubes.reserve(27);
 
@@ -32,12 +32,15 @@ void RubiksCube::init() {
             for (int z = -1; z <= 1; ++z) {
 
                 this->_cubes.emplace_back(this->_shader);
-                this->_cubes.back().mesh.init("assets/cube.glb");
+                if (!this->_cubes.back().mesh.init("assets/cube.glb"))
+                    return (false);
                 this->_cubes.back().position = glm::ivec3(x, y, z);
                 this->_cubes.back().mesh.translate(this->_cubes.back().position * 2);
             }
         }
     }
+
+    return (true);
 }
 
 void RubiksCube::resetPos() {

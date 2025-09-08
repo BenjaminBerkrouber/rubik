@@ -13,7 +13,7 @@ void Camera::setFov(float fov) {
     this->_updateProjection();
 }
 
-void Camera::init() {
+bool Camera::init() {
 
     this->_fov = CAM_FOV_DEFAULT;
     this->_radius = CAM_RADIUS_DEFAULT;
@@ -27,6 +27,8 @@ void Camera::init() {
     this->_view = glm::lookAt(this->_position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     this->_projection = glm::perspective(glm::radians(this->_fov), static_cast<float>(this->_renderer.getWindowSize()[WIDTH]) / static_cast<float>(this->_renderer.getWindowSize()[HEIGHT]), 0.1f, 110.0f);
     this->_shader.setMat4(CAMERA, this->_projection * this->_view);
+
+    return (true);
 }
 
 void Camera::orbitAround(const double rotation[2]) {

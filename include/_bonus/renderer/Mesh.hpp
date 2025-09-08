@@ -20,7 +20,7 @@ public:
     Mesh(const Shader & shader);
     ~Mesh();
 
-    void init(const std::string gltPath);
+    bool init(const std::string gltPath);
 
     void resetPos();
 

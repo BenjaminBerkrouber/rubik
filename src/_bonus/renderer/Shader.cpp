@@ -12,7 +12,7 @@ Shader::Shader() {}
 
 Shader::~Shader() {glDeleteProgram(this->_id);}
 
-void Shader::init() {
+bool Shader::init() {
 
     std::string vertSrc = _loadFromFile("src/_bonus/renderer/shaders/vertex.glsl");
     std::string fragSrc = _loadFromFile("src/_bonus/renderer/shaders/fragment.glsl");
@@ -32,6 +32,7 @@ void Shader::init() {
         char log[512];
         glGetProgramInfoLog(this->_id, 512, nullptr, log);
         std::cerr << "Shader link error:\n" << log << "\n";
+        return (false);
     }
 
     glDeleteShader(vert);
@@ -43,6 +44,8 @@ void Shader::init() {
     this->_matLoc[TEXTURE] = glGetUniformLocation(this->_id, "tex0");
 
     glUniform1i(this->_matLoc[TEXTURE], 0);
+
+    return (true);
 }
 
 void Shader::setMat4(const int name, const glm::mat4 & mat) const {

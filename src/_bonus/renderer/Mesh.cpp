@@ -8,7 +8,12 @@
 
 #include <gltf/tiny_gltf.h>
 
-Mesh::Mesh(const Shader & shader) : _shader(shader) {}
+Mesh::Mesh(const Shader & shader) : _shader(shader) {
+
+    this->_vao = 0;
+    this->_vbo = 0;
+    this->_ebo = 0;
+}
 
 Mesh::~Mesh() {
 
@@ -20,7 +25,7 @@ Mesh::~Mesh() {
         glDeleteVertexArrays(1, &this->_vao);
 }
 
-void Mesh::init(const std::string gltPath) {
+bool Mesh::init(const std::string gltPath) {
 
     tinygltf::Model model;
     tinygltf::TinyGLTF loader;
@@ -33,7 +38,7 @@ void Mesh::init(const std::string gltPath) {
     if (!err.empty())
         std::cerr << "Err: " << err << std::endl;
     if (!ret)
-        throw std::runtime_error("Failed to load GLB");
+        return (false);
 
     const tinygltf::Mesh & mesh = model.meshes[0];
 
@@ -115,6 +120,8 @@ void Mesh::init(const std::string gltPath) {
     glBindVertexArray(0);
 
     this->_model = glm::mat4(1.0f);
+
+    return (true);
 }
 
 void Mesh::resetPos() {

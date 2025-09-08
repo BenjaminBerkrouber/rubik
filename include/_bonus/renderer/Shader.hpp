@@ -16,7 +16,7 @@ public:
     Shader();
     ~Shader();
 
-    void init();
+    bool init();
     void setMat4(const int name, const glm::mat4& mat) const;
     void setTexture() const;
 

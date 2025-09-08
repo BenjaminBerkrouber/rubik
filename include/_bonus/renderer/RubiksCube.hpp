@@ -54,7 +54,7 @@ public:
 
     bool getAnimationState(const int animation);
 
-    void init();
+    bool init();
     void resetPos();
 
     void spin(SpinLst spin, const float duration = 1.0f);
