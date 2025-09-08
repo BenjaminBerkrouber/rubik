@@ -6,8 +6,13 @@
 #include "../../utils/Constants.hpp"
 
 #include "../Pruning/TableIO.hpp"
+#include "./p1_move_tables.hpp"
 
 #include <vector>
+
+#include <array>
+#include <algorithm>
+#include <stdexcept>
 
 /**
  * @class G1Solver
@@ -33,6 +38,11 @@ class G1Solver {
         * @brief Pruning table for edge positions in the M-slice.
         */
         std::vector<uint8_t> _pruningMSlice;
+        
+        /**
+        * @brief Move tables for phase 1.
+        */
+        MoveTables p1Tables_;
 
         /**
         * @brief Computed solution for G1 phase.
@@ -40,16 +50,33 @@ class G1Solver {
         std::vector<SpinLst> _solution;
 
         /**
+        * @struct P1State
+        * @brief Represents the state of the cube in terms of orientations and M-slice edges.
+        */
+        struct P1State {
+            uint16_t twist;   // encodeCornersOrientation(state)  ∈ [0..2186]
+            uint16_t flip;    // encodeEdgesOrientation(state)     ∈ [0..2047]
+            uint16_t mslice;  // encodeMSlice(state)               ∈ [0..494]
+        };
+
+
+        /**
         * @brief Internal IDA* solver used to explore move sequences.
         *
-        * @param state Current cube state.
-        * @param maxDepth Maximum allowed depth for the current iteration.
-        * @param depth Current recursive depth (default: 0).
-        * @param hasLastMove Indicates whether the last move is available.
-        * @param lastMove The last move performed.
-        * @return true if a solution was found at this depth.
+        * @param s Current state in terms of orientations and M-slice edges.
+        * @param g Current depth in the search tree.
+        * @param bound Current cost bound for the search.
+        * @param hasLastMove Indicates if there was a last move made.
+        * @param lastMove The last move made in the search.
+        * @return true if a solution was found within the given bound.
         */
-        bool IDA(CubeState state, int maxDepth, int depth = 0, bool hasLastMove = false, SpinLst lastMove = SpinLst::U);
+        bool IDA(
+            const P1State& s,
+            int g,
+            int bound,
+            bool hasLastMove,
+            SpinLst lastMove
+        );
 
         /**
         * @brief Checks whether two moves are inverse of each other.

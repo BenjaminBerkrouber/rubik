@@ -33,7 +33,9 @@ SRC_FILES := \
 	$(SRC_DIR)/solver/Kociemba/G1Solver.cpp \
 	$(SRC_DIR)/solver/Kociemba/G2Solver.cpp \
 	$(SRC_DIR)/solver/Pruning/TableIO.cpp \
-	$(SRC_DIR)/solver/Thistlethwaite/IPhaseSolver.cpp \
+	$(SRC_DIR)/solver/Kociemba/p1_move_tables.cpp \
+	$(SRC_DIR)/solver/Kociemba/p2_move_tables.cpp \
+# 	$(SRC_DIR)/solver/Thistlethwaite/IPhaseSolver.cpp \
 	$(SRC_DIR)/solver/Thistlethwaite/ThistlethwaiteSolver.cpp \
 
 

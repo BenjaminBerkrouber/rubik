@@ -38,23 +38,15 @@ bool ThistlethwaiteSolver::solve() {
     int i = 0;
 
     for (IPhaseSolver* phaseSolver : _phaseSolvers) {
-        std::cout << "=========== ============================ ==========" << std::endl;
-        std::cout << "=========== Solving Phase G" << ++i << " ==========" << std::endl;
-        std::cout << "=========== ============================ ==========" << std::endl;
         if (!phaseSolver->solve(_state)) {
-            std::cerr << "[KO] Phase solver failed to solve the cube." << std::endl;
             return false;
         }
         std::vector<SpinLst> solution = phaseSolver->getSolution();
-        std::cout << "Phase G" << i << " solution size: " << solution.size() << std::endl;
         for (const SpinLst& move : solution) {
             _spinManager.applyMove(_state, move);
             std::cout << spinToStr(move) << " ";
-            // std::cout << spinToStr(move) << " " << std::endl;
-            // helper.print();
         }
         std::cout << std::endl;
-        helper.print();
     }
 
     return true;

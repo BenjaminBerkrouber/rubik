@@ -15,8 +15,7 @@ RubikController::RubikController()
         _spinManager(),
         _solver(nullptr) {
     _engine = new CubeStateHelper(_cubeState);
-    // _solver = new KociembaSolver(_cubeState);
-    _solver = new ThistlethwaiteSolver(_cubeState);
+    _solver = new KociembaSolver(_cubeState);
 }
 
 RubikController::~RubikController() {
@@ -68,10 +67,10 @@ void RubikController::print() const {
 void RubikController::solve() {
     if (!_solver->solve()) 
         return;
-    // std::vector<SpinLst> solution = _solver->getSolution();
-    // for (const SpinLst& move : solution)
-    //     std::cout << std::left << std::setw(2) << spinToStr(move) << " ";
-    // std::cout << std::endl;
+    std::vector<SpinLst> solution = _solver->getSolution();
+    for (const SpinLst& move : solution)
+        std::cout << std::left << std::setw(2) << spinToStr(move) << " ";
+    std::cout << std::endl;
 }
 
 void RubikController::reset() {
