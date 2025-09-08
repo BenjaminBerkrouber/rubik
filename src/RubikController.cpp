@@ -1,7 +1,6 @@
 #include "../include/RubikController.hpp"
 #include "../include/engine/CubeStateHelper.hpp"
 #include "../include/solver/Kociemba/KociembaSolver.hpp"
-#include "../include/solver/Thistlethwaite/ThistlethwaiteSolver.hpp"
 #include <iomanip>
 
 
