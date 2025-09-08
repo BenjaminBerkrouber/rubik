@@ -1,5 +1,5 @@
 #include "renderer/Renderer.hpp"
-#include "RubikController.hpp"
+#include "renderer/../_bonus/RubikController_bonus.hpp"
 
 #include <GLFW/glfw3.h>
 

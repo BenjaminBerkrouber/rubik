@@ -36,7 +36,7 @@
 *.exe
 *.out
 *.app
-rubik
+rubik*
 bin/*
 *.prune
 

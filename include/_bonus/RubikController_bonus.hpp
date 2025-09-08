@@ -5,8 +5,6 @@
 #include "parser/Parser.hpp"
 #include "engine/IEngine.hpp"
 #include "solver/ISolver.hpp"
-#include "solver/Kociemba/KociembaSolver.hpp"
-#include "engine/CubeStateHelper.hpp"
 
 #include <iostream>
 
@@ -29,8 +27,9 @@ class RubikController {
         CubeState       _cubeState;     /**< Represents the current state of the Rubik's Cube */
         Parser          _parser;        /**< Parses input spin sequences */
         SpinManager     _spinManager;   /**< Applies spin moves to the cube */
-        KociembaSolver  *_solver = nullptr;  /**< Solver implementing the Kociemba algorithm */
-        IEngine *_engine = nullptr;  /**< Engine for rendering or printing the cube state */
+        ISolver         *_KociembaSolver = nullptr; /**< Pointer to the solver interface */
+        ISolver         *_ThiswlitheSolver = nullptr; /**< Pointer to the solver interface */
+        IEngine         *_engine = nullptr; /**< Pointer to the engine interface (display handler) */
 
         /**
         * @brief Applies a random shuffle of the cube.
@@ -44,7 +43,7 @@ class RubikController {
         /**
         * @brief Constructs a RubikController and initializes all components.
         */
-        RubikController();
+        RubikController(IEngine * engine);
 
         /**
         * @brief Default destructor.

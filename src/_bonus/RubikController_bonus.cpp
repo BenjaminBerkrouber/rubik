@@ -1,4 +1,4 @@
-#include "../include/RubikController.hpp"
+#include "../include/_bonus/RubikController_bonus.hpp"
 #include "../include/engine/CubeStateHelper.hpp"
 #include "../include/solver/Kociemba/KociembaSolver.hpp"
 #include <iomanip>
@@ -9,22 +9,28 @@
 // ==============================================================================================================================
 
 
-RubikController::RubikController()
+RubikController::RubikController(IEngine * engine)
     :   _parser(),
-        _spinManager() {
-    _engine = new CubeStateHelper(_cubeState);
-    _solver = new KociembaSolver(_cubeState);
+        _spinManager(),
+        _KociembaSolver(nullptr) {
+    _engine = engine;
+    _KociembaSolver = new KociembaSolver(_cubeState);
+    // _ThiswlitheSolver = new ThiswlitheSolver(_cubeState);
 }
 
 RubikController::~RubikController() {
-    if (_solver) {
-        delete _solver;
-        _solver = nullptr;
+    if (_KociembaSolver) {
+        delete _KociembaSolver;
+        _KociembaSolver = nullptr;
     }
-    if (_engine) {
-        delete _engine;
-        _engine = nullptr;
+    if (_ThiswlitheSolver) {
+        delete _ThiswlitheSolver;
+        _ThiswlitheSolver = nullptr;
     }
+    // if (_engine) {
+    //     delete _engine;
+    //     _engine = nullptr;
+    // }
 }
 
 
@@ -73,13 +79,11 @@ void RubikController::print() const {
 }
 
 void RubikController::solve(int algorithm) {
-    (void)algorithm;
-    if (!_solver->solve()) 
+    ISolver* solver = algorithm == 0 ? _KociembaSolver : _ThiswlitheSolver;
+    if (!solver->solve()) 
         return;
-    std::vector<SpinLst> solution = _solver->getSolution();
-    for (const SpinLst& move : solution)
-        std::cout << std::left << std::setw(2) << spinToStr(move) << " ";
-    std::cout << std::endl;
+    _engine->setSolutionSpins(solver->getSolution());
+    _engine->setSolutionSteps(solver->getSolutionSteps());
 }
 
 void RubikController::reset() {
@@ -97,7 +101,7 @@ std::vector<SpinLst> RubikController::getShuffle() const {
 }
 
 std::vector<SpinLst> RubikController::getSolution() const {
-    return _solver->getSolution();
+    return _KociembaSolver->getSolution();
 }  
 
 

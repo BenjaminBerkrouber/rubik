@@ -139,4 +139,16 @@ class CubeStateHelper : public IEngine {
         void printState() const ;
         void printFace(const std::pair<uint8_t, uint8_t> _face[9], int faceName, std::string padding) const;
         void print() const override;
+
+        void setSolutionSpins(const std::vector<SpinLst>& solutionSpins) override {
+            (void)solutionSpins;
+        };
+
+        void setSolutionSteps(const std::vector<std::pair<std::string, std::pair<std::vector<SpinLst>,std::vector<SpinLst>>>>& solutionSteps) override {
+            (void)solutionSteps;
+        };
+
+        void setShuffleSpins(const std::vector<SpinLst>& shuffleSpins) override {
+            (void)shuffleSpins;
+        };
 };

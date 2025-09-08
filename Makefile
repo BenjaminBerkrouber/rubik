@@ -45,6 +45,30 @@ SRC_FILES := \
 	$(SRC_DIR)/renderer/Mesh.cpp \
 	$(SRC_DIR)/renderer/RubiksCube.cpp \
 
+SRC_FILES_BONUS := \
+	main_bonus.cpp \
+	$(SRC_DIR)/_bonus/RubikController_bonus.cpp \
+	$(SRC_DIR)/cube/CubeOperations.cpp \
+	$(SRC_DIR)/cube/Encoding.cpp \
+	$(SRC_DIR)/spin/SpinManager.cpp \
+	$(SRC_DIR)/engine/CubeStateHelper.cpp \
+	$(SRC_DIR)/parser/Parser.cpp \
+	$(SRC_DIR)/utils/utils.cpp \
+	$(SRC_DIR)/solver/Kociemba/KociembaSolver.cpp \
+	$(SRC_DIR)/solver/Kociemba/G1Solver.cpp \
+	$(SRC_DIR)/solver/Kociemba/G2Solver.cpp \
+	$(SRC_DIR)/solver/Kociemba/p1_move_tables.cpp \
+	$(SRC_DIR)/solver/Kociemba/p2_move_tables.cpp \
+	$(SRC_DIR)/solver/Pruning/TableIO.cpp \
+	$(SRC_DIR)/renderer/Renderer.cpp \
+	$(SRC_DIR)/renderer/Renderer_callbacks.cpp \
+	$(SRC_DIR)/renderer/Renderer_IEngine.cpp \
+	$(SRC_DIR)/renderer/Renderer_imgui.cpp \
+	$(SRC_DIR)/renderer/Shader.cpp \
+	$(SRC_DIR)/renderer/Camera.cpp \
+	$(SRC_DIR)/renderer/Mesh.cpp \
+	$(SRC_DIR)/renderer/RubiksCube.cpp \
+
 
 TABLE_SRC := \
 	$(SRC_DIR)/BuildPruningTable/main.cpp \
@@ -57,6 +81,7 @@ TABLE_SRC := \
 
 
 OBJ_FILES := $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
+OBJ_FILES_BONUS := $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES_BONUS))
 
 TABLE_OBJ := $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(TABLE_SRC))
 
@@ -81,6 +106,10 @@ all: start $(NAME) end
 $(NAME): $(OBJ_FILES) 
 	@echo "$(BLUE)[LINK] Create the executable ...$(NC)"
 	@$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(GLIBFLAGS) -o $(NAME)
+
+bonus: start $(OBJ_FILES_BONUS) end
+	@echo "$(BLUE)[LINK] Create the bonus executable ...$(NC)"
+	@$(CXX) $(CXXFLAGS) $(OBJ_FILES_BONUS) $(GLIBFLAGS) -o rubik_bonus
 
 $(OBJ_DIR)/%.o: %.cpp
 	@echo "[BUILD] $<"
