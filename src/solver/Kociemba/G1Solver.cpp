@@ -5,62 +5,13 @@
 // ==== Constructor and Destructor ====
 // ==============================================================================================================================
 
-static inline void setEdgeId(CubeState& s, int pos, uint8_t id) {
-    s.edges &= ~(0xFULL << (pos*4));
-    s.edges |= (uint64_t(id) & 0xFULL) << (pos*4);
-}
-
-static int binom(int n, int k) {
-    if (k<0 || k>n) return 0;
-    if (k==0 || k==n) return 1;
-    long long r = 1;
-    for (int i=1;i<=k;++i) r = r*(n-k+i)/i;
-    return (int)r;
-}
-
-static std::array<uint8_t,4> unrankMSlice(uint16_t code) {
-    int idx = 494 - code;
-    std::array<uint8_t,4> pos{};
-    int x = 11;
-    for (int k = 4; k >= 1; --k) {
-        while (binom(x, k) > idx) --x;
-        pos[k-1] = (uint8_t)x;
-        idx -= binom(x, k);
-        --x;
-    }
-    std::sort(pos.begin(), pos.end());
-    return pos;
-}
-
+#include <iostream>
 
 
 G1Solver::G1Solver() : _spinManager() {
     pruning::io::load("./table/Kociemba/g1_corners_edges.prune", _pruningOrientation, 0x01);
     pruning::io::load("./table/Kociemba/g1_Mslice.prune", _pruningMSlice, 0x02);
-
-
-    try {
-        p1Tables_ = MoveTables::load("p1_moves.bin");
-    } catch (...) {
-        p1Tables_ = MoveTables::buildOnline(
-            _spinManager,
-            [this](CubeState& s, uint16_t t){ decodeCornersOrientation(s, t); },
-            [this](CubeState& s, uint16_t f){ decodeEdgesOrientation(s, f); },
-            [this](CubeState& s, uint16_t m){
-                auto pos = unrankMSlice(m);
-                uint8_t nextNonSlice = 0;
-                std::array<bool,12> isSlice{}; for (auto p : pos) isSlice[p] = true;
-                for (int p = 0; p < 12; ++p) {
-                    if (!isSlice[p]) setEdgeId(s, p, nextNonSlice++);
-                }
-                for (int i = 0; i < 4; ++i) setEdgeId(s, pos[i], 8 + i);
-            },
-            [this](const CubeState& s){ return encodeCornersOrientation(s); },
-            [this](const CubeState& s){ return encodeEdgesOrientation(s); },
-            [this](const CubeState& s){ return encodeMSlice(s); }
-        );
-        p1Tables_.save("p1_moves.bin");
-    }
+    p1Tables_ = MoveTables::load("./table/Kociemba/g1_moves.bin");
 }
 
 
@@ -132,6 +83,12 @@ bool G1Solver::solve(CubeState& state) {
 
 
 bool G1Solver::checkTable() const {
+    if (p1Tables_.twist_.empty() || 
+        p1Tables_.flip_.empty()  || 
+        p1Tables_.mslice_.empty()) {
+        return false;
+    }
+    
     return (_pruningOrientation.size() == 2048 * 2187 && 
             _pruningMSlice.size() == 495);
 }

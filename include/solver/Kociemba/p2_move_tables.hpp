@@ -40,12 +40,12 @@ public:
     inline uint16_t nextUDSlice(uint16_t idx, int mv) const { return udslc_ [idx*nmoves_ + mv]; }
 
     inline int nmoves() const { return nmoves_; }
-
-    private:
     int nmoves_ = 0;
     std::vector<uint16_t> corner_;
     std::vector<uint16_t> mslice_;
     std::vector<uint16_t> udslc_; 
+
+    private:
 
     P2MoveTables(int nm,
                 std::vector<uint16_t> c,

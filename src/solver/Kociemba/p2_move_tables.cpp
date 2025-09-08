@@ -93,30 +93,35 @@ void P2MoveTables::save(const std::string& path) const {
 }
 
 P2MoveTables P2MoveTables::load(const std::string& path) {
-    FILE* f = std::fopen(path.c_str(), "rb");
-    if (!f) throw std::runtime_error("P2MoveTables::load: open failed");
-
-    uint32_t hdr[6]{};
-    if (std::fread(hdr, sizeof(hdr), 1, f) != 1) {
-        std::fclose(f); throw std::runtime_error("P2MoveTables::load: header read failed");
+    try {
+        FILE* f = std::fopen(path.c_str(), "rb");
+        if (!f) throw std::runtime_error("P2MoveTables::load: open failed");
+    
+        uint32_t hdr[6]{};
+        if (std::fread(hdr, sizeof(hdr), 1, f) != 1) {
+            std::fclose(f); throw std::runtime_error("P2MoveTables::load: header read failed");
+        }
+        if (hdr[0] != MAGIC || hdr[1] != VERSION) {
+            std::fclose(f); throw std::runtime_error("P2MoveTables::load: bad magic/version");
+        }
+        int nm = (int)hdr[2];
+        if (nm <= 0) { std::fclose(f); throw std::runtime_error("P2MoveTables::load: bad nmoves"); }
+    
+        const int C = (int)hdr[3], M = (int)hdr[4], U = (int)hdr[5];
+        if (C != P2Counts::CORNER || M != P2Counts::MSLICE || U != P2Counts::UDSLICE) {
+            std::fclose(f); throw std::runtime_error("P2MoveTables::load: shape mismatch");
+        }
+    
+        std::vector<uint16_t> c(C * nm), m(M * nm), u(U * nm);
+        if (std::fread(c.data(), sizeof(uint16_t), c.size(), f) != c.size() ||
+            std::fread(m.data(), sizeof(uint16_t), m.size(), f) != m.size() ||
+            std::fread(u.data(), sizeof(uint16_t), u.size(), f) != u.size()) {
+            std::fclose(f); throw std::runtime_error("P2MoveTables::load: payload read failed");
+        }
+        std::fclose(f);
+        return P2MoveTables(nm, std::move(c), std::move(m), std::move(u));
+    } catch (const std::exception& e) {
+        (void)e;
+        return P2MoveTables();
     }
-    if (hdr[0] != MAGIC || hdr[1] != VERSION) {
-        std::fclose(f); throw std::runtime_error("P2MoveTables::load: bad magic/version");
-    }
-    int nm = (int)hdr[2];
-    if (nm <= 0) { std::fclose(f); throw std::runtime_error("P2MoveTables::load: bad nmoves"); }
-
-    const int C = (int)hdr[3], M = (int)hdr[4], U = (int)hdr[5];
-    if (C != P2Counts::CORNER || M != P2Counts::MSLICE || U != P2Counts::UDSLICE) {
-        std::fclose(f); throw std::runtime_error("P2MoveTables::load: shape mismatch");
-    }
-
-    std::vector<uint16_t> c(C * nm), m(M * nm), u(U * nm);
-    if (std::fread(c.data(), sizeof(uint16_t), c.size(), f) != c.size() ||
-        std::fread(m.data(), sizeof(uint16_t), m.size(), f) != m.size() ||
-        std::fread(u.data(), sizeof(uint16_t), u.size(), f) != u.size()) {
-        std::fclose(f); throw std::runtime_error("P2MoveTables::load: payload read failed");
-    }
-    std::fclose(f);
-    return P2MoveTables(nm, std::move(c), std::move(m), std::move(u));
 }

@@ -1,6 +1,6 @@
 #ifndef UTILS_H
 # define UTILS_H
-# define SHUFFLE_MODE 0
+# define SHUFFLE_MODE 1
 
 # include <string>
 # include <stdexcept>

@@ -9,7 +9,19 @@
 #include "../../include/solver/Pruning/TableIO.hpp"
 #include "../../include/BuildPruningTable/TableGenerator.hpp"
 
+#include "../../include/utils/Constants.hpp"
+#include "../../include/utils/utils.h"
+#include "../../include/spin/Spin.hpp"
+#include "../../include/spin/SpinManager.hpp"
+#include <array>
+#include <stdexcept>
+#include "../../include/solver/Kociemba/p1_move_tables.hpp"
+#include "../../include/solver/Kociemba/p2_move_tables.hpp"
 
+
+// =============================================================================================================================
+// ==== Pruning Table for Koceimba ====
+// =============================================================================================================================
 
 // ______________________________________________ G1 ______________________________________________
 
@@ -117,87 +129,84 @@ void KociembagenerateG2MSlicePermutation() {
     pruning::io::save("./table/Kociemba/g2_mSLice_permutation.prune", newTable, 0x01);
 }
 
-void ThistlethwaiteG1Pruning() {
-    SpinManager spinManager;
+// =============================================================================================================
+// ==== Move table for Koceimba ====
+// =============================================================================================================
 
-    std::vector<uint8_t> table;
-    if (pruning::io::load("./table/Thistlethwaite/g1_edge_orientation.prune", table, 0x01))
-        return;
-    auto newTable = TableGenerator::generate(
-        encodeEdgesOrientation,
-        [&spinManager](CubeState& state, SpinLst move) {
-            spinManager.applyMove(state, move);
-        },
-        2048 // 2^11 orientations
-    );
-    pruning::io::save("./table/Thistlethwaite/g1_edge_orientation.prune", newTable, 0x01);
+static inline void setEdgeId(CubeState& s, int pos, uint8_t id) {
+    s.edges &= ~(0xFULL << (pos*4));
+    s.edges |= (uint64_t(id) & 0xFULL) << (pos*4);
 }
 
-void ThistlethwaiteG2Pruning() {
-    SpinManager spinManager;
-
-    std::vector<uint8_t> table;
-    if (pruning::io::load("./table/Thistlethwaite/g2_corner_orientation_mSlice.prune", table, 0x01))
-        return;
-    auto newTable = TableGenerator::generate(
-        encodageG2,
-        [&spinManager](CubeState& state, SpinLst move) {
-            spinManager.applyMove(state, move);
-        },
-        2187 * 495, // 3^7 * C(12, 4) = 1081065
-        {
-            SpinLst::U, SpinLst::U2, SpinLst::U3,
-            SpinLst::D, SpinLst::D2, SpinLst::D3,
-            SpinLst::L, SpinLst::L2, SpinLst::L3,
-            SpinLst::R, SpinLst::R2, SpinLst::R3,
-            SpinLst::F2, SpinLst::B2
-        }
-    );
-    pruning::io::save("./table/Thistlethwaite/g2_corner_orientation_mSlice.prune", newTable, 0x01);
+static int binom(int n, int k) {
+    if (k<0 || k>n) return 0;
+    if (k==0 || k==n) return 1;
+    long long r = 1;
+    for (int i=1;i<=k;++i) r = r*(n-k+i)/i;
+    return (int)r;
 }
 
-
-void ThistlethwaiteG3Pruning() {
-    SpinManager spinManager;
-
-    std::vector<uint8_t> table;
-    if (pruning::io::load("./table/Thistlethwaite/g3_group_edgeCornes_parity.prune", table, 0x01))
-        return;
-    auto newTable = TableGenerator::generate(
-        encodeG3,
-        [&spinManager](CubeState& state, SpinLst move) {
-            spinManager.applyMove(state, move);
-        },
-        29400,
-        {
-            SpinLst::U, SpinLst::U2, SpinLst::U3,
-            SpinLst::D, SpinLst::D2, SpinLst::D3,
-            SpinLst::L2, SpinLst::R2, SpinLst::F2, SpinLst::B2
-        }
-    );
-    pruning::io::save("./table/Thistlethwaite/g3_group_edgeCornes_parity.prune", newTable, 0x01);
+static std::array<uint8_t,4> unrankMSlice(uint16_t code) {
+    int idx = 494 - code;
+    std::array<uint8_t,4> pos{};
+    int x = 11;
+    for (int k = 4; k >= 1; --k) {
+        while (binom(x, k) > idx) --x;
+        pos[k-1] = (uint8_t)x;
+        idx -= binom(x, k);
+        --x;
+    }
+    std::sort(pos.begin(), pos.end());
+    return pos;
 }
 
-void ThistlethwaiteG4Pruning() {
-    SpinManager spinManager;
+void KociembageratorG1Move() {
+    SpinManager spinMgr;
 
-    std::vector<uint8_t> table;
-    if (pruning::io::load("./table/Thistlethwaite/g4_mirrorSpin.prune", table, 0x01))
-        return;
-    auto newTable = TableGenerator::generate(
-        encodeG4,
-        [&spinManager](CubeState& state, SpinLst move) {
-            spinManager.applyMove(state, move);
+    MoveTables tbl = MoveTables::buildOnline(
+        spinMgr,
+        [](CubeState& s, uint16_t t){ decodeCornersOrientation(s, t); },
+        [](CubeState& s, uint16_t f){ decodeEdgesOrientation(s, f); },
+        [](CubeState& s, uint16_t m){
+            auto pos = unrankMSlice(m);
+            uint8_t nextNonSlice = 0;
+            std::array<bool,12> isSlice{}; for (auto p : pos) isSlice[p] = true;
+
+            for (int p = 0; p < 12; ++p)
+                if (!isSlice[p]) setEdgeId(s, p, nextNonSlice++);
+
+            for (int i = 0; i < 4; ++i) setEdgeId(s, pos[i], 8 + i);
         },
-        18501, // (4!^5/12)
-        {
-            SpinLst::U2, SpinLst::D2, SpinLst::L2, 
-            SpinLst::R2, SpinLst::F2, SpinLst::B2
-        }
+        [](const CubeState& s){ return encodeCornersOrientation(s); },
+        [](const CubeState& s){ return encodeEdgesOrientation(s); },
+        [](const CubeState& s){ return encodeMSlice(s); }
     );
-    pruning::io::save("./table/Thistlethwaite/g4_mirrorSpin.prune", newTable, 0x01);
+
+    tbl.save("./table/Kociemba/g1_moves.bin");
 }
 
+void KociembageratorG2Move() {
+    SpinManager spinMgr;
+
+    std::vector<SpinLst> moves = {
+        SpinLst::U, SpinLst::U2, SpinLst::U3,
+        SpinLst::D, SpinLst::D2, SpinLst::D3,
+        SpinLst::L2, SpinLst::R2, SpinLst::F2, SpinLst::B2
+    };
+
+    P2MoveTables tbl = P2MoveTables::buildOnline(
+        spinMgr,
+        moves,
+        [](CubeState& s, uint32_t c){ decodeCornerPermutation(s, c); },
+        [](CubeState& s, uint32_t m){ decodeMSliceEdgePermutation(s, m); },
+        [](CubeState& s, uint32_t u){ decodeUDSlicePermutation(s, u); },
+        [](const CubeState& s){ return encodeCornerPermutation(s); },
+        [](const CubeState& s){ return encodeMSliceEdgePermutation(s); },
+        [](const CubeState& s){ return encodeUDSlicePermutation(s); }
+    );
+
+    tbl.save("./table/Kociemba/g2_moves.bin");
+}
 
 int main() {
 
@@ -212,11 +221,9 @@ int main() {
     KociembagenerateG2MSlicePermutation();
     std::cout << "Kociemba Pruning Tables Generated Successfully!" << std::endl;
 
-    // Thistlethwaite Pruning Tables Generation
-    ThistlethwaiteG1Pruning();
-    ThistlethwaiteG2Pruning();
-    ThistlethwaiteG3Pruning();
-    ThistlethwaiteG4Pruning();
-    std::cout << "Thistlethwaite Pruning Tables Generated Successfully!" << std::endl;
+    KociembageratorG1Move();
+    KociembageratorG2Move();
+    std::cout << "Kociemba Move Table Generated Successfully!" << std::endl;
+
     return 0;
 }

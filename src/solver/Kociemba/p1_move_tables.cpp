@@ -4,14 +4,46 @@
 #include <algorithm>
 #include "../../../include/solver/Kociemba/p1_move_tables.hpp"
 
+static inline void setEdgeId(CubeState& s, int pos, uint8_t id) {
+    s.edges &= ~(0xFULL << (pos*4));
+    s.edges |= (uint64_t(id) & 0xFULL) << (pos*4);
+}
 
-static inline CubeState identityCube();
-static inline void clearOrientBits(CubeState& s);
-static inline void setEdgeId(CubeState& s, int pos, uint8_t id);
+static inline CubeState identityCube() {
+    CubeState s{};
+    
+    for (int p = 0; p < 12; ++p) setEdgeId(s, p, (uint8_t)p);
+    return s;
+}
+
+static inline void clearOrientBits(CubeState& s) {
+    s.corners &= ~((~0ULL) << 32);
+    s.edges   &= ((1ULL << 48) - 1);
+}
 
 
-static std::array<uint8_t,4> unrankMSlice(uint16_t code);
-static int binom(int n, int k); 
+static int binom(int n, int k) {
+    if (k<0 || k>n) return 0;
+    if (k==0 || k==n) return 1;
+    long long r = 1;
+    for (int i=1;i<=k;++i) r = r*(n-k+i)/i;
+    return int(r);
+}
+
+static std::array<uint8_t,4> unrankMSlice(uint16_t code) {
+    int idx = 494 - code;
+    std::array<uint8_t,4> pos{};
+    int x = 11;
+    for (int k = 4; k >= 1; --k) {
+        while (binom(x, k) > idx) --x;
+        pos[k-1] = (uint8_t)x;
+        idx -= binom(x, k);
+        --x;
+    }
+    std::sort(pos.begin(), pos.end());
+    return pos;
+}
+
 
 MoveTables MoveTables::buildOnline(
     const SpinManager& spinMgr,
@@ -109,75 +141,41 @@ void MoveTables::save(const std::string& path) const {
     std::fwrite(flip_.data(),   sizeof(uint16_t), flip_.size(),   f);
     std::fwrite(mslice_.data(), sizeof(uint16_t), mslice_.size(), f);
     std::fclose(f);
-    }
-
-    MoveTables MoveTables::load(const std::string& path) {
-    FILE* f = std::fopen(path.c_str(), "rb");
-    if (!f) throw std::runtime_error("MoveTables::load: open failed");
-
-    uint32_t hdr[6]{};
-    if (std::fread(hdr, sizeof(hdr), 1, f) != 1) {
-        std::fclose(f); throw std::runtime_error("MoveTables::load: header read failed");
-    }
-    if (hdr[0] != MAGIC || hdr[1] != VERSION) {
-        std::fclose(f); throw std::runtime_error("MoveTables::load: bad magic/version");
-    }
-    if (int(hdr[2]) != Counts::NMOVES ||
-        int(hdr[3]) != Counts::TWIST ||
-        int(hdr[4]) != Counts::FLIP  ||
-        int(hdr[5]) != Counts::MSLICE) {
-        std::fclose(f); throw std::runtime_error("MoveTables::load: shape mismatch");
-    }
-
-    std::vector<uint16_t> T(Counts::TWIST  * Counts::NMOVES);
-    std::vector<uint16_t> F(Counts::FLIP   * Counts::NMOVES);
-    std::vector<uint16_t> S(Counts::MSLICE * Counts::NMOVES);
-
-    if (std::fread(T.data(), sizeof(uint16_t), T.size(), f) != T.size() ||
-        std::fread(F.data(), sizeof(uint16_t), F.size(), f) != F.size() ||
-        std::fread(S.data(), sizeof(uint16_t), S.size(), f) != S.size()) {
-        std::fclose(f); throw std::runtime_error("MoveTables::load: payload read failed");
-    }
-    std::fclose(f);
-    return MoveTables(std::move(T), std::move(F), std::move(S));
 }
 
-
-static inline CubeState identityCube() {
-    CubeState s{};
+MoveTables MoveTables::load(const std::string& path) {
+    try {
+        FILE* f = std::fopen(path.c_str(), "rb");
+        if (!f) throw std::runtime_error("MoveTables::load: open failed");
     
-    for (int p = 0; p < 12; ++p) setEdgeId(s, p, (uint8_t)p);
-    return s;
-}
-
-static inline void clearOrientBits(CubeState& s) {
-    s.corners &= ~((~0ULL) << 32);
-    s.edges   &= ((1ULL << 48) - 1);
-}
-
-static inline void setEdgeId(CubeState& s, int pos, uint8_t id) {
-    s.edges &= ~(0xFULL << (pos*4));
-    s.edges |= (uint64_t(id) & 0xFULL) << (pos*4);
-}
-
-static int binom(int n, int k) {
-    if (k<0 || k>n) return 0;
-    if (k==0 || k==n) return 1;
-    long long r = 1;
-    for (int i=1;i<=k;++i) r = r*(n-k+i)/i;
-    return int(r);
-}
-
-static std::array<uint8_t,4> unrankMSlice(uint16_t code) {
-    int idx = 494 - code;
-    std::array<uint8_t,4> pos{};
-    int x = 11;
-    for (int k = 4; k >= 1; --k) {
-        while (binom(x, k) > idx) --x;
-        pos[k-1] = (uint8_t)x;
-        idx -= binom(x, k);
-        --x;
+        uint32_t hdr[6]{};
+        if (std::fread(hdr, sizeof(hdr), 1, f) != 1) {
+            std::fclose(f); throw std::runtime_error("MoveTables::load: header read failed");
+        }
+        if (hdr[0] != MAGIC || hdr[1] != VERSION) {
+            std::fclose(f); throw std::runtime_error("MoveTables::load: bad magic/version");
+        }
+        if (int(hdr[2]) != Counts::NMOVES ||
+            int(hdr[3]) != Counts::TWIST ||
+            int(hdr[4]) != Counts::FLIP  ||
+            int(hdr[5]) != Counts::MSLICE) {
+            std::fclose(f); throw std::runtime_error("MoveTables::load: shape mismatch");
+        }
+    
+        std::vector<uint16_t> T(Counts::TWIST  * Counts::NMOVES);
+        std::vector<uint16_t> F(Counts::FLIP   * Counts::NMOVES);
+        std::vector<uint16_t> S(Counts::MSLICE * Counts::NMOVES);
+    
+        if (std::fread(T.data(), sizeof(uint16_t), T.size(), f) != T.size() ||
+            std::fread(F.data(), sizeof(uint16_t), F.size(), f) != F.size() ||
+            std::fread(S.data(), sizeof(uint16_t), S.size(), f) != S.size()) {
+            std::fclose(f); throw std::runtime_error("MoveTables::load: payload read failed");
+        }
+        std::fclose(f);
+        return MoveTables(std::move(T), std::move(F), std::move(S));
+    } catch (const std::exception& e) {
+        (void)e;
+        return MoveTables();
     }
-    std::sort(pos.begin(), pos.end());
-    return pos;
 }
+

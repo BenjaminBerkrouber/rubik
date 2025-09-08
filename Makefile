@@ -35,8 +35,6 @@ SRC_FILES := \
 	$(SRC_DIR)/solver/Pruning/TableIO.cpp \
 	$(SRC_DIR)/solver/Kociemba/p1_move_tables.cpp \
 	$(SRC_DIR)/solver/Kociemba/p2_move_tables.cpp \
-# 	$(SRC_DIR)/solver/Thistlethwaite/IPhaseSolver.cpp \
-	$(SRC_DIR)/solver/Thistlethwaite/ThistlethwaiteSolver.cpp \
 
 
 TABLE_SRC := \
@@ -45,6 +43,8 @@ TABLE_SRC := \
 	$(SRC_DIR)/cube/CubeOperations.cpp \
 	$(SRC_DIR)/cube/Encoding.cpp \
 	$(SRC_DIR)/solver/Pruning/TableIO.cpp \
+	$(SRC_DIR)/solver/Kociemba/p1_move_tables.cpp \
+	$(SRC_DIR)/solver/Kociemba/p2_move_tables.cpp \
 
 
 OBJ_FILES := $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
@@ -104,7 +104,6 @@ table: $(TABLE_OBJ)
 	@$(CXX) $(CXXFLAGS) $(TABLE_OBJ) -o $(BIN_DIR)/table_exec
 	@echo "$(GREEN)Table compilation completed ✅$(NC)"
 	@mkdir -p $(TABLE_DIR)
-	@mkdir -p $(TABLE_DIR)/Thistlethwaite
 	@mkdir -p $(TABLE_DIR)/Kociemba
 	@./$(BIN_DIR)/table_exec
 

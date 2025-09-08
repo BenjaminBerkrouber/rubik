@@ -10,32 +10,7 @@ G2Solver::G2Solver() : _spinManager() {
     pruning::io::load("./table/Kociemba/g2_corners_permutation.prune", _pruningCornersPermutation, 0x01);
     pruning::io::load("./table/Kociemba/g2_mSLice_permutation.prune",  _pruningMSlicePermutation,  0x01);
     pruning::io::load("./table/Kociemba/g2_uDSlice_permutation.prune", _pruningUDSlicePermutation, 0x01);
-
-    if (_allowSpin.empty()) {
-        _allowSpin = {
-        SpinLst::U, SpinLst::U2, SpinLst::U3,
-        SpinLst::D, SpinLst::D2, SpinLst::D3,
-        SpinLst::R2, SpinLst::L2, SpinLst::F2, SpinLst::B2
-        };
-    }
-
-    try {
-        p2Tables_ = P2MoveTables::load("p2_moves.bin");
-        if (p2Tables_.nmoves() != (int)_allowSpin.size())
-        throw std::runtime_error("p2 nmoves mismatch with allowedMoves");
-    } catch (...) {
-        p2Tables_ = P2MoveTables::buildOnline(
-        _spinManager,
-        _allowSpin,
-        [this](CubeState& s, uint32_t idx){ decodeCornerPermutation(s, idx); },
-        [this](CubeState& s, uint32_t idx){ decodeMSliceEdgePermutation(s, idx); },
-        [this](CubeState& s, uint32_t idx){ decodeUDSlicePermutation(s, idx); },
-        [this](const CubeState& s){ return (uint16_t)encodeCornerPermutation(s); },
-        [this](const CubeState& s){ return (uint16_t)encodeMSliceEdgePermutation(s); },
-        [this](const CubeState& s){ return (uint16_t)encodeUDSlicePermutation(s); }
-        );
-        p2Tables_.save("p2_moves.bin");
-    }
+    p2Tables_ = P2MoveTables::load("./table/Kociemba/g2_moves.bin");
 }
 
 
@@ -110,6 +85,12 @@ bool G2Solver::solve(CubeState &state) {
 
 
 bool G2Solver::checkTable() const {
+    if (p2Tables_.corner_.empty() || 
+        p2Tables_.mslice_.empty()  || 
+        p2Tables_.udslc_.empty()) {
+        return false;
+    }
+
     return  (_pruningCornersPermutation.size() == 40320 &&
             _pruningMSlicePermutation.size() == 24 &&
             _pruningUDSlicePermutation.size() == 40320);

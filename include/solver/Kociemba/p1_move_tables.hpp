@@ -42,13 +42,11 @@ class MoveTables {
     const std::vector<uint16_t>& rawTwist () const { return twist_;  }
     const std::vector<uint16_t>& rawFlip  () const { return flip_;   }
     const std::vector<uint16_t>& rawMSlice() const { return mslice_; }
-
-    private:
-    
     std::vector<uint16_t> twist_;   
     std::vector<uint16_t> flip_;    
     std::vector<uint16_t> mslice_;  
 
+    private:
     
     MoveTables(std::vector<uint16_t> tw, std::vector<uint16_t> fl, std::vector<uint16_t> ms)
         : twist_(std::move(tw)), flip_(std::move(fl)), mslice_(std::move(ms)) {}
