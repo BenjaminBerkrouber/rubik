@@ -18,8 +18,6 @@ Mesh::~Mesh() {
         glDeleteBuffers(1, &this->_vbo);
     if (this->_vao)
         glDeleteVertexArrays(1, &this->_vao);
-    if (this->_texture)
-        glDeleteTextures(1, &this->_texture);
 }
 
 void Mesh::init(const std::string gltPath) {

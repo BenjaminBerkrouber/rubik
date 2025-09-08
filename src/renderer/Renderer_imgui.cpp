@@ -201,7 +201,7 @@ void Renderer::_renderGui() {
                 glfwSwapInterval(vsync);
             ImGui::SameLine();
             if (ImGui::Checkbox("MSAA x8", &MSAA)) {
-    
+
                 if (MSAA)
                     glEnable(GL_MULTISAMPLE);
                 else

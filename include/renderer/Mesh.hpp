@@ -41,5 +41,4 @@ private:
     unsigned int _ebo;
     unsigned int _indexCount;
 
-    unsigned int _texture;
 };
