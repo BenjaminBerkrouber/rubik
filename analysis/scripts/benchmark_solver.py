@@ -6,8 +6,6 @@ import os
 import csv
 import random
 
-import os
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, '..', 'data')
 CSV_PATH = os.path.abspath(os.path.join(DATA_DIR, 'Kociemba.csv'))
@@ -35,7 +33,6 @@ def generate_scramble(length):
     return " ".join(scramble)
 
 def run_benchmark(executable: str, runs: int, scramble_length: int):
-
     with open(CSV_PATH, mode='w', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(["time", "spins", "scramble", "solution"])
@@ -58,14 +55,13 @@ def run_benchmark(executable: str, runs: int, scramble_length: int):
                 print(f"[{i+1}/{runs}] ✅ {num_spins} spins in {duration:.4f}s")
 
     print(f"\nResults saved in {CSV_PATH}")
-
 def read_stats():
     if not os.path.exists(CSV_PATH):
-        print(f"Fichier introuvable : {CSV_PATH}")
+        print(f"File not found : {CSV_PATH}")
         return
 
     if os.path.getsize(CSV_PATH) == 0:
-        print(f"Fichier vide : {CSV_PATH}")
+        print(f"File is empty : {CSV_PATH}")
         return
 
     times = []
@@ -76,7 +72,7 @@ def read_stats():
         reader = csv.DictReader(file)
         rows = list(reader)
         if not rows:
-            print(f"Aucune donnée disponible dans {CSV_PATH}")
+            print(f"No data available in {CSV_PATH}")
             return
         for row in rows:
             t = float(row["time"])
@@ -102,20 +98,34 @@ def read_stats():
     display("Temps d'exécution (s)", times)
     display("Nombre de tours", spins)
 
+    print(f"\n[KO] rencontrés : {errors} / {len(times)} ({(errors / len(times) * 100):.2f}%)")
 
-    print(f"\n[KO] encountered: {errors} / {len(times)} ({(errors / len(times) * 100):.2f}%)")
 
 def main():
-    parser = argparse.ArgumentParser(description="Benchmark for the Kociemba solver.")
-    parser.add_argument("--run", action="store_true", help="Run tests and write to the CSV file.")
-    parser.add_argument("--read", action="store_true", help="Read results from the CSV file.")
-    parser.add_argument("-n", "--number", type=int, default=100, help="Number of tests (default: 100)")
-    parser.add_argument("--exec", type=str, default="./rubik", help="Path to the executable (default: ./rubik)")
-    parser.add_argument("--scramble", type=int, default=25, help="Scramble length (default: 25)")
+    parser = argparse.ArgumentParser(
+        description="📊 Benchmark tool for the Kociemba solver",
+        formatter_class=argparse.RawTextHelpFormatter
+    )
+    modes = parser.add_argument_group("Modes")
+    modes.add_argument("--run", action="store_true", help="Lancer les benchmarks et écrire dans le fichier CSV")
+    modes.add_argument("--read", action="store_true", help="Lire les résultats existants depuis le CSV")
+    modes.add_argument("--scramble-only", action="store_true", help="Afficher uniquement une suite de mouvements")
+    
+    bench_opts = parser.add_argument_group("Options benchmark")
+    bench_opts.add_argument("-n", "--number", type=int, default=100, help="Nombre de tests (défaut : 100)")
+    bench_opts.add_argument("--exec", type=str, default="./rubik", help="Chemin de l'exécutable (défaut : ./rubik)")
+    bench_opts.add_argument("--scramble", type=int, default=25, help="Longueur du scramble pour le benchmark (défaut : 25)")
+
+    scramble_opts = parser.add_argument_group("Options scramble")
+    scramble_opts.add_argument("-l", "--length", type=int, default=30, help="Longueur du scramble généré (défaut : 30)")
+
 
     args = parser.parse_args()
 
-    if args.run:
+    if args.scramble_only:
+        scramble = generate_scramble(args.length)
+        print(f" {scramble} ")
+    elif args.run:
         run_benchmark(args.exec, args.number, args.scramble)
     elif args.read:
         read_stats()

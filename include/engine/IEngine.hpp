@@ -30,5 +30,6 @@ class IEngine {
         virtual void setSolutionSpins(const std::vector<SpinLst>& solutionSpins) = 0;
         virtual void setSolutionSteps(const std::vector<std::pair<std::string, std::pair<std::vector<SpinLst>,std::vector<SpinLst>>>>& solutionSteps) = 0;
         virtual void setShuffleSpins(const std::vector<SpinLst>& shuffleSpins) = 0;
+        virtual void setTimeExec(double time) = 0;
 
 };
