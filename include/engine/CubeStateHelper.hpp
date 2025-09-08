@@ -151,4 +151,8 @@ class CubeStateHelper : public IEngine {
         void setShuffleSpins(const std::vector<SpinLst>& shuffleSpins) override {
             (void)shuffleSpins;
         };
+
+        void setTimeExec(double time) override {
+            (void)time;
+        };
 };

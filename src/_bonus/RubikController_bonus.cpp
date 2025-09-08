@@ -15,7 +15,6 @@ RubikController::RubikController(IEngine * engine)
         _KociembaSolver(nullptr) {
     _engine = engine;
     _KociembaSolver = new KociembaSolver(_cubeState);
-    // _ThiswlitheSolver = new ThiswlitheSolver(_cubeState);
 }
 
 RubikController::~RubikController() {
@@ -23,14 +22,6 @@ RubikController::~RubikController() {
         delete _KociembaSolver;
         _KociembaSolver = nullptr;
     }
-    if (_ThiswlitheSolver) {
-        delete _ThiswlitheSolver;
-        _ThiswlitheSolver = nullptr;
-    }
-    // if (_engine) {
-    //     delete _engine;
-    //     _engine = nullptr;
-    // }
 }
 
 
@@ -78,10 +69,19 @@ void RubikController::print() const {
     _engine->print();
 }
 
+#include <chrono>
+
 void RubikController::solve(int algorithm) {
-    ISolver* solver = algorithm == 0 ? _KociembaSolver : _ThiswlitheSolver;
+    auto start = std::chrono::high_resolution_clock::now();
+    ISolver* solver = algorithm == 0 ? _KociembaSolver : nullptr;
     if (!solver->solve()) 
         return;
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = end - start;
+    double timeExec = elapsed.count();
+    std::cout << "Solved in [" << std::fixed << std::setprecision(6) << timeExec << "] seconds.";
+    std::cout << " with : [" << solver->getSolution().size() << "] moves." << std::endl;
+    _engine->setTimeExec(timeExec);
     _engine->setSolutionSpins(solver->getSolution());
     _engine->setSolutionSteps(solver->getSolutionSteps());
 }
