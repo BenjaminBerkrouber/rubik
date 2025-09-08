@@ -23,3 +23,8 @@ void Renderer::setShuffleSpins(const std::vector<SpinLst> & shuffleSpins) {
     for (int i = 0; i < static_cast<int>(shuffleSpins.size()); i++)
         this->_rubiksCube.spin(shuffleSpins[i], 0.1f);
 };
+
+
+void Renderer::setTimeExec(double timeExec) {
+    this->_timeExec = timeExec;
+};
