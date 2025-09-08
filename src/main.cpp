@@ -1,29 +1,27 @@
 #include <iostream>
 #include <chrono>
 
-#include "include/RubikController.hpp"
+#include "RubikController.hpp"
 
-#include "include/BuildPruningTable/TableGenerator.hpp"
-#include "include/solver/Pruning/TableIO.hpp"
-#include "include/cube/Encoding.h"
+#include "BuildPruningTable/TableGenerator.hpp"
+#include "solver/Pruning/TableIO.hpp"
+#include "cube/Encoding.h"
 
-#include "include/spin/SpinManager.hpp"
+#include "spin/SpinManager.hpp"
 
-#include "include/engine/CubeStateHelper.hpp"
-#include "include/utils/Constants.hpp"
+#include "engine/CubeStateHelper.hpp"
+#include "utils/Constants.hpp"
 
 
-#include "include/solver/Kociemba/KociembaSolver.hpp"
-#include "include/engine/CubeStateHelper.hpp"
-#include "include/cube/CubeState.hpp"
+#include "solver/Kociemba/KociembaSolver.hpp"
+#include "engine/CubeStateHelper.hpp"
+#include "cube/CubeState.hpp"
 
 
 static inline int error(const std::string& message) {
     std::cerr << "[KO] | " << message << std::endl;
     return 1;
 }
-
-#include "renderer/Renderer.hpp"
 
 int main(int argc, char* argv[]) {
     

@@ -1,6 +1,6 @@
 #include "renderer/Renderer.hpp"
 #include "renderer/Mesh.hpp"
-#include "renderer/../_bonus/RubikController_bonus.hpp"
+#include "RubikController_bonus.hpp"
 
 #include <iostream>
 

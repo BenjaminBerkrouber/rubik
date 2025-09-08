@@ -14,8 +14,8 @@ Shader::~Shader() {glDeleteProgram(this->_id);}
 
 void Shader::init() {
 
-    std::string vertSrc = _loadFromFile("src/renderer/shaders/vertex.glsl");
-    std::string fragSrc = _loadFromFile("src/renderer/shaders/fragment.glsl");
+    std::string vertSrc = _loadFromFile("src/_bonus/renderer/shaders/vertex.glsl");
+    std::string fragSrc = _loadFromFile("src/_bonus/renderer/shaders/fragment.glsl");
 
     unsigned int vert = _compile(vertSrc, GL_VERTEX_SHADER);
     unsigned int frag = _compile(fragSrc, GL_FRAGMENT_SHADER);

@@ -32,7 +32,7 @@ void RubiksCube::init() {
             for (int z = -1; z <= 1; ++z) {
 
                 this->_cubes.emplace_back(this->_shader);
-                this->_cubes.back().mesh.init("cube.glb");
+                this->_cubes.back().mesh.init("assets/cube.glb");
                 this->_cubes.back().position = glm::ivec3(x, y, z);
                 this->_cubes.back().mesh.translate(this->_cubes.back().position * 2);
             }

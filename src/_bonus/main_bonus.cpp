@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "_bonus/RubikController_bonus.hpp"
+#include "RubikController_bonus.hpp"
 #include "renderer/Renderer.hpp"
 
 int main() {
