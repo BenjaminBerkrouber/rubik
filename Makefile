@@ -33,6 +33,8 @@ SRC_FILES := \
 	$(SRC_DIR)/solver/Kociemba/KociembaSolver.cpp \
 	$(SRC_DIR)/solver/Kociemba/G1Solver.cpp \
 	$(SRC_DIR)/solver/Kociemba/G2Solver.cpp \
+	$(SRC_DIR)/solver/Kociemba/p1_move_tables.cpp \
+	$(SRC_DIR)/solver/Kociemba/p2_move_tables.cpp \
 	$(SRC_DIR)/solver/Pruning/TableIO.cpp \
 	$(SRC_DIR)/renderer/Renderer.cpp \
 	$(SRC_DIR)/renderer/Renderer_callbacks.cpp \
@@ -50,6 +52,8 @@ TABLE_SRC := \
 	$(SRC_DIR)/cube/CubeOperations.cpp \
 	$(SRC_DIR)/cube/Encoding.cpp \
 	$(SRC_DIR)/solver/Pruning/TableIO.cpp \
+	$(SRC_DIR)/solver/Kociemba/p1_move_tables.cpp \
+	$(SRC_DIR)/solver/Kociemba/p2_move_tables.cpp \
 
 
 OBJ_FILES := $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
@@ -74,7 +78,7 @@ NC      := \033[0m
 
 all: start $(NAME) end
 
-$(NAME): $(OBJ_FILES) table
+$(NAME): $(OBJ_FILES) 
 	@echo "$(BLUE)[LINK] Create the executable ...$(NC)"
 	@$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(GLIBFLAGS) -o $(NAME)
 
@@ -109,6 +113,7 @@ table: $(TABLE_OBJ)
 	@$(CXX) $(CXXFLAGS) $(TABLE_OBJ) -o $(BIN_DIR)/table_exec
 	@echo "$(GREEN)Table compilation completed ✅$(NC)"
 	@mkdir -p $(TABLE_DIR)
+	@mkdir -p $(TABLE_DIR)/Kociemba
 	@./$(BIN_DIR)/table_exec
 
 table_clean:

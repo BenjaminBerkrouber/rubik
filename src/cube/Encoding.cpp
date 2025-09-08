@@ -167,8 +167,8 @@ uint32_t encodeCornerPermutation(const CubeState& state) {
     return index; // 8! = 40320
 }
 
-static constexpr int factorials[8] = {
-    1, 1, 2, 6, 24, 120, 720, 5040
+static constexpr int factorials[10] = {
+    1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880
 };
 
 void decodeCornerPermutation(CubeState& state, uint32_t index) {
@@ -324,6 +324,3 @@ void decodeMSliceEdgePermutation(CubeState& state, uint32_t index) {
         state.edges |= (uint64_t(M_SLICE_EDGES[perm[i]]) & 0xF) << (M_SLICE_EDGES[i] * 4);
     }
 }
-
-
-

@@ -1,4 +1,5 @@
 #include "../../../include/solver/Kociemba/KociembaSolver.hpp"
+#include "../../../include/cube/Encoding.h"
 
 // ==============================================================================================================================
 // ==== Constructor and Destructor ====
@@ -18,26 +19,25 @@ KociembaSolver::~KociembaSolver() = default;
 // ==============================================================================================================================
 
 
-bool KociembaSolver::solve() {
-    if (!checkTable()) {
-        std::cerr << "[KO] Pruning tables are not loaded correctly." << std::endl;
-        return false;
-    }
-    if (!_g1Solver.solve(_state)) {
-        std::cerr << "[KO] G1Solver failed to solve the cube." << std::endl;
-        return false;
-    }
-    for (const SpinLst& move : _g1Solver.getSolution()) {
-        _spinManager.applyMove(_state, move);
-    }
+static bool error(const char* msg) {
+    std::cerr << msg << std::endl;
+    return false;
+}
 
-    if (!_g2Solver.solve(_state)) {
-        std::cerr << "[KO] G2Solver failed to solve the cube." << std::endl;
-        return false;
-    }
-    for (const SpinLst& move : _g2Solver.getSolution()) {
+bool KociembaSolver::solve() {
+    if (!checkTable())
+        return error("[KO] Pruning tables are not loaded correctly");
+    
+    if (!_g1Solver.solve(_state))
+        return error("[KO] G1Solver failed to solve the cube.");
+    for (const SpinLst& move : _g1Solver.getSolution())
         _spinManager.applyMove(_state, move);
-    }
+
+    if (!_g2Solver.solve(_state))
+        return error("[KO] G2Solver failed to solve the cube.");
+    for (const SpinLst& move : _g2Solver.getSolution())
+        _spinManager.applyMove(_state, move);
+    
     return true;
 }
 

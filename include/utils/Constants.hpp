@@ -29,7 +29,7 @@ enum CornersPieceLst {
     DFR, // 4
     DLF, // 5
     DBL, // 6
-    DRB // 7
+    DRB  // 7
 };
 
 enum EdgesPieceLst {

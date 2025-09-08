@@ -15,6 +15,7 @@
 
 #include "include/solver/Kociemba/KociembaSolver.hpp"
 
+
 static inline int error(const std::string& message) {
     std::cerr << "[KO] | " << message << std::endl;
     return 1;
@@ -37,3 +38,4 @@ int main() {
 
     return (0);
 }
+

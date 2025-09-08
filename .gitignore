@@ -51,3 +51,10 @@ analysis/results
 
 # opengl/imgui temp files
 imgui.ini
+
+# opengl/imgui temp files
+imgui.ini
+
+*.txt
+
+*.bin

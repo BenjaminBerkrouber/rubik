@@ -8,7 +8,8 @@
 # include <cstdint>
 
 # include "./CubeState.hpp"
-
+# include "../spin/SpinManager.hpp"
+# include "../utils/Constants.hpp"
 
 // ===============================================================================================================================
 // ===============================================================================================================================
@@ -161,5 +162,9 @@ uint32_t encodeMSliceEdgePermutation(const CubeState& state);
  */
 void decodeMSliceEdgePermutation(CubeState& state, uint32_t code);
 
+
+uint32_t encodageG2(const CubeState &state);
+uint32_t encodeG3(const CubeState& state);
+uint32_t encodeG4(const CubeState& state);
 
 #endif // CUBE_ENCODING_H

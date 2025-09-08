@@ -6,9 +6,9 @@
 #include "../../utils/Constants.hpp"
 
 #include "../Pruning/TableIO.hpp"
+#include "./p2_move_tables.hpp"
 
 #include <vector>
-#include <unordered_map>
 
 
 /**
@@ -41,6 +41,11 @@ class G2Solver {
         std::vector<uint8_t> _pruningUDSlicePermutation;
 
         /**
+        * @brief Move tables for phase 2.
+        */
+        P2MoveTables p2Tables_;
+
+        /**
         * @brief Computed move sequence for G2 solution.
         */
         std::vector<SpinLst> _solution;
@@ -57,23 +62,31 @@ class G2Solver {
         };
 
         /**
-        * @brief IDA* search algorithm for solving G2 phase.
+        * @struct P2State
+        * @brief Represents the state of the cube in terms of corner and edge permutations.
+        */
+        struct P2State {
+            uint16_t cperm;   // 0..40319
+            uint16_t msperm;  // 0..23
+            uint16_t udperm;  // 0..40319
+        };
+
+        /**
+        * @brief Internal IDA* solver used to explore move sequences.
         *
-        * @param state Current cube state.
-        * @param maxDepth Maximum depth allowed in this iteration.
-        * @param visited States already visited to prevent cycles.
-        * @param depth Current recursion depth (default: 0).
-        * @param hasLastMove Whether the last move is available.
-        * @param lastMove Last performed move.
-        * @return true if a solution was found.
+        * @param s Current state in terms of orientations and M-slice edges.
+        * @param g Current depth in the search tree.
+        * @param bound Current cost bound for the search.
+        * @param hasLastMove Indicates if there was a last move made.
+        * @param lastMove The last move made in the search.
+        * @return true if a solution was found within the given bound.
         */
         bool IDA(
-            CubeState state,
-            int maxDepth,
-            std::unordered_map<CubeState, int>& visited,
-            int depth = 0,
-            bool hasLastMove = false,
-            SpinLst lastMove = SpinLst::U
+            const P2State& s,
+            int g,
+            int bound,
+            bool hasLastMove,
+            SpinLst lastMove
         );
 
         /**

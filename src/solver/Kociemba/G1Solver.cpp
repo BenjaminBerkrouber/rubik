@@ -5,10 +5,13 @@
 // ==== Constructor and Destructor ====
 // ==============================================================================================================================
 
+#include <iostream>
+
 
 G1Solver::G1Solver() : _spinManager() {
-    pruning::io::load("./table/g1_corners_edges.prune", _pruningOrientation, 0x01);
-    pruning::io::load("./table/g1_Mslice.prune", _pruningMSlice, 0x02);
+    pruning::io::load("./table/Kociemba/g1_corners_edges.prune", _pruningOrientation, 0x01);
+    pruning::io::load("./table/Kociemba/g1_Mslice.prune", _pruningMSlice, 0x02);
+    p1Tables_ = MoveTables::load("./table/Kociemba/g1_moves.bin");
 }
 
 
@@ -16,47 +19,63 @@ G1Solver::G1Solver() : _spinManager() {
 // ==== Solve Method ====
 // ==============================================================================================================================
 
+inline int axisOf(SpinLst m) {
+    static constexpr int FACE_TO_AXIS[6] = {0, 0, 2, 2, 1, 1};
+    int face = static_cast<int>(m) / 3;
+    return FACE_TO_AXIS[face];
+}
 
 bool G1Solver::IDA(
-    CubeState state,
-    int maxDepth,
-    int depth,
+    const P1State& s,
+    int g,
+    int bound,
     bool hasLastMove,
     SpinLst lastMove
 ) {
-
-    size_t indexOrient = encodeOrientationIndex(state);
-    size_t indexMSlice = encodeMSlice(state);
-
-    uint8_t heuristic = std::max(_pruningOrientation[indexOrient], _pruningMSlice[indexMSlice]);
-
-    if (heuristic == 0) return true;
-    if (depth + heuristic > maxDepth) return false;
+    uint8_t h = std::max(
+        _pruningOrientation[s.twist * 2048 + s.flip],
+        _pruningMSlice[s.mslice]
+    );
+    int f = g + h;
+    if (f > bound) return false;
+    if (h == 0)    return true;
 
     for (int moveInt = 0; moveInt < SPIN_COUNT; ++moveInt) {
         SpinLst move = static_cast<SpinLst>(moveInt);
-        if (hasLastMove && areInverseMoves(lastMove, move)) continue;
+        
+        auto faceOf = [](SpinLst x){ return static_cast<int>(x) / 3; };
+        if (hasLastMove && faceOf(lastMove) == faceOf(move)) continue;
 
-        CubeState next = state;
-        _spinManager.applyMove(next, move);
+        P1State n{
+            p1Tables_.nextTwist (s.twist , moveInt),
+            p1Tables_.nextFlip  (s.flip  , moveInt),
+            p1Tables_.nextMSlice(s.mslice, moveInt)
+        };
+
         _solution.push_back(move);
-
-        if (IDA(next, maxDepth, depth + 1, true, move)) {
-            return true;
-        }
-
+        if (IDA(n, g + 1, bound, true, move)) return true;
         _solution.pop_back();
     }
-
     return false;
 }
 
 
 
-bool G1Solver::solve(CubeState &state) {
-    for (int depth = 0; depth <= 20; ++depth) {
+bool G1Solver::solve(CubeState& state) {
+    P1State root{
+        (uint16_t)encodeCornersOrientation(state),
+        (uint16_t)encodeEdgesOrientation(state),
+        (uint16_t)encodeMSlice(state)
+    };
+    int bound = std::max(
+        _pruningOrientation[root.twist * 2048 + root.flip],
+        _pruningMSlice[root.mslice]
+    );
+
+    for (int depth = bound; depth <= 20; ++depth) {
         _solution.clear();
-        if (IDA(state, depth)) return true;
+        if (IDA(root, 0, depth, false, (SpinLst)0))
+            return true;
     }
     return false;
 }
@@ -68,21 +87,15 @@ bool G1Solver::solve(CubeState &state) {
 
 
 bool G1Solver::checkTable() const {
+    if (p1Tables_.twist_.empty() || 
+        p1Tables_.flip_.empty()  || 
+        p1Tables_.mslice_.empty()) {
+        return false;
+    }
+    
     return (_pruningOrientation.size() == 2048 * 2187 && 
             _pruningMSlice.size() == 495);
 }
-
-bool G1Solver::areInverseMoves(SpinLst a, SpinLst b) {
-    int faceA = static_cast<int>(a) / 3;
-    int faceB = static_cast<int>(b) / 3;
-
-    if (faceA != faceB) return false;
-
-    int turnA = static_cast<int>(a) % 3;
-    int turnB = static_cast<int>(b) % 3;
-    return (turnA + turnB) == 3;
-}
-
 
 // ====================================================================================
 // ==== Getter ====
