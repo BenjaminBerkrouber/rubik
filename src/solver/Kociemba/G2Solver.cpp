@@ -20,9 +20,12 @@ G2Solver::G2Solver() : _spinManager() {
 // ==============================================================================================================================
 
 
-inline bool axisOf(SpinLst m) {
-    return static_cast<int>(m) / 3;
+inline int axisOf(SpinLst m) {
+    static constexpr int FACE_TO_AXIS[6] = {0, 0, 2, 2, 1, 1};
+    int face = static_cast<int>(m) / 3;
+    return FACE_TO_AXIS[face];
 }
+
 
 bool G2Solver::IDA(const P2State& s,
                     int g,
@@ -42,7 +45,8 @@ bool G2Solver::IDA(const P2State& s,
     for (int mi = 0; mi < (int)_allowSpin.size(); ++mi) {
         SpinLst m = _allowSpin[mi];
 
-        if (hasLastMove && axisOf(lastMove) == axisOf(m)) continue;
+        auto faceOf = [](SpinLst x){ return static_cast<int>(x) / 3; };
+        if (hasLastMove && faceOf(lastMove) == faceOf(m)) continue;
 
         P2State n{
         p2Tables_.nextCorner (s.cperm , mi),

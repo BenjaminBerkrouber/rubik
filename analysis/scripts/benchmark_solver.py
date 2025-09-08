@@ -61,11 +61,11 @@ def run_benchmark(executable: str, runs: int, scramble_length: int):
 
 def read_stats():
     if not os.path.exists(CSV_PATH):
-        print(f"File not found: {CSV_PATH}")
+        print(f"Fichier introuvable : {CSV_PATH}")
         return
 
     if os.path.getsize(CSV_PATH) == 0:
-        print(f"File is empty: {CSV_PATH}")
+        print(f"Fichier vide : {CSV_PATH}")
         return
 
     times = []
@@ -76,7 +76,7 @@ def read_stats():
         reader = csv.DictReader(file)
         rows = list(reader)
         if not rows:
-            print(f"No data available in {CSV_PATH}")
+            print(f"Aucune donnée disponible dans {CSV_PATH}")
             return
         for row in rows:
             t = float(row["time"])
@@ -89,18 +89,19 @@ def read_stats():
 
     def display(label, data):
         if not data:
-            print(f"\n--- {label} ---\nNo data available.")
+            print(f"\n--- {label} ---\nAucune donnée disponible.")
             return
         print(f"\n--- {label} ---")
         print(f"Total       : {len(data)}")
-        print(f"Mean        : {statistics.mean(data):.4f}")
-        print(f"Median      : {statistics.median(data):.4f}")
+        print(f"Moyenne     : {statistics.mean(data):.4f}")
+        print(f"Médiane     : {statistics.median(data):.4f}")
         print(f"Min         : {min(data):.4f}")
         print(f"Max         : {max(data):.4f}")
-        print(f"Std. dev.   : {statistics.stdev(data):.4f}" if len(data) > 1 else "Std. dev.   : N/A")
+        print(f"Écart-type  : {statistics.stdev(data):.4f}" if len(data) > 1 else "Écart-type  : N/A")
 
-    display("Execution time (s)", times)
-    display("Number of spins", spins)
+    display("Temps d'exécution (s)", times)
+    display("Nombre de tours", spins)
+
 
     print(f"\n[KO] encountered: {errors} / {len(times)} ({(errors / len(times) * 100):.2f}%)")
 

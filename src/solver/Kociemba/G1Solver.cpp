@@ -19,10 +19,11 @@ G1Solver::G1Solver() : _spinManager() {
 // ==== Solve Method ====
 // ==============================================================================================================================
 
-inline bool axisOf(SpinLst m) {
-    return static_cast<int>(m) / 3;
+inline int axisOf(SpinLst m) {
+    static constexpr int FACE_TO_AXIS[6] = {0, 0, 2, 2, 1, 1};
+    int face = static_cast<int>(m) / 3;
+    return FACE_TO_AXIS[face];
 }
-
 
 bool G1Solver::IDA(
     const P1State& s,
@@ -41,7 +42,10 @@ bool G1Solver::IDA(
 
     for (int moveInt = 0; moveInt < SPIN_COUNT; ++moveInt) {
         SpinLst move = static_cast<SpinLst>(moveInt);
-        if (hasLastMove && axisOf(lastMove) == axisOf(move)) continue;
+        
+        auto faceOf = [](SpinLst x){ return static_cast<int>(x) / 3; };
+        if (hasLastMove && faceOf(lastMove) == faceOf(move)) continue;
+
         P1State n{
             p1Tables_.nextTwist (s.twist , moveInt),
             p1Tables_.nextFlip  (s.flip  , moveInt),
