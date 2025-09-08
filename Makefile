@@ -8,21 +8,24 @@
 
 NAME        := rubik
 
+BNAME		:= rubik_bonus
+
 CXX         := g++
 CXXFLAGS    := -Wall -Wextra -Werror -std=c++20 -O3 -g
-INCLUDES    := -Iinclude
+INCLUDES    := -Iinclude -Iinclude/_bonus -Iinclude/_bonus/libs
 SRC_DIR     := src
+BSRC_DIR	:= src/_bonus
 BIN_DIR     := bin
 OBJ_DIR     := $(BIN_DIR)/obj
 TABLE_DIR   := table
-
-GLIBFLAGS   := libs/glad/libglad.a libs/glfw/libglfw3.a libs/tinygltf/libtinygltf.a libs/imgui/libimgui.a -ldl -lGL -lX11 -lpthread -lXrandr -lXi
+LIBS_DIR	:= include/_bonus/libs
+GLIBFLAGS   := $(LIBS_DIR)/glad/libglad.a $(LIBS_DIR)/GLFW/libglfw3.a $(LIBS_DIR)/gltf/libtinygltf.a $(LIBS_DIR)/imgui/libimgui.a -ldl -lGL -lX11 -lpthread -lXrandr -lXi
 # ====================================================================================
 # Source Files
 # ====================================================================================
 
 SRC_FILES := \
-	main.cpp \
+	$(SRC_DIR)/main.cpp \
 	$(SRC_DIR)/RubikController.cpp \
 	$(SRC_DIR)/cube/CubeOperations.cpp \
 	$(SRC_DIR)/cube/Encoding.cpp \
@@ -36,18 +39,10 @@ SRC_FILES := \
 	$(SRC_DIR)/solver/Kociemba/p1_move_tables.cpp \
 	$(SRC_DIR)/solver/Kociemba/p2_move_tables.cpp \
 	$(SRC_DIR)/solver/Pruning/TableIO.cpp \
-	$(SRC_DIR)/renderer/Renderer.cpp \
-	$(SRC_DIR)/renderer/Renderer_callbacks.cpp \
-	$(SRC_DIR)/renderer/Renderer_IEngine.cpp \
-	$(SRC_DIR)/renderer/Renderer_imgui.cpp \
-	$(SRC_DIR)/renderer/Shader.cpp \
-	$(SRC_DIR)/renderer/Camera.cpp \
-	$(SRC_DIR)/renderer/Mesh.cpp \
-	$(SRC_DIR)/renderer/RubiksCube.cpp \
 
 SRC_FILES_BONUS := \
-	main_bonus.cpp \
-	$(SRC_DIR)/_bonus/RubikController_bonus.cpp \
+	$(BSRC_DIR)/main_bonus.cpp \
+	$(BSRC_DIR)/RubikController_bonus.cpp \
 	$(SRC_DIR)/cube/CubeOperations.cpp \
 	$(SRC_DIR)/cube/Encoding.cpp \
 	$(SRC_DIR)/spin/SpinManager.cpp \
@@ -60,14 +55,14 @@ SRC_FILES_BONUS := \
 	$(SRC_DIR)/solver/Kociemba/p1_move_tables.cpp \
 	$(SRC_DIR)/solver/Kociemba/p2_move_tables.cpp \
 	$(SRC_DIR)/solver/Pruning/TableIO.cpp \
-	$(SRC_DIR)/renderer/Renderer.cpp \
-	$(SRC_DIR)/renderer/Renderer_callbacks.cpp \
-	$(SRC_DIR)/renderer/Renderer_IEngine.cpp \
-	$(SRC_DIR)/renderer/Renderer_imgui.cpp \
-	$(SRC_DIR)/renderer/Shader.cpp \
-	$(SRC_DIR)/renderer/Camera.cpp \
-	$(SRC_DIR)/renderer/Mesh.cpp \
-	$(SRC_DIR)/renderer/RubiksCube.cpp \
+	$(BSRC_DIR)/renderer/Renderer.cpp \
+	$(BSRC_DIR)/renderer/Renderer_callbacks.cpp \
+	$(BSRC_DIR)/renderer/Renderer_IEngine.cpp \
+	$(BSRC_DIR)/renderer/Renderer_imgui.cpp \
+	$(BSRC_DIR)/renderer/Shader.cpp \
+	$(BSRC_DIR)/renderer/Camera.cpp \
+	$(BSRC_DIR)/renderer/Mesh.cpp \
+	$(BSRC_DIR)/renderer/RubiksCube.cpp \
 
 
 TABLE_SRC := \
@@ -105,11 +100,11 @@ all: start $(NAME) end
 
 $(NAME): $(OBJ_FILES) 
 	@echo "$(BLUE)[LINK] Create the executable ...$(NC)"
-	@$(CXX) $(CXXFLAGS) $(OBJ_FILES) $(GLIBFLAGS) -o $(NAME)
+	@$(CXX) $(CXXFLAGS) $(OBJ_FILES) -o $(NAME)
 
 bonus: start $(OBJ_FILES_BONUS) end
 	@echo "$(BLUE)[LINK] Create the bonus executable ...$(NC)"
-	@$(CXX) $(CXXFLAGS) $(OBJ_FILES_BONUS) $(GLIBFLAGS) -o rubik_bonus
+	@$(CXX) $(CXXFLAGS) $(OBJ_FILES_BONUS) $(GLIBFLAGS) -o $(BNAME)
 
 $(OBJ_DIR)/%.o: %.cpp
 	@echo "[BUILD] $<"
@@ -129,7 +124,7 @@ clean:
 fclean: clean
 	@echo "$(RED)[FCLEAN] Remove the executable...$(NC)"
 	@rm -rf $(BIN_DIR)
-	@rm -f $(NAME)
+	@rm -f $(NAME) $(BNAME)
 
 re: fclean all
 
