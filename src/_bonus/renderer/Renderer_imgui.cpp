@@ -18,6 +18,8 @@ void Renderer::_renderGui() {
     static int solveAlgo = SOLVER_KOCIEMBA;
     static bool randomShuffle = true;
     static char spinBuffer[1024] = "R F2 U' R ...";
+    static bool solved = false;
+    static bool shuffled = false;
 
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
@@ -59,13 +61,24 @@ void Renderer::_renderGui() {
             this->_controller->applySuffle();
             this->setShuffleSpins(this->_controller->getShuffle());
         }
+        shuffled = true;
+        solved = false;
     }
 
     ImGui::SetCursorPos(ImVec2(windowSize.x * 0.5f + 2, windowSize.y - buttonSize.y - GUI_BUTTON_OFFSET));
-    if (ImGui::Button("Solve", buttonSize))
-        this->_controller->solve(solveAlgo);
+    if (!shuffled || solved) {
 
-    if (!this->_solutionSteps.empty()) {
+        ImGui::BeginDisabled();
+        ImGui::Button("Solve", buttonSize);
+        ImGui::EndDisabled();
+    }
+    else if (ImGui::Button("Solve", buttonSize)) {
+
+        this->_controller->solve(solveAlgo);
+        solved = true;
+    }
+
+    if (solved) {
 
         const char * text = this->_solutionSteps[this->_currentStep].first.c_str();
         const ImVec2 textSize = ImGui::CalcTextSize(text);
@@ -101,15 +114,26 @@ void Renderer::_renderGui() {
 
     if (ImGui::CollapsingHeader("Info", ImGuiTreeNodeFlags_DefaultOpen)) {
 
-        ImGui::Text("FPS: %.1f", this->_fps);
-        // if (ImGui::TreeNode("Last Shuffle:")) {
+        ImGui::TextWrapped("FPS: %.1f", this->_fps);
+        if (!this->_shuffleSpins.empty() && ImGui::TreeNode("Last Shuffle:")) {
 
-        //     ImGui::TreePop();
-        // }
-        // if (ImGui::TreeNode("Last Solve:")) {
+            ImGui::TextWrapped("Spins: %ld", this->_shuffleSpinsStr.size());
+            ImGui::TextWrapped("Spins List: %s", this->_shuffleSpinsStr.c_str());
+            ImGui::SameLine();
+            if (ImGui::Button("Copy"))
+                ImGui::SetClipboardText(this->_shuffleSpinsStr.c_str());
+            ImGui::TreePop();
+        }
+        if (!this->_solutionSteps.empty() && ImGui::TreeNode("Last Solve:")) {
 
-        //     ImGui::TreePop();
-        // }
+            ImGui::TextWrapped("Solve Time: %f", this->_solveTime);
+            ImGui::TextWrapped("Spins: %ld", this->_solutionSpins.size());
+            ImGui::TextWrapped("Spins List: %s", this->_solutionSpinsStr.c_str());
+            ImGui::SameLine();
+            if (ImGui::Button("Copy"))
+                ImGui::SetClipboardText(this->_solutionSpinsStr.c_str());
+            ImGui::TreePop();
+        }
     }
 
     if (ImGui::CollapsingHeader("Rubiks Cube", ImGuiTreeNodeFlags_DefaultOpen)) {
@@ -121,11 +145,11 @@ void Renderer::_renderGui() {
 
         if (ImGui::TreeNode("Algo:")) {
 
-            ImGui::Text("Solver Method:");
+            ImGui::TextWrapped("Solver Method:");
             ImGui::SameLine();
-            ImGui::RadioButton("Kociemba", &solveAlgo, 0);
+            ImGui::RadioButton("Minimal Spins", &solveAlgo, 0);
             ImGui::SameLine();
-            ImGui::RadioButton("Pruning", &solveAlgo, 1);
+            ImGui::RadioButton("Fastest", &solveAlgo, 1);
             ImGui::Checkbox("Random Shuffle", &randomShuffle);
             if (randomShuffle && ImGui::InputInt("Shuffle Depth", &shuffleValue, 1, 10) && shuffleValue < 0)
                 shuffleValue *= -1;
@@ -170,7 +194,7 @@ void Renderer::_renderGui() {
 
             if (ImGui::SliderFloat("Scale", &guiZoom, GUI_SCALE_MIN, GUI_SCALE_MAX))
                 ImGui::GetIO().FontGlobalScale = guiZoom;
-            ImGui::Text("Style:");
+            ImGui::TextWrapped("Style:");
             ImGui::SameLine();
             if (ImGui::RadioButton("Default Light", &stylePreset, 0))
                 this->_setupImGuiStyle(stylePreset, rounding);
@@ -184,7 +208,7 @@ void Renderer::_renderGui() {
             if (ImGui::RadioButton("Comfy Cyan", &stylePreset, 3))
                 this->_setupImGuiStyle(stylePreset, rounding);
 
-            ImGui::Text("Rounding:");
+            ImGui::TextWrapped("Rounding:");
             ImGui::SameLine();
             if (ImGui::RadioButton("True", &rounding, 1))
                 this->_setupImGuiStyle(stylePreset, rounding);

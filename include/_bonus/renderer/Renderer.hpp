@@ -45,9 +45,7 @@ public:
     void setSolutionSteps(const std::vector<std::pair<std::string, std::pair<std::vector<SpinLst>,std::vector<SpinLst>>>> \
         & solutionSteps);
     void setShuffleSpins(const std::vector<SpinLst> & shuffleSpins);
-    void setTimeExec(double time) override;
-
-    double _timeExec;
+    void setTimeExec(const double time);
 
     const int * getWindowSize() const ;
 

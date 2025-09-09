@@ -13,6 +13,7 @@
 
 Renderer::Renderer() : _window(nullptr), _title("Rubik"), _camera(*this, this->_shader), _rubiksCube(this->_shader) {
 
+    this->_solveTime = 0;
     this->_controller = 0;
     this->_windowSize[WIDTH] = DEFAULT_WIDTH;
     this->_windowSize[HEIGHT] = DEFAULT_HEIGHT;
