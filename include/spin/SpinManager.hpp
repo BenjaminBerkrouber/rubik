@@ -83,4 +83,16 @@ public:
      * @param spin Spin identifier from SpinLst enum specifying which spin to apply.
      */
     void applyMove(CubeState& state, SpinLst spin);
+
+
+    /**
+     * @brief Retrieves the inverse of a given spin.
+     *
+     * The inverse of a spin is defined as the spin that undoes the effect of the original spin.
+     * For example, if the original spin is "U", its inverse would be "U'".
+     *
+     * @param spin Spin identifier from SpinLst enum to get the inverse of.
+     * @return The inverse SpinLst value.
+     */
+    SpinLst getInverseSpin(SpinLst spin) const;
 };

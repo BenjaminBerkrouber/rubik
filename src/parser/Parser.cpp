@@ -1,5 +1,9 @@
 #include "parser/Parser.hpp"
 
+// ==============================================================================================================================
+// ==== Constructor and Destructor ====
+// ==============================================================================================================================
+
 /**
  * @brief Correspondence table between motion strings and SpinLst values.
  * Sorted for quick binary search.
@@ -14,6 +18,36 @@ static constexpr std::array<std::pair<std::string_view, SpinLst>, SPIN_COUNT> kS
 }};
 
 Parser::Parser() {}
+
+
+// ==============================================================================================================================
+// ==== Parse Method ====
+// ==============================================================================================================================
+
+
+const ParseResult Parser::parse(const std::string& input) {
+    _results.clear();
+    if (input.empty()) return ParseResult{false, "Input string is empty"};
+    auto tokens = split(input, ' ');
+    if (tokens.empty()) return ParseResult{false, "No moves found in input"};
+
+    _results.reserve(tokens.size());
+    for (const auto& token : tokens) {
+        SpinLst spin;
+        if (!tryGetSpinFromString(token, spin)) {
+            return ParseResult{false, "Invalid spin token: [" + std::string(token) + "]"};
+        }
+        _results.push_back(spin);
+    }
+
+    return ParseResult{true, ""};
+}
+
+
+// ==============================================================================================================================
+// ==== Utils Methods ====
+// ==============================================================================================================================
+
 
 std::vector<std::string_view> Parser::split(const std::string& str, char delimiter) const {
     std::vector<std::string_view> tokens;
@@ -41,38 +75,6 @@ bool Parser::tryGetSpinFromString(std::string_view token, SpinLst& out) const {
     return false;
 }
 
-
-const ParseResult Parser::parse(const std::string& input) {
-    _results.clear();
-    if (input.empty()) return ParseResult{false, "Input string is empty"};
-    auto tokens = split(input, ' ');
-    if (tokens.empty()) return ParseResult{false, "No moves found in input"};
-
-    _results.reserve(tokens.size());
-    for (const auto& token : tokens) {
-        SpinLst spin;
-        if (!tryGetSpinFromString(token, spin)) {
-            return ParseResult{false, "Invalid spin token: [" + std::string(token) + "]"};
-        }
-        _results.push_back(spin);
-    }
-
-    return ParseResult{true, ""};
-}
-
-const std::vector<SpinLst>& Parser::getResults() const {
-    return _results;
-}
-
-void Parser::clearResults() {
-    _results.clear();
-}
-
-void Parser::setResults(const std::vector<SpinLst>& results) {
-    _results = results;
-}
-
-
 std::vector<SpinLst> & Parser::generateRandomSpinLst(int count) {
     static bool seeded = false;
     if (!seeded) {
@@ -85,4 +87,28 @@ std::vector<SpinLst> & Parser::generateRandomSpinLst(int count) {
         _results.push_back(spin);
     }
     return _results;
+}
+
+void Parser::clearResults() {
+    _results.clear();
+}
+
+
+// ==================================================================================
+// ==== Getter ====
+// ==================================================================================
+
+
+const std::vector<SpinLst>& Parser::getResults() const {
+    return _results;
+}
+
+
+// ==================================================================================
+// ==== Setter ====
+// ==================================================================================
+
+
+void Parser::setResults(const std::vector<SpinLst>& results) {
+    _results = results;
 }

@@ -29,16 +29,32 @@
 # Compiled Static libraries
 *.lai
 *.la
-*.a
+#*.a
 *.lib
 
 # Executables
 *.exe
 *.out
 *.app
-rubik
+rubik*
 bin/*
+*.prune
 
+# static analyzers
+*.csv
 
 # debug information files
 *.dwo
+
+analysis/data
+analysis/results
+
+# opengl/imgui temp files
+imgui.ini
+
+# opengl/imgui temp files
+imgui.ini
+
+*.txt
+
+*.bin

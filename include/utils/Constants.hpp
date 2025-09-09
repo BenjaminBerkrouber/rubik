@@ -29,7 +29,7 @@ enum CornersPieceLst {
     DFR, // 4
     DLF, // 5
     DBL, // 6
-    DRB // 7
+    DRB  // 7
 };
 
 enum EdgesPieceLst {
@@ -55,3 +55,9 @@ enum Color {
     e_ORANGE, // face Back
     e_WHITE // face Down
 };
+
+#define ALGO_MODE 1
+
+#define cornersOrientation 2187 // 3^7
+#define edgesOrientation 2048 // 2^11
+#define sliceEdgesOrientation 495 // 9C4
