@@ -71,11 +71,11 @@ void RubikController::print() const {
 
 #include <chrono>
 
-void RubikController::solve(int algorithm) {
+bool void RubikController::solve(int algorithm) {
     auto start = std::chrono::high_resolution_clock::now();
     ISolver* solver = algorithm == 0 ? _KociembaSolver : nullptr;
     if (!solver->solve()) 
-        return;
+        return false;
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = end - start;
     double timeExec = elapsed.count();
@@ -84,6 +84,7 @@ void RubikController::solve(int algorithm) {
     _engine->setTimeExec(timeExec);
     _engine->setSolutionSpins(solver->getSolution());
     _engine->setSolutionSteps(solver->getSolutionSteps());
+    return true;
 }
 
 void RubikController::reset() {

@@ -73,7 +73,7 @@ class RubikController {
         /**
         * @brief Solves the cube using the selected solving algorithm.
         */
-        void solve(int algorithm = 0);
+        bool solve(int algorithm = 0);
 
         /**
          * @brief Resets the RubikController to its initial state.

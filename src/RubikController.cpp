@@ -72,14 +72,15 @@ void RubikController::print() const {
     _engine->print();
 }
 
-void RubikController::solve(int algorithm) {
+bool RubikController::solve(int algorithm) {
     (void)algorithm;
     if (!_solver->solve()) 
-        return;
+        return false;
     std::vector<SpinLst> solution = _solver->getSolution();
     for (const SpinLst& move : solution)
         std::cout << std::left << std::setw(2) << spinToStr(move) << " ";
     std::cout << std::endl;
+    return true;
 }
 
 void RubikController::reset() {
