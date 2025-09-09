@@ -170,18 +170,21 @@ void Renderer::_nextSpin() {
     if (this->_solutionSteps.empty())
         return;
 
-    std::pair<std::string, std::pair<std::vector<SpinLst>, std::vector<SpinLst>>> & step \
-        = this->_solutionSteps[this->_currentStep];
+    if (this->_currentSpin + 1 < static_cast<int>(this->_solutionSteps[this->_currentStep].second.first.size())) {
 
-    if (this->_currentSpin < static_cast<int>(step.second.first.size())) {
-
-        this->_rubiksCube.spin(step.second.first[this->_currentSpin], 0.2f);
+        this->_rubiksCube.spin(this->_solutionSteps[this->_currentStep].second.first[this->_currentSpin], 0.2f);
         this->_currentSpin++;
     }
     else if (this->_currentStep + 1 < static_cast<int>(this->_solutionSteps.size())) {
 
+        this->_rubiksCube.spin(this->_solutionSteps[this->_currentStep].second.first[this->_currentSpin], 0.2f);
         this->_currentStep++;
         this->_currentSpin = 0;
+    }
+    else if (this->_currentSpin < static_cast<int>(this->_solutionSteps[this->_currentStep].second.first.size())) {
+
+        this->_rubiksCube.spin(this->_solutionSteps[this->_currentStep].second.first[this->_currentSpin], 0.2f);
+        this->_currentSpin++;
     }
 }
 
@@ -189,18 +192,16 @@ void Renderer::_prevSpin() {
 
     if (this->_solutionSteps.empty())
         return;
-        
-    std::pair<std::string, std::pair<std::vector<SpinLst>, std::vector<SpinLst>>> & step \
-        = this->_solutionSteps[this->_currentStep];
 
     if (this->_currentSpin > 0) {
 
         this->_currentSpin--;
-        this->_rubiksCube.spin(step.second.second[this->_currentSpin], 0.2f);
+        this->_rubiksCube.spin(this->_solutionSteps[this->_currentStep].second.second[this->_currentSpin], 0.2f);
     }
     else if (this->_currentStep > 0) {
 
         this->_currentStep--;
-        this->_currentSpin = static_cast<int>(step.second.second.size()) - 1;
+        this->_currentSpin = static_cast<int>(this->_solutionSteps[this->_currentStep].second.second.size()) - 1;
+        this->_rubiksCube.spin(this->_solutionSteps[this->_currentStep].second.second[this->_currentSpin], 0.2f);
     }
 }

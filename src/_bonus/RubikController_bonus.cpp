@@ -71,7 +71,7 @@ void RubikController::print() const {
 
 #include <chrono>
 
-bool void RubikController::solve(int algorithm) {
+bool RubikController::solve(int algorithm) {
     auto start = std::chrono::high_resolution_clock::now();
     ISolver* solver = algorithm == 0 ? _KociembaSolver : nullptr;
     if (!solver->solve()) 

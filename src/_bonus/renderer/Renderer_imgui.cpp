@@ -72,11 +72,8 @@ void Renderer::_renderGui() {
         ImGui::Button("Solve", buttonSize);
         ImGui::EndDisabled();
     }
-    else if (ImGui::Button("Solve", buttonSize)) {
-
-        this->_controller->solve(solveAlgo);
+    else if (ImGui::Button("Solve", buttonSize) && this->_controller->solve(solveAlgo))
         solved = true;
-    }
 
     if (solved) {
 
@@ -117,7 +114,7 @@ void Renderer::_renderGui() {
         ImGui::TextWrapped("FPS: %.1f", this->_fps);
         if (!this->_shuffleSpins.empty() && ImGui::TreeNode("Last Shuffle:")) {
 
-            ImGui::TextWrapped("Spins: %ld", this->_shuffleSpinsStr.size());
+            ImGui::TextWrapped("Spins: %ld", this->_shuffleSpins.size());
             ImGui::TextWrapped("Spins List: %s", this->_shuffleSpinsStr.c_str());
             ImGui::SameLine();
             if (ImGui::Button("Copy"))

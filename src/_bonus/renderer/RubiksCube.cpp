@@ -62,8 +62,6 @@ void RubiksCube::resetPos() {
     }
 }
 
-#include "utils/utils.h"
-
 void RubiksCube::spin(SpinLst spin, const float duration) {
 
     float angle = 0.0f;
