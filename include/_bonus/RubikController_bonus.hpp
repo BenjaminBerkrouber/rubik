@@ -27,7 +27,7 @@ class RubikController {
         CubeState       _cubeState;     /**< Represents the current state of the Rubik's Cube */
         Parser          _parser;        /**< Parses input spin sequences */
         SpinManager     _spinManager;   /**< Applies spin moves to the cube */
-        ISolver         *_KociembaSolver = nullptr; /**< Pointer to the solver interface */
+        ISolver         *_solver = nullptr; /**< Pointer to the solver interface */
         IEngine         *_engine = nullptr; /**< Pointer to the engine interface (display handler) */
 
         /**

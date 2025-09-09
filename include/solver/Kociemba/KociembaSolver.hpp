@@ -59,7 +59,7 @@ class KociembaSolver : public ISolver {
         * @brief Attempts to solve the cube using the Kociemba algorithm.
         * @return true if a solution is found, false otherwise.
         */
-        bool solve() override;
+        bool solve(bool mode) override;
 
         /**
         * @brief Checks if all necessary tables are loaded and valid.

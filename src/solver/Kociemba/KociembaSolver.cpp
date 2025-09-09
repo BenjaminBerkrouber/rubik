@@ -24,16 +24,16 @@ static bool error(const char* msg) {
     return false;
 }
 
-bool KociembaSolver::solve() {
+bool KociembaSolver::solve(bool mode) {
     if (!checkTable())
         return error("[KO] Pruning tables are not loaded correctly");
     
-    if (!_g1Solver.solve(_state))
+    if (!_g1Solver.solve(_state, mode))
         return error("[KO] G1Solver failed to solve the cube.");
     for (const SpinLst& move : _g1Solver.getSolution())
         _spinManager.applyMove(_state, move);
 
-    if (!_g2Solver.solve(_state))
+    if (!_g2Solver.solve(_state, mode))
         return error("[KO] G2Solver failed to solve the cube.");
     for (const SpinLst& move : _g2Solver.getSolution())
         _spinManager.applyMove(_state, move);

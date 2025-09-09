@@ -144,9 +144,9 @@ void Renderer::_renderGui() {
 
             ImGui::TextWrapped("Solver Method:");
             ImGui::SameLine();
-            ImGui::RadioButton("Minimal Spins", &solveAlgo, 0);
+            ImGui::RadioButton("Fastest", &solveAlgo, 0);
             ImGui::SameLine();
-            ImGui::RadioButton("Fastest", &solveAlgo, 1);
+            ImGui::RadioButton("Minimal Spins", &solveAlgo, 1);
             ImGui::Checkbox("Random Shuffle", &randomShuffle);
             if (randomShuffle && ImGui::InputInt("Shuffle Depth", &shuffleValue, 1, 10) && shuffleValue < 0)
                 shuffleValue *= -1;

@@ -45,8 +45,12 @@ bool G2Solver::IDA(const P2State& s,
     for (int mi = 0; mi < (int)_allowSpin.size(); ++mi) {
         SpinLst m = _allowSpin[mi];
 
-        auto faceOf = [](SpinLst x){ return static_cast<int>(x) / 3; };
-        if (hasLastMove && faceOf(lastMove) == faceOf(m)) continue;
+        if (_mode) {
+            auto faceOf = [](SpinLst x){ return static_cast<int>(x) / 3; };
+            if (hasLastMove && faceOf(lastMove) == faceOf(m)) continue;
+        } else {
+            if (hasLastMove && axisOf(lastMove) == axisOf(m)) continue;
+        }
 
         P2State n{
         p2Tables_.nextCorner (s.cperm , mi),
@@ -62,7 +66,8 @@ bool G2Solver::IDA(const P2State& s,
 }
 
 
-bool G2Solver::solve(CubeState &state) {
+bool G2Solver::solve(CubeState &state, bool mode) {
+    _mode = mode;
     P2State root{
         (uint16_t)encodeCornerPermutation(state),
         (uint16_t)encodeMSliceEdgePermutation(state),

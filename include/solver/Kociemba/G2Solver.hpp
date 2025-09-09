@@ -50,6 +50,8 @@ class G2Solver {
         */
         std::vector<SpinLst> _solution;
 
+        bool _mode;
+
         /**
         * @brief List of allowed moves in phase G2.
         *
@@ -113,7 +115,7 @@ class G2Solver {
         * @param state Initial cube state.
         * @return true if a solution was found.
         */
-        bool solve(CubeState& state);
+        bool solve(CubeState& state, bool mode);
 
         /**
         * @brief Checks if pruning tables are correctly loaded and valid.

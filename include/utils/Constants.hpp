@@ -56,6 +56,7 @@ enum Color {
     e_WHITE // face Down
 };
 
+#define ALGO_MODE 1
 
 #define cornersOrientation 2187 // 3^7
 #define edgesOrientation 2048 // 2^11

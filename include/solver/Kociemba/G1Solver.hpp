@@ -49,6 +49,8 @@ class G1Solver {
         */
         std::vector<SpinLst> _solution;
 
+        bool _mode;
+
         /**
         * @struct P1State
         * @brief Represents the state of the cube in terms of orientations and M-slice edges.
@@ -102,7 +104,7 @@ class G1Solver {
         * @param state Initial cube state.
         * @return true if a solution was found.
         */
-        bool solve(CubeState& state);
+        bool solve(CubeState& state, bool mode);
 
         /**
         * @brief Checks if required pruning tables are loaded and valid.

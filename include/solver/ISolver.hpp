@@ -36,7 +36,7 @@ class ISolver {
         * @brief Attempts to solve the cube.
         * @return true if a solution was found, false otherwise.
         */
-        virtual bool solve() = 0;
+        virtual bool solve(bool mode) = 0;
 
         /**
         * @brief Checks whether the necessary pruning or lookup tables are loaded and valid.

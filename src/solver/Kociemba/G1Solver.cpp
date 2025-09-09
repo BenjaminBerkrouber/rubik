@@ -43,8 +43,12 @@ bool G1Solver::IDA(
     for (int moveInt = 0; moveInt < SPIN_COUNT; ++moveInt) {
         SpinLst move = static_cast<SpinLst>(moveInt);
         
-        auto faceOf = [](SpinLst x){ return static_cast<int>(x) / 3; };
-        if (hasLastMove && faceOf(lastMove) == faceOf(move)) continue;
+        if (_mode) {
+            auto faceOf = [](SpinLst x){ return static_cast<int>(x) / 3; };
+            if (hasLastMove && faceOf(lastMove) == faceOf(move)) continue;
+        } else {
+            if (hasLastMove && axisOf(lastMove) == axisOf(move)) continue;
+        }
 
         P1State n{
             p1Tables_.nextTwist (s.twist , moveInt),
@@ -61,7 +65,8 @@ bool G1Solver::IDA(
 
 
 
-bool G1Solver::solve(CubeState& state) {
+bool G1Solver::solve(CubeState& state, bool mode) {
+    _mode = mode;
     P1State root{
         (uint16_t)encodeCornersOrientation(state),
         (uint16_t)encodeEdgesOrientation(state),

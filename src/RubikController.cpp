@@ -1,4 +1,5 @@
 #include "../include/RubikController.hpp"
+#include "../include/utils/Constants.hpp"
 #include "../include/engine/CubeStateHelper.hpp"
 #include "../include/solver/Kociemba/KociembaSolver.hpp"
 #include <iomanip>
@@ -74,7 +75,7 @@ void RubikController::print() const {
 
 bool RubikController::solve(int algorithm) {
     (void)algorithm;
-    if (!_solver->solve()) 
+    if (!_solver->solve(ALGO_MODE)) 
         return false;
     std::vector<SpinLst> solution = _solver->getSolution();
     for (const SpinLst& move : solution)
